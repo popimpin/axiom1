@@ -56,8 +56,9 @@ def _run(argv, cwd):
 
 def _existing(repo, sha, paths):
     """The subset of `paths` present at `sha` (git archive errors on a missing pathspec)."""
-    out = _git(repo, "ls-tree", "--name-only", sha, "--", *paths).stdout.split()
-    return [p for p in paths if p.rstrip("/") in out]
+    out = _git(repo, "ls-tree", "-r", "--name-only", sha, "--", *paths).stdout.splitlines()
+    return [p for p in paths
+            if any(o == p.rstrip("/") or o.startswith(p.rstrip("/") + "/") for o in out)]
 
 
 def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths):

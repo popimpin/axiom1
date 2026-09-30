@@ -1,5 +1,6 @@
 """Axiom-1 core tests. Most of these are an agent trying to cheat, and the rules refusing."""
 import inspect
+import json
 import subprocess
 import sys
 import tempfile
@@ -150,6 +151,18 @@ class Verification(Base):
         self.repo.commit("swap")
         self.repo.git("checkout", "-q", "main")
         self.assertEqual(self.ax.verify(c["id"])["label"], WITNESSED)
+
+    def test_list_checks_shows_the_command_but_not_our_disk(self):
+        [c] = self.ax.list_checks()
+        self.assertEqual(c["command"], "python -m unittest discover -s tests")
+        self.assertNotIn(str(self.repo.root), json.dumps(c))
+        self.assertNotIn(sys.executable, json.dumps(c))
+
+    def test_directory_test_path_with_trailing_slash(self):
+        self.ax.register_check("slash", self.repo.root, CHECK_ARGV, ["tests/"])
+        fix = self.repo.branch_from_base("fix", {"calc.py": FIXED, "tests/test_calc.py": REAL_TEST})
+        v = self.ax.verify(self.ax.claim("nemotron-1", "add() adds", "slash", self.repo.base, fix)["id"])
+        self.assertEqual(v["label"], WITNESSED, v)
 
     def test_unregistered_check_is_refused(self):
         with self.assertRaises(AxiomError):

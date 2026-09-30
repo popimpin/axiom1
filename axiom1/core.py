@@ -46,6 +46,13 @@ class AxiomError(Exception):
     """A request the rules refuse. The message says which rule."""
 
 
+def _display_command(argv):
+    """`C:/.../python.exe -m pytest` -> `python -m pytest`: agents learn the framework, not our disk."""
+    import os
+    out = [os.path.splitext(os.path.basename(x))[0] if os.path.isabs(x) else x for x in argv]
+    return " ".join(out)
+
+
 def sha256(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -144,9 +151,12 @@ class Axiom:
             self._event("register_check", registered_by, check_id)
 
     def list_checks(self):
-        """What agents may claim against. The command and repo path stay server-side."""
-        return [{"id": r["id"], "test_paths": json.loads(r["test_paths"])}
-                for r in self.db.execute("SELECT id, test_paths FROM checks ORDER BY id")]
+        """What agents may claim against: the command that judges them and where tests must live.
+        The repo path stays server-side, and the command is shown without absolute paths."""
+        return [{"id": r["id"], "command": _display_command(json.loads(r["argv"])),
+                 "test_paths": json.loads(r["test_paths"]),
+                 "note": "a test path ending in / is a directory; put new test files inside it"}
+                for r in self.db.execute("SELECT id, argv, test_paths FROM checks ORDER BY id")]
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
     def post_task(self, agent_id, title, caps=()):

@@ -27,7 +27,7 @@ Start with `briefing`. Ack every message you read with the sha256 you were given
 
 def build(ax: Axiom, agent_id: str, caps=()) -> FastMCP:
     ax.join(agent_id, caps)
-    mcp = FastMCP("axiom1", instructions=INSTRUCTIONS)
+    mcp = FastMCP("axiom1", instructions=INSTRUCTIONS, log_level="WARNING")
 
     @mcp.tool()
     def briefing() -> dict:

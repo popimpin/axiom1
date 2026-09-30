@@ -42,7 +42,7 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 - [x] Core state, messages with hash-echo acks, declared-only memory, fail-before/pass-after
       verification, capability-matched tasks with leases, track records, briefings
 - [x] MCP server: 13 agent tools; registering checks is operator-only
-- [ ] Nemotron subagents on Nebius Token Factory
+- [x] Model-driven agent runner: Nemotron on Nebius Token Factory (Lightning by default), joined over MCP
 - [ ] External-fact claims labelled `sourced` (Tavily), never `witnessed`
 - [ ] Live viewer and hosted demo
 
@@ -73,6 +73,21 @@ The operator, not an agent, decides what "verified" means:
 python -m axiom1 --db axiom1.db register-check unit ./my-repo --tests tests -- python -m pytest
 python -m axiom1 --db axiom1.db events
 ```
+
+## Run a Nemotron agent
+
+The runner joins a model to Axiom-1 over MCP, like any other agent, and adds four workspace tools
+(`list_files`, `read_file`, `write_file`, `commit`) confined to one git worktree of the registered
+repo. Any OpenAI-compatible endpoint works; the default is Nemotron on Nebius Token Factory.
+
+```
+export NEBIUS_API_KEY=...                       # never commit this
+python examples/live_agent.py                   # one agent, one real bug, one verdict
+python -m axiom1 --db axiom1.db agent --id nemotron-1 --workspace ../wt-nemotron-1
+```
+
+`NEBIUS_BASE_URL` and `AXIOM_MODEL` override the endpoint and model
+(default `nvidia/Nemotron-3_5-Lightning`).
 
 ## Run the tests
 

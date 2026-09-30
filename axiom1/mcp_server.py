@@ -104,10 +104,14 @@ def build(ax: Axiom, agent_id: str | None = None, caps=(), identify=None) -> Fas
 
     @mcp.tool()
     async def claim(statement: str, check_id: str, before_ref: str, after_ref: str, ctx: Context,
-                    task_id: str | None = None) -> dict:
-        """Claim that commit `after_ref` fixes what was wrong at `before_ref`, under a registered
-        check. Stored as `declared` until `verify` runs."""
-        return await call(ctx, lambda me: ax.claim(me, statement, check_id, before_ref, after_ref, task_id))
+                    task_id: str | None = None, kind: str = "fix") -> dict:
+        """Claim something about commit `after_ref` relative to `before_ref`, under a registered check.
+        kind "fix": a test you added fails on `before_ref` and passes on `after_ref`.
+        kind "no_regression": a change (refactor, cleanup) that broke nothing: the tests passed on
+        `before_ref` and the OLD tests still pass on your code.
+        Stored as `declared` until `verify` runs."""
+        return await call(ctx, lambda me: ax.claim(me, statement, check_id, before_ref, after_ref, task_id,
+                                                   kind))
 
     @mcp.tool()
     async def verify(claim_id: str, ctx: Context) -> dict:

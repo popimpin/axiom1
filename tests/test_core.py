@@ -128,7 +128,7 @@ class Verification(Base):
         self.assertNotEqual(v["evidence"]["before"]["exit"], 0)
         self.assertEqual(v["evidence"]["after"]["exit"], 0)
         facts = self.ax.briefing("nemotron-2")["facts"]
-        self.assertEqual([f["content"] for f in facts], ["add() adds"])
+        self.assertEqual([f["content"] for f in facts], ["[fixed] add() adds"])
 
     def test_a_test_that_passes_on_the_unfixed_code_is_refuted(self):
         # The oracle hole: the "fix" ships its own test, which asserts nothing. The test file does

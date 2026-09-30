@@ -189,6 +189,79 @@ def _verify(repo, before_sha, after_sha, argv, test_paths, sandbox, holdout):
             evidence, private)
 
 
+def _replace_tests(tree, repo, sha, test_paths):
+    """Swap `tree`'s tests for the ones at `sha`: the paths are emptied first, so tests deleted
+    since then come back and tests added since then are gone."""
+    for p in test_paths:
+        target = Path(tree) / p.rstrip("/")
+        if target.is_dir():
+            shutil.rmtree(target)
+        elif target.exists():
+            target.unlink()
+    present = _existing(repo, sha, test_paths)
+    if present:
+        _export(repo, sha, tree, present)
+
+
+def no_regression(repo, before_sha, after_sha, argv, test_paths, sandbox=None, holdout=None):
+    """"I changed this and nothing broke". Returns (label, reason, evidence, private).
+
+      1. BEFORE's tree                          -> must PASS (the baseline)
+      2. AFTER's code with BEFORE's tests       -> must PASS (deleting a broken test cannot hide it)
+      3. AFTER's tree                           -> must PASS
+      4. held-out tests: any that passed on BEFORE must pass on AFTER
+      5. canaries on AFTER                      -> must FAIL (the harness was not rigged)"""
+    sandbox = sandbox or LocalSandbox()
+    evidence, private = {"sandbox": sandbox.describe(), "kind": "no_regression"}, {}
+    with tempfile.TemporaryDirectory() as before_dir, tempfile.TemporaryDirectory() as old_tests_dir, \
+            tempfile.TemporaryDirectory() as after_dir:
+        _export(repo, before_sha, before_dir)
+        _export(repo, after_sha, after_dir)
+        _export(repo, after_sha, old_tests_dir)
+        _replace_tests(old_tests_dir, repo, before_sha, test_paths)
+
+        base = sandbox.run(before_dir, argv)
+        evidence["before"] = {"sha": before_sha, "exit": base.returncode, "tail": base.output[-800:]}
+        if base.returncode != 0:
+            return ("refuted", "the tests already fail before the change, so there is no baseline "
+                               "to show nothing broke", evidence, private)
+        old = sandbox.run(old_tests_dir, argv)
+        evidence["old_tests_on_new_code"] = {"exit": old.returncode, "tail": old.output[-800:]}
+        if old.returncode != 0:
+            return ("refuted", "regression: tests that passed before fail on the changed code",
+                    evidence, private)
+        new = sandbox.run(after_dir, argv)
+        evidence["after"] = {"sha": after_sha, "exit": new.returncode, "tail": new.output[-800:]}
+        if new.returncode != 0:
+            return "refuted", "the changed tree fails its own tests", evidence, private
+
+        overlay = _existing(repo, after_sha, test_paths) or test_paths[:1]
+        is_dir = (Path(after_dir) / overlay[0].rstrip("/")).is_dir() or overlay[0].endswith("/")
+        if holdout:
+            held_before = _holdout_run(sandbox, before_dir, argv, overlay[0], is_dir, holdout)
+            held_after = _holdout_run(sandbox, after_dir, argv, overlay[0], is_dir, holdout)
+            evidence["holdout"] = {"ran": True, "passed_before": held_before.returncode == 0,
+                                   "passed": held_after.returncode == 0}
+            if held_before.returncode == 0 and held_after.returncode != 0:
+                private["holdout_tail"] = held_after.output[-2000:]
+                return ("refuted", "regression: the operator's held-out tests passed before the change "
+                                   "and fail after it", evidence, private)
+
+        if not _canary_collected(sandbox, before_dir, argv, overlay[0], is_dir):
+            evidence["canaries"] = {"collected": False}
+            return ("witnessed", "no regression: the old tests pass on the new code (no tamper check "
+                                 "possible)", evidence, private)
+        tampered = _tamper_check(sandbox, after_dir, argv, overlay[0], is_dir)
+    evidence["canaries"] = {"collected": True, "styles": list(CANARY_STYLES), "all_failed": tampered is None}
+    if tampered:
+        style, _ = tampered
+        return ("refuted", f"tampering: with the change applied, a test that must fail ({style}) passed",
+                evidence, private)
+    return ("witnessed", "no regression: the tests passed before, the old tests pass on the new code, the "
+                         "new tests pass" + (", held-out tests still pass" if holdout else "")
+            + ", and a must-fail canary still fails", evidence, private)
+
+
 def is_repo(path):
     return Path(path).exists() and subprocess.run(
         ["git", "-C", str(path), "rev-parse", "--git-dir"], capture_output=True,

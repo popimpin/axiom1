@@ -80,6 +80,21 @@ python -m axiom1 register-check unit ./my-repo --tests tests/ --holdout ../held-
 **Still not caught:** a cheat that also defeats tests it has never seen. Held-out tests only raise the
 bar to "fix the behaviour in general".
 
+### Claims that are not fixes: "nothing broke"
+
+A refactor has no failing test to turn green. `claim(..., kind="no_regression")` is checked instead as:
+
+1. BEFORE's tree. **It must pass** (no baseline, no claim).
+2. AFTER's code with **BEFORE's tests** put back. **It must pass.** This is what stops the obvious
+   cheat: break something, delete its test, and leave the rest of the suite green.
+3. AFTER's tree. **It must pass.**
+4. Held-out tests that passed on BEFORE must still pass on AFTER.
+5. The canaries must still fail.
+
+A witnessed claim becomes a fact prefixed with what was proven, `[fixed]` or `[no regression]`, then
+the agent's own words. An agent that claims "fixed every bug" under `no_regression` gets a fact that
+reads `[no regression] fixed every bug`.
+
 ## The collective
 
 - **Tasks go by capability, not by name.** A task declares what it needs (`shell`, `gpu`, ...). Any

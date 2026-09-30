@@ -115,7 +115,7 @@ class SharedStateAcrossProcesses(unittest.TestCase):
                 # a late joiner knows all of it at once
                 late = await Agent(stack, self.db, "late").start()
                 b = await late("briefing")
-                self.assertEqual([f["content"] for f in b["facts"]], ["add() adds"])
+                self.assertEqual([f["content"] for f in b["facts"]], ["[fixed] add() adds"])
                 self.assertEqual([r["statement"] for r in b["refuted"]], ["fixed add"])
                 self.assertEqual(b["agents"]["nemotron-2"]["witnessed"], 1)
                 self.assertIsNone((await late("take_task"))["task"])  # the task is done

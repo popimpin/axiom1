@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS tasks    (id TEXT PRIMARY KEY, title TEXT NOT NULL, c
 CREATE TABLE IF NOT EXISTS claims   (id TEXT PRIMARY KEY, agent TEXT NOT NULL, statement TEXT NOT NULL,
                                      check_id TEXT NOT NULL, before_sha TEXT NOT NULL, after_sha TEXT NOT NULL,
                                      task_id TEXT, label TEXT NOT NULL, reason TEXT, evidence TEXT,
-                                     made_at REAL NOT NULL, verified_at REAL);
+                                     made_at REAL NOT NULL, verified_at REAL, kind TEXT NOT NULL DEFAULT 'fix');
 CREATE TABLE IF NOT EXISTS events   (id INTEGER PRIMARY KEY AUTOINCREMENT, at REAL NOT NULL, kind TEXT NOT NULL,
                                      agent TEXT, subject TEXT, detail TEXT);
 """
@@ -54,7 +54,15 @@ MIGRATIONS = [
     ("checks", "sandbox", "TEXT NOT NULL DEFAULT 'local'"),
     ("checks", "image", "TEXT"),
     ("checks", "holdout", "TEXT"),
+    ("claims", "kind", "TEXT NOT NULL DEFAULT 'fix'"),
 ]
+
+# What a claim can assert, how the server checks it, and how a witnessed one is written down. The
+# fact records what was PROVEN; the agent's own words follow it and prove nothing by themselves.
+CLAIM_KINDS = {
+    "fix": ("fixed", verifier.fail_before_pass_after),
+    "no_regression": ("no regression", verifier.no_regression),
+}
 
 
 def _locked(method):
@@ -279,8 +287,12 @@ class Axiom:
 
     # ---- claims: declared until the server checks them --------------------
     @_locked
-    def claim(self, agent_id, statement, check_id, before_ref, after_ref, task_id=None):
+    def claim(self, agent_id, statement, check_id, before_ref, after_ref, task_id=None, kind="fix"):
+        """`kind` is what the claim asserts: "fix" (a test that failed before passes after) or
+        "no_regression" (a change that broke nothing: the old tests still pass on the new code)."""
         self._agent(agent_id)
+        if kind not in CLAIM_KINDS:
+            raise AxiomError(f"unknown claim kind {kind!r}; use one of {sorted(CLAIM_KINDS)}")
         check = self.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone()
         if check is None:
             raise AxiomError(f"no registered check {check_id!r}")
@@ -298,11 +310,12 @@ class Axiom:
             raise AxiomError("before and after are the same commit")
         claim_id = uuid.uuid4().hex[:12]
         with self.db:
-            self.db.execute("INSERT INTO claims VALUES (?,?,?,?,?,?,?,?,NULL,NULL,?,NULL)",
+            self.db.execute("INSERT INTO claims (id, agent, statement, check_id, before_sha, after_sha, "
+                            "task_id, label, made_at, kind) VALUES (?,?,?,?,?,?,?,?,?,?)",
                             (claim_id, agent_id, statement, check_id, before_sha, after_sha,
-                             task_id, DECLARED, self.clock()))
-            self._event("claim", agent_id, claim_id, statement=statement)
-        return {"id": claim_id, "label": DECLARED, "before": before_sha, "after": after_sha}
+                             task_id, DECLARED, self.clock(), kind))
+            self._event("claim", agent_id, claim_id, statement=statement, claim_kind=kind)
+        return {"id": claim_id, "label": DECLARED, "kind": kind, "before": before_sha, "after": after_sha}
 
     def verify(self, claim_id):
         with self.lock:
@@ -313,7 +326,8 @@ class Axiom:
                 return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
             check = self.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
         # the slow part runs unlocked, so one agent's verification does not stall the others
-        label, reason, evidence, private = verifier.fail_before_pass_after(
+        _, check_fn = CLAIM_KINDS[c["kind"]]
+        label, reason, evidence, private = check_fn(
             check["repo"], c["before_sha"], c["after_sha"],
             json.loads(check["argv"]), json.loads(check["test_paths"]),
             sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
@@ -332,7 +346,8 @@ class Axiom:
             if label == WITNESSED:
                 self.db.execute("INSERT INTO memories (key, agent, content, label, claim_id, at) "
                                 "VALUES (?,?,?,?,?,?)",
-                                (f"claim:{claim_id}", c["agent"], c["statement"], WITNESSED,
+                                (f"claim:{claim_id}", c["agent"],
+                                 f"[{CLAIM_KINDS[c['kind']][0]}] {c['statement']}", WITNESSED,
                                  claim_id, self.clock()))
             if c["task_id"]:
                 status = "done" if label == WITNESSED else "open"

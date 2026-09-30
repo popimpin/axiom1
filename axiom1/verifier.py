@@ -48,6 +48,16 @@ def resolve(repo, ref):
     return _git(repo, "rev-parse", "--verify", f"{ref}^{{commit}}").stdout.strip()
 
 
+def current_branch(repo):
+    return _git(repo, "symbolic-ref", "--short", "HEAD").stdout.strip()
+
+
+def is_ancestor(repo, commit, of):
+    """True if `commit` is `of` or in its history: the code already reached that branch."""
+    return subprocess.run(["git", "-C", str(repo), "merge-base", "--is-ancestor", commit, of],
+                          capture_output=True, stdin=subprocess.DEVNULL).returncode == 0
+
+
 def _export(repo, sha, dest, paths=()):
     data = _git(repo, "archive", "--format=tar", sha, *paths, text=False).stdout
     with tarfile.open(fileobj=io.BytesIO(data)) as tar:

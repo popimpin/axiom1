@@ -36,14 +36,16 @@ CREATE TABLE IF NOT EXISTS memories (id INTEGER PRIMARY KEY AUTOINCREMENT, key T
                                      content TEXT NOT NULL, label TEXT NOT NULL, claim_id TEXT, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS checks   (id TEXT PRIMARY KEY, repo TEXT NOT NULL, argv TEXT NOT NULL,
                                      test_paths TEXT NOT NULL, registered_by TEXT NOT NULL, at REAL NOT NULL,
-                                     sandbox TEXT NOT NULL DEFAULT 'local', image TEXT, holdout TEXT);
+                                     sandbox TEXT NOT NULL DEFAULT 'local', image TEXT, holdout TEXT,
+                                     base_ref TEXT);
 CREATE TABLE IF NOT EXISTS tasks    (id TEXT PRIMARY KEY, title TEXT NOT NULL, caps TEXT NOT NULL,
                                      posted_by TEXT NOT NULL, status TEXT NOT NULL, holder TEXT,
                                      lease_until REAL, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS claims   (id TEXT PRIMARY KEY, agent TEXT NOT NULL, statement TEXT NOT NULL,
                                      check_id TEXT NOT NULL, before_sha TEXT NOT NULL, after_sha TEXT NOT NULL,
                                      task_id TEXT, label TEXT NOT NULL, reason TEXT, evidence TEXT,
-                                     made_at REAL NOT NULL, verified_at REAL, kind TEXT NOT NULL DEFAULT 'fix');
+                                     made_at REAL NOT NULL, verified_at REAL, kind TEXT NOT NULL DEFAULT 'fix',
+                                     anchored INTEGER NOT NULL DEFAULT 1);
 CREATE TABLE IF NOT EXISTS events   (id INTEGER PRIMARY KEY AUTOINCREMENT, at REAL NOT NULL, kind TEXT NOT NULL,
                                      agent TEXT, subject TEXT, detail TEXT);
 """
@@ -55,6 +57,8 @@ MIGRATIONS = [
     ("checks", "image", "TEXT"),
     ("checks", "holdout", "TEXT"),
     ("claims", "kind", "TEXT NOT NULL DEFAULT 'fix'"),
+    ("checks", "base_ref", "TEXT"),
+    ("claims", "anchored", "INTEGER NOT NULL DEFAULT 1"),
 ]
 
 # What a claim can assert, how the server checks it, and how a witnessed one is written down. The
@@ -212,13 +216,20 @@ class Axiom:
     # ---- operator API: NOT exposed to agents ------------------------------
     @_locked
     def register_check(self, check_id, repo, argv, test_paths, registered_by="operator",
-                       sandbox="local", image=None, holdout=None):
+                       sandbox="local", image=None, holdout=None, base=None):
         """A human registers what "verified" means for a repo. Agents cannot add or edit checks.
         `sandbox` is where the command runs: "local" (development only) or "docker" (needs `image`).
         `holdout` is a directory of tests the agents never see, run against every fix. It must live
-        OUTSIDE the repo: agents work in worktrees of it and can read everything in its history."""
+        OUTSIDE the repo: agents work in worktrees of it and can read everything in its history.
+        `base` is the branch holding the collective's accepted code (default: the repo's current
+        branch). Only claims that start from a commit on it count toward a track record."""
         if not verifier.is_repo(repo):
             raise AxiomError(f"{repo!r} is not a git repository")
+        try:
+            base = base or verifier.current_branch(repo)
+            verifier.resolve(repo, base)
+        except Exception:
+            raise AxiomError(f"base branch {base!r} does not resolve in {repo!r}") from None
         try:
             sandboxes.from_check(sandbox, image)
         except ValueError as e:
@@ -231,9 +242,9 @@ class Axiom:
                 raise AxiomError("held-out tests must live outside the repo, where agents cannot read them")
             holdout = str(held)
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?,?)",
+            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?,?,?)",
                             (check_id, str(repo), json.dumps(list(argv)), json.dumps(list(test_paths)),
-                             registered_by, self.clock(), sandbox, image, holdout))
+                             registered_by, self.clock(), sandbox, image, holdout, base))
             self._event("register_check", registered_by, check_id)
 
     @_locked
@@ -244,10 +255,12 @@ class Axiom:
                  "test_paths": json.loads(r["test_paths"]),
                  "sandbox": sandboxes.from_check(r["sandbox"], r["image"]).describe(),
                  "holdout": r["holdout"] is not None,
+                 "base": r["base_ref"],
                  "note": "a test path ending in / is a directory; put new test files inside it"
                          + ("; this check also runs held-out tests you cannot see, so fix the behaviour "
-                            "in general, not just the case your test checks" if r["holdout"] else "")}
-                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image, holdout "
+                            "in general, not just the case your test checks" if r["holdout"] else "")
+                         + f"; only claims whose before_ref is on {r['base_ref']!r} count toward your record"}
+                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image, holdout, base_ref "
                                          "FROM checks ORDER BY id")]
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
@@ -308,14 +321,18 @@ class Axiom:
             raise AxiomError(f"could not resolve refs: {e}") from None
         if before_sha == after_sha:
             raise AxiomError("before and after are the same commit")
+        # anchored: the claim starts from code the collective already had. A fix to a bug the agent
+        # planted in its own unmerged commit is true, and worth nothing.
+        anchored = verifier.is_ancestor(check["repo"], before_sha, check["base_ref"])
         claim_id = uuid.uuid4().hex[:12]
         with self.db:
             self.db.execute("INSERT INTO claims (id, agent, statement, check_id, before_sha, after_sha, "
-                            "task_id, label, made_at, kind) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                            "task_id, label, made_at, kind, anchored) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                             (claim_id, agent_id, statement, check_id, before_sha, after_sha,
-                             task_id, DECLARED, self.clock(), kind))
-            self._event("claim", agent_id, claim_id, statement=statement, claim_kind=kind)
-        return {"id": claim_id, "label": DECLARED, "kind": kind, "before": before_sha, "after": after_sha}
+                             task_id, DECLARED, self.clock(), kind, int(anchored)))
+            self._event("claim", agent_id, claim_id, statement=statement, claim_kind=kind, anchored=anchored)
+        return {"id": claim_id, "label": DECLARED, "kind": kind, "before": before_sha, "after": after_sha,
+                "counts": anchored}
 
     def verify(self, claim_id):
         with self.lock:
@@ -323,7 +340,8 @@ class Axiom:
             if c is None:
                 raise AxiomError(f"no claim {claim_id!r}")
             if c["label"] != DECLARED:
-                return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
+                return {"id": claim_id, "label": c["label"], "reason": c["reason"],
+                        "counts": bool(c["anchored"])}
             check = self.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
         # the slow part runs unlocked, so one agent's verification does not stall the others
         _, check_fn = CLAIM_KINDS[c["kind"]]
@@ -341,32 +359,43 @@ class Axiom:
                                   "WHERE id=? AND label=?",
                                   (label, reason, json.dumps(evidence), self.clock(), claim_id, DECLARED))
             if won.rowcount == 0:
-                c = self.db.execute("SELECT label, reason FROM claims WHERE id=?", (claim_id,)).fetchone()
-                return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
-            if label == WITNESSED:
+                c = self.db.execute("SELECT label, reason, anchored FROM claims WHERE id=?",
+                                    (claim_id,)).fetchone()
+                return {"id": claim_id, "label": c["label"], "reason": c["reason"],
+                        "counts": bool(c["anchored"])}
+            anchored = bool(c["anchored"])
+            if label == WITNESSED and not anchored:
+                reason += (" (does not count: before_ref is not on the base branch, so this fixes "
+                           "code the collective never had)")
+                self.db.execute("UPDATE claims SET reason=? WHERE id=?", (reason, claim_id))
+            if label == WITNESSED and anchored:
                 self.db.execute("INSERT INTO memories (key, agent, content, label, claim_id, at) "
                                 "VALUES (?,?,?,?,?,?)",
                                 (f"claim:{claim_id}", c["agent"],
                                  f"[{CLAIM_KINDS[c['kind']][0]}] {c['statement']}", WITNESSED,
                                  claim_id, self.clock()))
             if c["task_id"]:
-                status = "done" if label == WITNESSED else "open"
+                status = "done" if label == WITNESSED and anchored else "open"
                 self.db.execute("UPDATE tasks SET status=?, holder=CASE WHEN ?='done' THEN holder END, "
                                 "lease_until=NULL WHERE id=?", (status, status, c["task_id"]))
             self._event(label, c["agent"], claim_id, reason=reason)
             if "holdout_tail" in private:  # operator-only: the event log is not on the agent surface
                 self._event("holdout_failed", c["agent"], claim_id, tail=private["holdout_tail"])
-        return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence}
+        return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence, "counts": anchored}
 
     # ---- track record: honesty and reliability are separate ----------------
     @_locked
     def track_record(self, agent_id):
-        counts = dict(self.db.execute("SELECT label, COUNT(*) FROM claims WHERE agent=? GROUP BY label",
-                                      (agent_id,)).fetchall())
+        """Witnessed counts only anchored claims (farming your own bugs earns nothing). Refuted counts
+        every claim: a false statement is false wherever it started."""
+        rows = self.db.execute("SELECT label, anchored, COUNT(*) AS n FROM claims WHERE agent=? "
+                               "GROUP BY label, anchored", (agent_id,)).fetchall()
+        n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+                                             and (anchored is None or r["anchored"] == anchored))
         expired = self.db.execute("SELECT COUNT(*) FROM events WHERE kind='lease_expired' AND agent=?",
                                   (agent_id,)).fetchone()[0]
-        return {"witnessed": counts.get(WITNESSED, 0), "refuted": counts.get(REFUTED, 0),
-                "pending": counts.get(DECLARED, 0), "leases_expired": expired}
+        return {"witnessed": n(WITNESSED, 1), "refuted": n(REFUTED), "pending": n(DECLARED),
+                "unanchored": n(WITNESSED, 0), "leases_expired": expired}
 
     # ---- briefing: what a joining agent needs, not the transcript ----------
     @_locked

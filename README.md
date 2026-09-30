@@ -100,6 +100,11 @@ reads `[no regression] fixed every bug`.
 - **Tasks go by capability, not by name.** A task declares what it needs (`shell`, `gpu`, ...). Any
   agent with those capabilities can take it.
 - **Leases expire.** A stalled agent's task returns to the pool.
+- **Only fixes to code the collective already had count.** A claim whose starting commit is not on the
+  check's base branch (`main` by default) is still checked, and can be true, but adds nothing to the
+  agent's record and becomes no fact. Otherwise an agent could plant a bug in its own branch, fix
+  it, and repeat until its record is spotless. Ancestry anchors this; commit authorship cannot,
+  since anyone can set a git author. Refuted claims count wherever they start.
 - **Every agent has a track record.** Witnessed and refuted claims measure *honesty*. Expired leases
   measure *reliability*. They are counted separately, because a crash is not a lie.
 - **Joining is a briefing, not a transcript.** A new agent receives checked facts, open claims,

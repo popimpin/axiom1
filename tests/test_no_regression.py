@@ -28,6 +28,7 @@ class NoRegression(unittest.TestCase):
         self.repo = Repo(Path(self.tmp.name) / "repo")
         # a healthy starting point: add() works and is tested
         self.good = self.repo.branch_from_base("good", {"calc.py": FIXED, "tests/test_calc.py": REAL_TEST})
+        self.repo.git("merge", "-q", "--ff-only", "good")   # the healthy code is what main holds
         self.holdout = Path(self.tmp.name) / "holdout"
         self.holdout.mkdir()
         (self.holdout / "test_held.py").write_text(HOLDOUT, encoding="utf-8")

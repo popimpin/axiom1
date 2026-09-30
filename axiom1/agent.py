@@ -138,17 +138,28 @@ def _openai_tool(name, description, parameters):
                                              "parameters": parameters or {"type": "object", "properties": {}}}}
 
 
-async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=print):
-    """Run one agent until it gives a final answer or runs out of steps. Returns the transcript."""
+async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=print, hub_url=None,
+                    token=None):
+    """Run one agent until it gives a final answer or runs out of steps. Returns the transcript.
+
+    With `hub_url` the agent connects to a hub over HTTP and is whoever `token` says it is; `db` and
+    `caps` are ignored (the hub owns the database, the operator set the caps). Without it, the
+    runner starts a stdio server on `db` for local development."""
     ws = Workspace(workspace)
     start_sha = ws.head()
-    server = StdioServerParameters(
-        command=sys.executable, args=["-m", "axiom1", "--db", str(db), "serve"],
-        env={**os.environ, "AXIOM_AGENT": agent_id, "AXIOM_CAPS": ",".join(caps),
-             "PYTHONPATH": os.pathsep.join([str(Path(__file__).resolve().parents[1]),
-                                            os.environ.get("PYTHONPATH", "")])})
     async with AsyncExitStack() as stack:
-        read, write = await stack.enter_async_context(stdio_client(server))
+        if hub_url:
+            from mcp.client.streamable_http import streamablehttp_client
+            read, write, _ = await stack.enter_async_context(
+                streamablehttp_client(hub_url, headers={"Authorization": f"Bearer {token}"}, timeout=60,
+                                      sse_read_timeout=900))
+        else:
+            server = StdioServerParameters(
+                command=sys.executable, args=["-m", "axiom1", "--db", str(db), "serve"],
+                env={**os.environ, "AXIOM_AGENT": agent_id, "AXIOM_CAPS": ",".join(caps),
+                     "PYTHONPATH": os.pathsep.join([str(Path(__file__).resolve().parents[1]),
+                                                    os.environ.get("PYTHONPATH", "")])})
+            read, write = await stack.enter_async_context(stdio_client(server))
         session = await stack.enter_async_context(ClientSession(read, write))
         await session.initialize()
         mcp_tools = (await session.list_tools()).tools

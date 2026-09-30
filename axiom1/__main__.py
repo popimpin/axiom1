@@ -1,9 +1,13 @@
 """Operator commands. These are for the human running Axiom-1, not for agents.
 
-    python -m axiom1 serve                      # MCP server for one agent (see mcp_server.py)
-    python -m axiom1 register-check ID REPO --tests tests -- python -m pytest
-    python -m axiom1 events [--since N]         # the raw event log, as JSON lines
-    python -m axiom1 agent --id nemotron-1 --workspace ./wt-nemotron-1   # a model-driven agent
+    python -m axiom1 hub --port 8765            # THE shared server: owns the database, HTTP + tokens
+    python -m axiom1 add-agent nemotron-1 --caps shell   # admit an agent; prints its token once
+    python -m axiom1 revoke-agent nemotron-1     # its token stops working at once
+    python -m axiom1 register-check ID REPO --tests tests/ -- python -m pytest
+    python -m axiom1 events [--since N]         # the raw event log, as JSON lines (operator-only)
+    python -m axiom1 agent --id nemotron-1 --workspace ./wt --hub http://127.0.0.1:8765/mcp
+                                                # a model-driven agent; token from AXIOM_TOKEN
+    python -m axiom1 serve                      # stdio server for one agent (local development)
 
 A workspace is a git worktree of the registered repo, so the agent's commits are visible to the
 verifier:  git -C my-repo worktree add ../wt-nemotron-1
@@ -20,7 +24,15 @@ def main(argv=None):
     p = argparse.ArgumentParser(prog="axiom1")
     p.add_argument("--db", default=os.environ.get("AXIOM_DB", "axiom1.db"))
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("serve")
+    sub.add_parser("serve", help="stdio MCP server for one agent (local development)")
+    hb = sub.add_parser("hub", help="the shared server: owns the database, serves MCP over HTTP")
+    hb.add_argument("--host", default="127.0.0.1")
+    hb.add_argument("--port", type=int, default=8765)
+    aa = sub.add_parser("add-agent", help="admit an agent and print its token (shown once)")
+    aa.add_argument("agent_id")
+    aa.add_argument("--caps", default="", help="comma-separated capabilities")
+    ra = sub.add_parser("revoke-agent", help="stop an agent's token working")
+    ra.add_argument("agent_id")
     rc = sub.add_parser("register-check", help="define what 'verified' means for a repo")
     rc.add_argument("check_id")
     rc.add_argument("repo")
@@ -34,7 +46,8 @@ def main(argv=None):
     ag = sub.add_parser("agent", help="run a model-driven agent (Nemotron on Nebius by default)")
     ag.add_argument("--id", required=True)
     ag.add_argument("--workspace", required=True, help="a git worktree of the registered repo")
-    ag.add_argument("--caps", default="", help="comma-separated capabilities")
+    ag.add_argument("--hub", help="hub URL, e.g. http://127.0.0.1:8765/mcp (token from AXIOM_TOKEN)")
+    ag.add_argument("--caps", default="", help="comma-separated capabilities (stdio mode only)")
     ag.add_argument("--model", default=None, help="overrides AXIOM_MODEL")
     ag.add_argument("--max-steps", type=int, default=30)
     ev = sub.add_parser("events")
@@ -54,12 +67,26 @@ def main(argv=None):
         import asyncio
         from .agent import ChatModel, run_agent
         caps = [c.strip() for c in a.caps.split(",") if c.strip()]
+        token = os.environ.get("AXIOM_TOKEN")
+        if a.hub and not token:
+            p.error("set AXIOM_TOKEN to the token add-agent printed")
         asyncio.run(run_agent(a.id, a.workspace, os.path.abspath(a.db), ChatModel(a.model), caps,
-                              a.max_steps))
+                              a.max_steps, hub_url=a.hub, token=token))
         return 0
 
     ax = Axiom(a.db)
-    if a.cmd == "register-check":
+    if a.cmd == "hub":
+        from .mcp_server import serve_hub
+        print(f"axiom1 hub on http://{a.host}:{a.port}/mcp  (database {os.path.abspath(a.db)})")
+        serve_hub(ax, a.host, a.port)
+    elif a.cmd == "add-agent":
+        caps = [c.strip() for c in a.caps.split(",") if c.strip()]
+        token = ax.issue_token(a.agent_id, caps)
+        print(f"{a.agent_id} admitted. Its token, shown once (only a hash is stored):\n{token}")
+    elif a.cmd == "revoke-agent":
+        ax.revoke_token(a.agent_id)
+        print(f"{a.agent_id}: token revoked")
+    elif a.cmd == "register-check":
         if not command:
             p.error("give the test command after --")
         ax.register_check(a.check_id, os.path.abspath(a.repo), command, a.tests,

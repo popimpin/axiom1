@@ -101,25 +101,51 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 - [ ] External-fact claims labelled `sourced` (Tavily), never `witnessed`
 - [x] Sandboxed verification: Docker (no network, read-only, unprivileged, capped)
 - [x] Held-out tests the agents never see (operator-only output)
+- [x] Hub: one process owns the database; per-agent tokens (hashed), identity from the token on every call
 - [ ] Nebius Serverless AI job sandbox
 - [ ] Live viewer and hosted demo
 
 ## Connect an agent
 
-Every agent runs its own MCP server process, and all of them point at one database file. Who the
-agent is comes from its launch environment, not from a tool argument, so an agent cannot act as
-another agent.
+### The hub (use this for anything shared)
+
+One process owns the database and serves MCP over HTTP. The operator admits each agent and gets a
+token, shown once and stored only as a hash. Every tool call is attributed to the agent whose token
+it carries; no tool takes an identity as an argument. A request without a valid token is refused
+before it reaches any tool.
+
+```
+python -m axiom1 --db axiom1.db hub --port 8765
+python -m axiom1 --db axiom1.db add-agent claude --caps shell      # prints claude's token
+python -m axiom1 --db axiom1.db revoke-agent claude                # that token stops working
+```
 
 ```json
 {
   "mcpServers": {
     "axiom1": {
-      "command": "python",
-      "args": ["-m", "axiom1", "--db", "/path/to/shared/axiom1.db", "serve"],
-      "env": { "AXIOM_AGENT": "claude", "AXIOM_CAPS": "shell" }
+      "type": "http",
+      "url": "http://127.0.0.1:8765/mcp",
+      "headers": { "Authorization": "Bearer axm_..." }
     }
   }
 }
+```
+
+Why a hub and not a shared file: agents never see the database, so an agent with a shell cannot
+open it and write `witnessed` around the rules, or start a server under someone else's name.
+`tests/test_hub.py` has agents trying to act as each other, with revoked and reissued tokens, and
+checks that no token appears in the database file.
+
+### stdio (local development)
+
+Each agent runs its own server process on a shared database file, named by its launch environment.
+That trusts whoever launches the process, so keep it to your own machine.
+
+```json
+{ "mcpServers": { "axiom1": { "command": "python",
+    "args": ["-m", "axiom1", "--db", "/path/to/axiom1.db", "serve"],
+    "env": { "AXIOM_AGENT": "claude", "AXIOM_CAPS": "shell" } } } }
 ```
 
 Tools: `briefing`, `send`, `inbox`, `ack`, `message_status`, `remember`, `recall`, `list_checks`,
@@ -141,7 +167,7 @@ repo. Any OpenAI-compatible endpoint works; the default is Nemotron on Nebius To
 ```
 export NEBIUS_API_KEY=...                       # never commit this
 python examples/live_agent.py                   # one agent, one real bug, one verdict
-python -m axiom1 --db axiom1.db agent --id nemotron-1 --workspace ../wt-nemotron-1
+AXIOM_TOKEN=axm_... python -m axiom1 agent --id nemotron-1 --workspace ../wt-nemotron-1 --hub http://127.0.0.1:8765/mcp
 ```
 
 `NEBIUS_BASE_URL` and `AXIOM_MODEL` override the endpoint and model

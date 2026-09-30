@@ -14,6 +14,9 @@ import hashlib
 import json
 import sqlite3
 import time
+import functools
+import secrets
+import threading
 import uuid
 from pathlib import Path
 
@@ -24,7 +27,8 @@ DECLARED, WITNESSED, REFUTED = "declared", "witnessed", "refuted"
 DEFAULT_LEASE_S = 600
 
 SCHEMA = """
-CREATE TABLE IF NOT EXISTS agents   (id TEXT PRIMARY KEY, caps TEXT NOT NULL, joined_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS agents   (id TEXT PRIMARY KEY, caps TEXT NOT NULL, joined_at REAL NOT NULL,
+                                     token_sha256 TEXT);
 CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, sender TEXT NOT NULL, recipient TEXT NOT NULL,
                                      body TEXT NOT NULL, sha256 TEXT NOT NULL, sent_at REAL NOT NULL,
                                      delivered_at REAL);
@@ -43,6 +47,23 @@ CREATE TABLE IF NOT EXISTS claims   (id TEXT PRIMARY KEY, agent TEXT NOT NULL, s
 CREATE TABLE IF NOT EXISTS events   (id INTEGER PRIMARY KEY AUTOINCREMENT, at REAL NOT NULL, kind TEXT NOT NULL,
                                      agent TEXT, subject TEXT, detail TEXT);
 """
+
+# columns added after a table first shipped; applied to older database files on open
+MIGRATIONS = [
+    ("agents", "token_sha256", "TEXT"),
+    ("checks", "sandbox", "TEXT NOT NULL DEFAULT 'local'"),
+    ("checks", "image", "TEXT"),
+    ("checks", "holdout", "TEXT"),
+]
+
+
+def _locked(method):
+    """One agent's call at a time touches the database. The hub runs tool calls on worker threads."""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        with self.lock:
+            return method(self, *args, **kwargs)
+    return wrapper
 
 
 class AxiomError(Exception):
@@ -68,7 +89,12 @@ class Axiom:
         if db_path != ":memory:":
             self.db.execute("PRAGMA journal_mode=WAL")
         self.db.executescript(SCHEMA)
+        for table, column, decl in MIGRATIONS:
+            have = {r["name"] for r in self.db.execute(f"PRAGMA table_info({table})")}
+            if column not in have:
+                self.db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
         self.clock = clock
+        self.lock = threading.RLock()
 
     # ---- plumbing -------------------------------------------------------
     def _event(self, kind, agent=None, subject=None, **detail):
@@ -82,15 +108,43 @@ class Axiom:
         return row
 
     # ---- membership -----------------------------------------------------
+    @_locked
     def join(self, agent_id, caps=()):
         """Join the collective. `caps` are what this agent can do, e.g. ["shell", "gpu"]."""
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO agents VALUES (?,?,?)",
+            self.db.execute("INSERT INTO agents (id, caps, joined_at) VALUES (?,?,?) "
+                            "ON CONFLICT(id) DO UPDATE SET caps=excluded.caps",
                             (agent_id, json.dumps(sorted(set(caps))), self.clock()))
             self._event("join", agent_id, caps=sorted(set(caps)))
         return self.briefing(agent_id)
 
+    # ---- identity for the hub: a token per agent, stored only as a hash ----
+    @_locked
+    def issue_token(self, agent_id, caps=(), issued_by="operator"):
+        """Operator-only. Admits an agent and returns its token, the only time it is ever shown.
+        Issuing again replaces the old token, which stops working at once."""
+        token = "axm_" + secrets.token_urlsafe(32)
+        self.join(agent_id, caps)
+        with self.db:
+            self.db.execute("UPDATE agents SET token_sha256=? WHERE id=?", (sha256(token), agent_id))
+            self._event("issue_token", issued_by, agent_id)
+        return token
+
+    @_locked
+    def revoke_token(self, agent_id, revoked_by="operator"):
+        with self.db:
+            self.db.execute("UPDATE agents SET token_sha256=NULL WHERE id=?", (agent_id,))
+            self._event("revoke_token", revoked_by, agent_id)
+
+    @_locked
+    def agent_for_token(self, token):
+        if not token:
+            return None
+        row = self.db.execute("SELECT id FROM agents WHERE token_sha256=?", (sha256(token),)).fetchone()
+        return row["id"] if row else None
+
     # ---- messages: delivered only when the recipient acks the exact bytes ----
+    @_locked
     def send(self, sender, recipient, body):
         self._agent(sender)
         self._agent(recipient)
@@ -102,6 +156,7 @@ class Axiom:
             self._event("send", sender, msg_id, to=recipient)
         return {"id": msg_id, "sha256": digest, "status": "sent"}
 
+    @_locked
     def inbox(self, agent_id):
         self._agent(agent_id)
         rows = self.db.execute("SELECT id, sender, body, sha256 FROM messages "
@@ -109,6 +164,7 @@ class Axiom:
                                (agent_id,)).fetchall()
         return [dict(r) for r in rows]
 
+    @_locked
     def ack(self, agent_id, msg_id, echoed_sha256):
         row = self.db.execute("SELECT * FROM messages WHERE id=?", (msg_id,)).fetchone()
         if row is None:
@@ -122,6 +178,7 @@ class Axiom:
             self._event("ack", agent_id, msg_id)
         return {"id": msg_id, "status": "delivered"}
 
+    @_locked
     def message_status(self, msg_id):
         row = self.db.execute("SELECT delivered_at FROM messages WHERE id=?", (msg_id,)).fetchone()
         if row is None:
@@ -129,6 +186,7 @@ class Axiom:
         return "delivered" if row["delivered_at"] else "sent"
 
     # ---- memory: agents can only declare ----------------------------------
+    @_locked
     def remember(self, agent_id, key, content):
         self._agent(agent_id)
         with self.db:
@@ -137,12 +195,14 @@ class Axiom:
             self._event("remember", agent_id, key)
         return {"key": key, "label": DECLARED}
 
+    @_locked
     def recall(self, key):
         rows = self.db.execute("SELECT key, agent, content, label, claim_id, at FROM memories "
                                "WHERE key=? ORDER BY id DESC", (key,)).fetchall()
         return [dict(r) for r in rows]
 
     # ---- operator API: NOT exposed to agents ------------------------------
+    @_locked
     def register_check(self, check_id, repo, argv, test_paths, registered_by="operator",
                        sandbox="local", image=None, holdout=None):
         """A human registers what "verified" means for a repo. Agents cannot add or edit checks.
@@ -168,6 +228,7 @@ class Axiom:
                              registered_by, self.clock(), sandbox, image, holdout))
             self._event("register_check", registered_by, check_id)
 
+    @_locked
     def list_checks(self):
         """What agents may claim against: the command that judges them and where tests must live.
         The repo path stays server-side, and the command is shown without absolute paths."""
@@ -182,6 +243,7 @@ class Axiom:
                                          "FROM checks ORDER BY id")]
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
+    @_locked
     def post_task(self, agent_id, title, caps=()):
         self._agent(agent_id)
         task_id = uuid.uuid4().hex[:12]
@@ -201,6 +263,7 @@ class Axiom:
                                 (t["id"],))
                 self._event("lease_expired", t["holder"], t["id"])
 
+    @_locked
     def take_task(self, agent_id, lease_s=DEFAULT_LEASE_S):
         """Lease the oldest open task this agent is capable of, or None."""
         caps = set(json.loads(self._agent(agent_id)["caps"]))
@@ -215,6 +278,7 @@ class Axiom:
         return None
 
     # ---- claims: declared until the server checks them --------------------
+    @_locked
     def claim(self, agent_id, statement, check_id, before_ref, after_ref, task_id=None):
         self._agent(agent_id)
         check = self.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone()
@@ -241,16 +305,22 @@ class Axiom:
         return {"id": claim_id, "label": DECLARED, "before": before_sha, "after": after_sha}
 
     def verify(self, claim_id):
-        c = self.db.execute("SELECT * FROM claims WHERE id=?", (claim_id,)).fetchone()
-        if c is None:
-            raise AxiomError(f"no claim {claim_id!r}")
-        if c["label"] != DECLARED:
-            return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
-        check = self.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
+        with self.lock:
+            c = self.db.execute("SELECT * FROM claims WHERE id=?", (claim_id,)).fetchone()
+            if c is None:
+                raise AxiomError(f"no claim {claim_id!r}")
+            if c["label"] != DECLARED:
+                return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
+            check = self.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
+        # the slow part runs unlocked, so one agent's verification does not stall the others
         label, reason, evidence, private = verifier.fail_before_pass_after(
             check["repo"], c["before_sha"], c["after_sha"],
             json.loads(check["argv"]), json.loads(check["test_paths"]),
             sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
+        with self.lock:
+            return self._record_verdict(c, claim_id, label, reason, evidence, private)
+
+    def _record_verdict(self, c, claim_id, label, reason, evidence, private):
         with self.db:
             # another process may have verified this claim while ours ran; the first verdict stands
             won = self.db.execute("UPDATE claims SET label=?, reason=?, evidence=?, verified_at=? "
@@ -274,6 +344,7 @@ class Axiom:
         return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence}
 
     # ---- track record: honesty and reliability are separate ----------------
+    @_locked
     def track_record(self, agent_id):
         counts = dict(self.db.execute("SELECT label, COUNT(*) FROM claims WHERE agent=? GROUP BY label",
                                       (agent_id,)).fetchall())
@@ -283,6 +354,7 @@ class Axiom:
                 "pending": counts.get(DECLARED, 0), "leases_expired": expired}
 
     # ---- briefing: what a joining agent needs, not the transcript ----------
+    @_locked
     def briefing(self, agent_id, limit=20):
         self._agent(agent_id)
         self._expire_leases()
@@ -301,5 +373,6 @@ class Axiom:
         return {"you": agent_id, "facts": facts, "open_claims": open_claims, "refuted": refuted,
                 "tasks_you_can_take": tasks, "agents": agents, "unread": len(self.inbox(agent_id))}
 
+    @_locked
     def events(self, since_id=0):
         return [dict(r) for r in self.db.execute("SELECT * FROM events WHERE id>? ORDER BY id", (since_id,))]

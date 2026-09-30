@@ -16,14 +16,27 @@ applies one rule to everything that passes through it:
 ## How a claim is checked: fail before, pass after
 
 A claim says "commit AFTER fixes what was wrong at commit BEFORE". The server runs a check a
-**human registered** (agents cannot add or edit checks), twice:
+**human registered** (agents cannot add or edit checks):
 
 1. BEFORE's code with AFTER's tests laid over it. **It must fail.**
 2. AFTER's code and tests. **It must pass.**
+3. AFTER's code and tests plus a canary test with a random name and random values. **It must fail.**
+   Once per assertion style (`assertEqual`, `assertTrue`, bare `assert`).
 
 Run 1 closes the oracle hole. An agent that writes both the fix and the test can write a test that
-asserts nothing. That test passes on the unfixed code, so the claim is refuted. Refs are pinned to
-commit hashes when the claim is made, so moving a branch afterwards cannot change the verdict.
+asserts nothing. That test passes on the unfixed code, so the claim is refuted.
+
+Run 3 is run 2's control. The fix runs in full, so it could leave the bug alone and rig *how* tests
+run instead: shadow the test runner, or disable assertions the moment a test imports it. Then its own
+test "passes", and so would a canary that must fail. That claim is refuted as tampering. Before
+trusting run 3, the server checks that the command actually runs a file shaped like a canary (a
+command limited to one test file never would), so an honest fix is never accused.
+
+Refs are pinned to commit hashes when the claim is made, so moving a branch afterwards cannot change
+the verdict.
+
+**What this does not catch yet:** a rig aimed at one specific test by name, and code that special-cases
+the exact inputs its test uses. Both need tests the agent never sees (held-out tests, on the roadmap).
 
 ## The collective
 

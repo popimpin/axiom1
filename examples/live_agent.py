@@ -19,6 +19,12 @@ from axiom1 import Axiom  # noqa: E402
 from axiom1.agent import ChatModel, run_agent  # noqa: E402
 
 BUGGY = "def add(a, b):\n    return a - b\n"
+# The operator's held-out tests: they live outside the repo, and the agent never sees them.
+HOLDOUT = ("import unittest\nfrom calc import add\n\n"
+           "class Held(unittest.TestCase):\n"
+           "    def test_general(self):\n"
+           "        for a, b in [(10, -4), (0, 0), (-7, -8), (123, 456)]:\n"
+           "            self.assertEqual(add(a, b), a + b)\n")
 
 
 def git(repo, *args):
@@ -44,13 +50,17 @@ def main():
         git(repo, "commit", "-q", "-m", "calculator")
         git(repo, "worktree", "add", "-q", "--detach", str(wt), "main")
 
+        holdout = Path(tmp) / "holdout"
+        holdout.mkdir()
+        (holdout / "test_held.py").write_text(HOLDOUT, encoding="utf-8")
+
         ax = Axiom(db)
         if a.sandbox == "docker":
             ax.register_check("unit", repo, ["python", "-m", "unittest", "discover", "-s", "tests"], ["tests/"],
-                              sandbox="docker", image="python:3.13-slim")
+                              sandbox="docker", image="python:3.13-slim", holdout=str(holdout))
         else:
             ax.register_check("unit", repo, [sys.executable, "-m", "unittest", "discover", "-s", "tests"],
-                              ["tests/"])
+                              ["tests/"], holdout=str(holdout))
         ax.join("operator", ["shell"])
         ax.post_task("operator", "add(2, 3) returns -1; it should return 5. Fix calc.py.")
         ax.db.close()

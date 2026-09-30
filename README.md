@@ -55,8 +55,30 @@ python -m axiom1 register-check unit ./my-repo --tests tests/ --sandbox docker -
 A Nebius Serverless AI job backend (each verification in a disposable cloud container) is on the
 roadmap.
 
-**What this does not catch yet:** a rig aimed at one specific test by name, and code that special-cases
-the exact inputs its test uses. Both need tests the agent never sees (held-out tests, on the roadmap).
+### Held-out tests
+
+The canary cannot catch two cheats: code that special-cases the exact inputs its own test uses
+(`return 5 if (a, b) == (2, 3) else a - b`), and a rig aimed at one test by name (the canary has a
+different, random name, so it fails normally and the rig slips past). Both pass the agent's own test.
+
+So the operator can register a directory of **held-out tests** with a check. They run against every
+fix, and must pass:
+
+```
+python -m axiom1 register-check unit ./my-repo --tests tests/ --holdout ../held-out-tests -- python -m pytest
+```
+
+- They must live **outside the repo**. Agents work in worktrees of it and can read its whole history,
+  so registration refuses a held-out directory inside it.
+- Agents learn **that** held-out tests exist (`list_checks`) and **that** they failed, never which
+  ones or why. Their output names the inputs and expected values, and an agent that saw
+  `14 != 6` could special-case that too. The output goes to the operator's event log
+  (`python -m axiom1 events`), which is not on the agent surface.
+
+`tests/test_holdout.py` shows both cheats witnessed without held-out tests and refuted with them.
+
+**Still not caught:** a cheat that also defeats tests it has never seen. Held-out tests only raise the
+bar to "fix the behaviour in general".
 
 ## The collective
 
@@ -78,6 +100,7 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 - [x] Model-driven agent runner: Nemotron on Nebius Token Factory (Lightning by default), joined over MCP
 - [ ] External-fact claims labelled `sourced` (Tavily), never `witnessed`
 - [x] Sandboxed verification: Docker (no network, read-only, unprivileged, capped)
+- [x] Held-out tests the agents never see (operator-only output)
 - [ ] Nebius Serverless AI job sandbox
 - [ ] Live viewer and hosted demo
 

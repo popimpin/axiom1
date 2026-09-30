@@ -15,6 +15,7 @@ import json
 import sqlite3
 import time
 import uuid
+from pathlib import Path
 
 from . import sandbox as sandboxes
 from . import verifier
@@ -31,7 +32,7 @@ CREATE TABLE IF NOT EXISTS memories (id INTEGER PRIMARY KEY AUTOINCREMENT, key T
                                      content TEXT NOT NULL, label TEXT NOT NULL, claim_id TEXT, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS checks   (id TEXT PRIMARY KEY, repo TEXT NOT NULL, argv TEXT NOT NULL,
                                      test_paths TEXT NOT NULL, registered_by TEXT NOT NULL, at REAL NOT NULL,
-                                     sandbox TEXT NOT NULL DEFAULT 'local', image TEXT);
+                                     sandbox TEXT NOT NULL DEFAULT 'local', image TEXT, holdout TEXT);
 CREATE TABLE IF NOT EXISTS tasks    (id TEXT PRIMARY KEY, title TEXT NOT NULL, caps TEXT NOT NULL,
                                      posted_by TEXT NOT NULL, status TEXT NOT NULL, holder TEXT,
                                      lease_until REAL, at REAL NOT NULL);
@@ -143,19 +144,28 @@ class Axiom:
 
     # ---- operator API: NOT exposed to agents ------------------------------
     def register_check(self, check_id, repo, argv, test_paths, registered_by="operator",
-                       sandbox="local", image=None):
+                       sandbox="local", image=None, holdout=None):
         """A human registers what "verified" means for a repo. Agents cannot add or edit checks.
-        `sandbox` is where the command runs: "local" (development only) or "docker" (needs `image`)."""
+        `sandbox` is where the command runs: "local" (development only) or "docker" (needs `image`).
+        `holdout` is a directory of tests the agents never see, run against every fix. It must live
+        OUTSIDE the repo: agents work in worktrees of it and can read everything in its history."""
         if not verifier.is_repo(repo):
             raise AxiomError(f"{repo!r} is not a git repository")
         try:
             sandboxes.from_check(sandbox, image)
         except ValueError as e:
             raise AxiomError(str(e)) from None
+        if holdout is not None:
+            held, root = Path(holdout).resolve(), Path(repo).resolve()
+            if not held.is_dir():
+                raise AxiomError(f"held-out tests {holdout!r} is not a directory")
+            if held == root or root in held.parents:
+                raise AxiomError("held-out tests must live outside the repo, where agents cannot read them")
+            holdout = str(held)
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?)",
+            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?,?)",
                             (check_id, str(repo), json.dumps(list(argv)), json.dumps(list(test_paths)),
-                             registered_by, self.clock(), sandbox, image))
+                             registered_by, self.clock(), sandbox, image, holdout))
             self._event("register_check", registered_by, check_id)
 
     def list_checks(self):
@@ -164,8 +174,12 @@ class Axiom:
         return [{"id": r["id"], "command": _display_command(json.loads(r["argv"])),
                  "test_paths": json.loads(r["test_paths"]),
                  "sandbox": sandboxes.from_check(r["sandbox"], r["image"]).describe(),
-                 "note": "a test path ending in / is a directory; put new test files inside it"}
-                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image FROM checks ORDER BY id")]
+                 "holdout": r["holdout"] is not None,
+                 "note": "a test path ending in / is a directory; put new test files inside it"
+                         + ("; this check also runs held-out tests you cannot see, so fix the behaviour "
+                            "in general, not just the case your test checks" if r["holdout"] else "")}
+                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image, holdout "
+                                         "FROM checks ORDER BY id")]
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
     def post_task(self, agent_id, title, caps=()):
@@ -233,10 +247,10 @@ class Axiom:
         if c["label"] != DECLARED:
             return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
         check = self.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
-        label, reason, evidence = verifier.fail_before_pass_after(
+        label, reason, evidence, private = verifier.fail_before_pass_after(
             check["repo"], c["before_sha"], c["after_sha"],
             json.loads(check["argv"]), json.loads(check["test_paths"]),
-            sandboxes.from_check(check["sandbox"], check["image"]))
+            sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
         with self.db:
             # another process may have verified this claim while ours ran; the first verdict stands
             won = self.db.execute("UPDATE claims SET label=?, reason=?, evidence=?, verified_at=? "
@@ -255,6 +269,8 @@ class Axiom:
                 self.db.execute("UPDATE tasks SET status=?, holder=CASE WHEN ?='done' THEN holder END, "
                                 "lease_until=NULL WHERE id=?", (status, status, c["task_id"]))
             self._event(label, c["agent"], claim_id, reason=reason)
+            if "holdout_tail" in private:  # operator-only: the event log is not on the agent surface
+                self._event("holdout_failed", c["agent"], claim_id, tail=private["holdout_tail"])
         return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence}
 
     # ---- track record: honesty and reliability are separate ----------------

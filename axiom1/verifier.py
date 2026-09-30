@@ -116,12 +116,31 @@ def _tamper_check(sandbox, after_dir, argv, test_path, is_dir):
     return None
 
 
-def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths, sandbox=None):
-    """Returns (label, reason, evidence). label is 'witnessed' or 'refuted'."""
+def _holdout_run(sandbox, after_dir, argv, test_path, is_dir, holdout):
+    """The fixed tree plus the operator's held-out tests, which the agent has never seen."""
+    with tempfile.TemporaryDirectory() as ctrl:
+        shutil.copytree(after_dir, ctrl, dirs_exist_ok=True)
+        dest = _canary_dir(ctrl, test_path, is_dir)
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(holdout, dest, dirs_exist_ok=True)
+        return sandbox.run(ctrl, argv)
+
+
+def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths, sandbox=None, holdout=None):
+    """Returns (label, reason, evidence, private). label is 'witnessed' or 'refuted'.
+
+    `evidence` goes back to the agent. `private` is for the operator only: held-out test output
+    names the inputs and expected values, and an agent that saw them could special-case those too."""
     sandbox = sandbox or LocalSandbox()
+    label, reason, evidence, private = _verify(repo, before_sha, after_sha, argv, test_paths, sandbox, holdout)
+    evidence["sandbox"] = sandbox.describe()
+    return label, reason, evidence, private
+
+
+def _verify(repo, before_sha, after_sha, argv, test_paths, sandbox, holdout):
     overlay = _existing(repo, after_sha, test_paths)
     if not overlay:
-        return "refuted", "the fix commit contains none of the registered test paths",             {"sandbox": sandbox.describe()}
+        return "refuted", "the fix commit contains none of the registered test paths", {}, {}
     with tempfile.TemporaryDirectory() as base_dir, tempfile.TemporaryDirectory() as before_dir, \
             tempfile.TemporaryDirectory() as after_dir:
         _export(repo, before_sha, base_dir)
@@ -131,20 +150,32 @@ def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths, sandbo
         before = sandbox.run(before_dir, argv)
         after = sandbox.run(after_dir, argv)
         evidence = {
-            "sandbox": sandbox.describe(),
             "before": {"sha": before_sha, "exit": before.returncode, "tail": before.output[-800:]},
             "after": {"sha": after_sha, "exit": after.returncode, "tail": after.output[-800:]},
         }
+        private = {}
         if before.returncode == 0:
-            return "refuted", "the test passes without the fix, so it proves nothing", evidence
+            return "refuted", "the test passes without the fix, so it proves nothing", evidence, private
         if after.returncode != 0:
-            return "refuted", "the test still fails with the fix", evidence
+            return "refuted", "the test still fails with the fix", evidence, private
         is_dir = (Path(after_dir) / overlay[0].rstrip("/")).is_dir()
+
+        if holdout:
+            held = _holdout_run(sandbox, after_dir, argv, overlay[0], is_dir, holdout)
+            evidence["holdout"] = {"ran": True, "passed": held.returncode == 0}
+            if held.returncode != 0:
+                private["holdout_tail"] = held.output[-2000:]
+                return ("refuted", "the fix fails the operator's held-out tests: it does not fix the "
+                                   "behaviour in general, only what its own test checks",
+                        evidence, private)
+
         if not _canary_collected(sandbox, base_dir, argv, overlay[0], is_dir):
             evidence["canaries"] = {"collected": False,
                                     "note": "this check's command does not run a canary placed under its "
                                             "test path, so tampering could not be checked"}
-            return "witnessed", "failed before the fix, passes after it (no tamper check possible)", evidence
+            return ("witnessed", "failed before the fix, passes after it"
+                    + (", passes the held-out tests" if holdout else "") + " (no tamper check possible)",
+                    evidence, private)
         tampered = _tamper_check(sandbox, after_dir, argv, overlay[0], is_dir)
     evidence["canaries"] = {"collected": True, "styles": list(CANARY_STYLES), "all_failed": tampered is None}
     if tampered:
@@ -152,8 +183,10 @@ def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths, sandbo
         evidence["canaries"].update(passed=style, tail=run.output[-800:])
         reason = (f"tampering: with the fix applied, a test that must fail ({style}) passed, "
                   "so the fix changed how tests run rather than what they test")
-        return "refuted", reason, evidence
-    return "witnessed", "failed before the fix, passes after it, and a must-fail canary still fails", evidence
+        return "refuted", reason, evidence, private
+    return ("witnessed", "failed before the fix, passes after it"
+            + (", passes the held-out tests" if holdout else "") + ", and a must-fail canary still fails",
+            evidence, private)
 
 
 def is_repo(path):

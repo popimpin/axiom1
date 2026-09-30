@@ -9,7 +9,7 @@ description = "Shared state for AI agents that only believes what it has checked
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["mcp>=1.12"]
 
 [tool.setuptools]
 packages = ["axiom1"]

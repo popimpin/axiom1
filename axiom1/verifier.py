@@ -27,9 +27,11 @@ class Run:
     output: str
 
 
+# stdin=DEVNULL everywhere: under MCP the server's own stdin IS the protocol pipe, and a child
+# that inherits it stalls the session
 def _git(repo, *args, text=True):
     return subprocess.run(["git", "-C", str(repo), *args], capture_output=True,
-                          text=text, check=True)
+                          stdin=subprocess.DEVNULL, text=text, check=True)
 
 
 def resolve(repo, ref):
@@ -46,7 +48,7 @@ def _export(repo, sha, dest, paths=()):
 def _run(argv, cwd):
     try:
         p = subprocess.run(argv, cwd=cwd, capture_output=True, text=True,
-                           timeout=RUN_TIMEOUT_S)
+                           stdin=subprocess.DEVNULL, timeout=RUN_TIMEOUT_S)
         return Run(p.returncode, (p.stdout + p.stderr)[-4000:])
     except subprocess.TimeoutExpired:
         return Run(-1, f"timed out after {RUN_TIMEOUT_S}s")
@@ -82,4 +84,5 @@ def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths):
 
 def is_repo(path):
     return Path(path).exists() and subprocess.run(
-        ["git", "-C", str(path), "rev-parse", "--git-dir"], capture_output=True).returncode == 0
+        ["git", "-C", str(path), "rev-parse", "--git-dir"], capture_output=True,
+        stdin=subprocess.DEVNULL).returncode == 0

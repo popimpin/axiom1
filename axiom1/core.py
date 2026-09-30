@@ -52,8 +52,11 @@ def sha256(text):
 
 class Axiom:
     def __init__(self, db_path=":memory:", clock=time.time):
-        self.db = sqlite3.connect(db_path, check_same_thread=False)
+        # several agents' server processes can share one file: WAL + a busy timeout let them
+        self.db = sqlite3.connect(db_path, check_same_thread=False, timeout=30)
         self.db.row_factory = sqlite3.Row
+        if db_path != ":memory:":
+            self.db.execute("PRAGMA journal_mode=WAL")
         self.db.executescript(SCHEMA)
         self.clock = clock
 
@@ -140,6 +143,11 @@ class Axiom:
                              registered_by, self.clock()))
             self._event("register_check", registered_by, check_id)
 
+    def list_checks(self):
+        """What agents may claim against. The command and repo path stay server-side."""
+        return [{"id": r["id"], "test_paths": json.loads(r["test_paths"])}
+                for r in self.db.execute("SELECT id, test_paths FROM checks ORDER BY id")]
+
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
     def post_task(self, agent_id, title, caps=()):
         self._agent(agent_id)
@@ -210,8 +218,13 @@ class Axiom:
             check["repo"], c["before_sha"], c["after_sha"],
             json.loads(check["argv"]), json.loads(check["test_paths"]))
         with self.db:
-            self.db.execute("UPDATE claims SET label=?, reason=?, evidence=?, verified_at=? WHERE id=?",
-                            (label, reason, json.dumps(evidence), self.clock(), claim_id))
+            # another process may have verified this claim while ours ran; the first verdict stands
+            won = self.db.execute("UPDATE claims SET label=?, reason=?, evidence=?, verified_at=? "
+                                  "WHERE id=? AND label=?",
+                                  (label, reason, json.dumps(evidence), self.clock(), claim_id, DECLARED))
+            if won.rowcount == 0:
+                c = self.db.execute("SELECT label, reason FROM claims WHERE id=?", (claim_id,)).fetchone()
+                return {"id": claim_id, "label": c["label"], "reason": c["reason"]}
             if label == WITNESSED:
                 self.db.execute("INSERT INTO memories (key, agent, content, label, claim_id, at) "
                                 "VALUES (?,?,?,?,?,?)",

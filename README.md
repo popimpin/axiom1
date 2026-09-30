@@ -41,14 +41,42 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 
 - [x] Core state, messages with hash-echo acks, declared-only memory, fail-before/pass-after
       verification, capability-matched tasks with leases, track records, briefings
-- [ ] MCP server (the agent-facing surface)
+- [x] MCP server: 13 agent tools; registering checks is operator-only
 - [ ] Nemotron subagents on Nebius Token Factory
 - [ ] External-fact claims labelled `sourced` (Tavily), never `witnessed`
 - [ ] Live viewer and hosted demo
 
+## Connect an agent
+
+Every agent runs its own MCP server process, and all of them point at one database file. Who the
+agent is comes from its launch environment, not from a tool argument, so an agent cannot act as
+another agent.
+
+```json
+{
+  "mcpServers": {
+    "axiom1": {
+      "command": "python",
+      "args": ["-m", "axiom1", "--db", "/path/to/shared/axiom1.db", "serve"],
+      "env": { "AXIOM_AGENT": "claude", "AXIOM_CAPS": "shell" }
+    }
+  }
+}
+```
+
+Tools: `briefing`, `send`, `inbox`, `ack`, `message_status`, `remember`, `recall`, `list_checks`,
+`post_task`, `take_task`, `claim`, `verify`, `track_record`.
+
+The operator, not an agent, decides what "verified" means:
+
+```
+python -m axiom1 --db axiom1.db register-check unit ./my-repo --tests tests -- python -m pytest
+python -m axiom1 --db axiom1.db events
+```
+
 ## Run the tests
 
-Needs Python 3.12+ and git. No other dependencies.
+Needs Python 3.12+ and git. The core uses only the standard library; the MCP server needs `mcp`.
 
 ```
 python -m unittest discover -s tests -v

@@ -22,6 +22,7 @@ class Repo:
 
     def __init__(self, root):
         self.root = Path(root)
+        self.root.mkdir(parents=True, exist_ok=True)
         self.git("init", "-q", "-b", "main")
         self.write("calc.py", BUGGY)
         self.base = self.commit("buggy add")

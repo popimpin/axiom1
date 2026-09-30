@@ -35,6 +35,26 @@ command limited to one test file never would), so an honest fix is never accused
 Refs are pinned to commit hashes when the claim is made, so moving a branch afterwards cannot change
 the verdict.
 
+### Where it runs
+
+Verification executes code an agent wrote, so every check names a sandbox, and every verdict's
+evidence records which one judged it:
+
+- `docker`: a throwaway container with no network, capped memory, CPU and process count, no Linux
+  capabilities, an unprivileged user, a read-only root, and the tree mounted **read-only**. A probe
+  that tries to reach the network, read a file outside the tree, write into the tree or run as root
+  is blocked on all four (`tests/test_sandbox.py`, which also shows the same probe getting out when
+  unsandboxed).
+- `local`: runs on the server's own machine. For development only; evidence says `isolated: false`.
+
+```
+python -m axiom1 register-check unit ./my-repo --tests tests/ --sandbox docker --image python:3.13-slim \
+    -- python -m unittest discover -s tests
+```
+
+A Nebius Serverless AI job backend (each verification in a disposable cloud container) is on the
+roadmap.
+
 **What this does not catch yet:** a rig aimed at one specific test by name, and code that special-cases
 the exact inputs its test uses. Both need tests the agent never sees (held-out tests, on the roadmap).
 
@@ -57,6 +77,8 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 - [x] MCP server: 13 agent tools; registering checks is operator-only
 - [x] Model-driven agent runner: Nemotron on Nebius Token Factory (Lightning by default), joined over MCP
 - [ ] External-fact claims labelled `sourced` (Tavily), never `witnessed`
+- [x] Sandboxed verification: Docker (no network, read-only, unprivileged, capped)
+- [ ] Nebius Serverless AI job sandbox
 - [ ] Live viewer and hosted demo
 
 ## Connect an agent

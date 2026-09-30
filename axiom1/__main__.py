@@ -26,6 +26,9 @@ def main(argv=None):
     rc.add_argument("repo")
     rc.add_argument("--tests", action="append", required=True,
                     help="test path(s) laid over the pre-fix code; repeatable")
+    rc.add_argument("--sandbox", default="local", choices=["local", "docker"],
+                    help="where the command runs; local is for development only")
+    rc.add_argument("--image", help="container image for --sandbox docker, e.g. python:3.13-slim")
     ag = sub.add_parser("agent", help="run a model-driven agent (Nemotron on Nebius by default)")
     ag.add_argument("--id", required=True)
     ag.add_argument("--workspace", required=True, help="a git worktree of the registered repo")
@@ -57,8 +60,10 @@ def main(argv=None):
     if a.cmd == "register-check":
         if not command:
             p.error("give the test command after --")
-        ax.register_check(a.check_id, os.path.abspath(a.repo), command, a.tests)
-        print(f"registered {a.check_id}: {command} over {a.tests}")
+        ax.register_check(a.check_id, os.path.abspath(a.repo), command, a.tests,
+                          sandbox=a.sandbox, image=a.image)
+        print(f"registered {a.check_id}: {command} over {a.tests} in {a.sandbox}"
+              + (f" ({a.image})" if a.image else ""))
     elif a.cmd == "events":
         for e in ax.events(a.since):
             print(json.dumps(e))

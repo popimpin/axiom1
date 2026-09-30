@@ -16,6 +16,7 @@ import sqlite3
 import time
 import uuid
 
+from . import sandbox as sandboxes
 from . import verifier
 
 DECLARED, WITNESSED, REFUTED = "declared", "witnessed", "refuted"
@@ -29,7 +30,8 @@ CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, sender TEXT NOT NULL, 
 CREATE TABLE IF NOT EXISTS memories (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT NOT NULL, agent TEXT NOT NULL,
                                      content TEXT NOT NULL, label TEXT NOT NULL, claim_id TEXT, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS checks   (id TEXT PRIMARY KEY, repo TEXT NOT NULL, argv TEXT NOT NULL,
-                                     test_paths TEXT NOT NULL, registered_by TEXT NOT NULL, at REAL NOT NULL);
+                                     test_paths TEXT NOT NULL, registered_by TEXT NOT NULL, at REAL NOT NULL,
+                                     sandbox TEXT NOT NULL DEFAULT 'local', image TEXT);
 CREATE TABLE IF NOT EXISTS tasks    (id TEXT PRIMARY KEY, title TEXT NOT NULL, caps TEXT NOT NULL,
                                      posted_by TEXT NOT NULL, status TEXT NOT NULL, holder TEXT,
                                      lease_until REAL, at REAL NOT NULL);
@@ -140,14 +142,20 @@ class Axiom:
         return [dict(r) for r in rows]
 
     # ---- operator API: NOT exposed to agents ------------------------------
-    def register_check(self, check_id, repo, argv, test_paths, registered_by="operator"):
-        """A human registers what "verified" means for a repo. Agents cannot add or edit checks."""
+    def register_check(self, check_id, repo, argv, test_paths, registered_by="operator",
+                       sandbox="local", image=None):
+        """A human registers what "verified" means for a repo. Agents cannot add or edit checks.
+        `sandbox` is where the command runs: "local" (development only) or "docker" (needs `image`)."""
         if not verifier.is_repo(repo):
             raise AxiomError(f"{repo!r} is not a git repository")
+        try:
+            sandboxes.from_check(sandbox, image)
+        except ValueError as e:
+            raise AxiomError(str(e)) from None
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?)",
+            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?)",
                             (check_id, str(repo), json.dumps(list(argv)), json.dumps(list(test_paths)),
-                             registered_by, self.clock()))
+                             registered_by, self.clock(), sandbox, image))
             self._event("register_check", registered_by, check_id)
 
     def list_checks(self):
@@ -155,8 +163,9 @@ class Axiom:
         The repo path stays server-side, and the command is shown without absolute paths."""
         return [{"id": r["id"], "command": _display_command(json.loads(r["argv"])),
                  "test_paths": json.loads(r["test_paths"]),
+                 "sandbox": sandboxes.from_check(r["sandbox"], r["image"]).describe(),
                  "note": "a test path ending in / is a directory; put new test files inside it"}
-                for r in self.db.execute("SELECT id, argv, test_paths FROM checks ORDER BY id")]
+                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image FROM checks ORDER BY id")]
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
     def post_task(self, agent_id, title, caps=()):
@@ -226,7 +235,8 @@ class Axiom:
         check = self.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
         label, reason, evidence = verifier.fail_before_pass_after(
             check["repo"], c["before_sha"], c["after_sha"],
-            json.loads(check["argv"]), json.loads(check["test_paths"]))
+            json.loads(check["argv"]), json.loads(check["test_paths"]),
+            sandboxes.from_check(check["sandbox"], check["image"]))
         with self.db:
             # another process may have verified this claim while ours ran; the first verdict stands
             won = self.db.execute("UPDATE claims SET label=?, reason=?, evidence=?, verified_at=? "

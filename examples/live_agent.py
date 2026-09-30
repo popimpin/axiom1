@@ -30,6 +30,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--model", default=None)
     p.add_argument("--max-steps", type=int, default=30)
+    p.add_argument("--sandbox", default="docker", choices=["docker", "local"],
+                   help="where verification runs (docker needs python:3.13-slim pulled)")
     a = p.parse_args()
 
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
@@ -43,13 +45,18 @@ def main():
         git(repo, "worktree", "add", "-q", "--detach", str(wt), "main")
 
         ax = Axiom(db)
-        ax.register_check("unit", repo, [sys.executable, "-m", "unittest", "discover", "-s", "tests"], ["tests/"])
+        if a.sandbox == "docker":
+            ax.register_check("unit", repo, ["python", "-m", "unittest", "discover", "-s", "tests"], ["tests/"],
+                              sandbox="docker", image="python:3.13-slim")
+        else:
+            ax.register_check("unit", repo, [sys.executable, "-m", "unittest", "discover", "-s", "tests"],
+                              ["tests/"])
         ax.join("operator", ["shell"])
         ax.post_task("operator", "add(2, 3) returns -1; it should return 5. Fix calc.py.")
         ax.db.close()
 
         model = ChatModel(a.model)
-        print(f"model: {model.model}\n")
+        print(f"model: {model.model}   verification sandbox: {a.sandbox}\n")
         t = time.time()
         asyncio.run(run_agent("nemotron-1", wt, db, model, max_steps=a.max_steps))
         ax = Axiom(db)

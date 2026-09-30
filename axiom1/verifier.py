@@ -31,16 +31,9 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
-from dataclasses import dataclass
 from pathlib import Path
 
-RUN_TIMEOUT_S = 300
-
-
-@dataclass
-class Run:
-    returncode: int
-    output: str
+from .sandbox import LocalSandbox
 
 
 # stdin=DEVNULL everywhere: under MCP the server's own stdin IS the protocol pipe, and a child
@@ -59,15 +52,6 @@ def _export(repo, sha, dest, paths=()):
     data = _git(repo, "archive", "--format=tar", sha, *paths, text=False).stdout
     with tarfile.open(fileobj=io.BytesIO(data)) as tar:
         tar.extractall(dest, filter="data")
-
-
-def _run(argv, cwd):
-    try:
-        p = subprocess.run(argv, cwd=cwd, capture_output=True, text=True,
-                           stdin=subprocess.DEVNULL, timeout=RUN_TIMEOUT_S)
-        return Run(p.returncode, (p.stdout + p.stderr)[-4000:])
-    except subprocess.TimeoutExpired:
-        return Run(-1, f"timed out after {RUN_TIMEOUT_S}s")
 
 
 def _existing(repo, sha, paths):
@@ -101,7 +85,7 @@ def _canary_dir(tree, test_path, is_dir):
     return p if is_dir else p.parent
 
 
-def _canary_collected(base_dir, argv, test_path, is_dir):
+def _canary_collected(sandbox, base_dir, argv, test_path, is_dir):
     """Calibration: does this command run a file shaped like a canary at all?
 
     A PASSING twin of the canary goes into the test directory of the untouched BEFORE tree, with that
@@ -116,36 +100,38 @@ def _canary_collected(base_dir, argv, test_path, is_dir):
         target.mkdir(parents=True, exist_ok=True)
         name, text = _canary("assertEqual", passing=True)
         (target / name).write_text(text, encoding="utf-8")
-        return _run(argv, ctrl).returncode == 0
+        return sandbox.run(ctrl, argv).returncode == 0
 
 
-def _tamper_check(after_dir, argv, test_path, is_dir):
+def _tamper_check(sandbox, after_dir, argv, test_path, is_dir):
     """Run the fixed tree once per canary style. Returns the first style whose canary PASSED, or None."""
     for style in CANARY_STYLES:
         with tempfile.TemporaryDirectory() as ctrl:
             shutil.copytree(after_dir, ctrl, dirs_exist_ok=True)
             name, text = _canary(style)
             (_canary_dir(ctrl, test_path, is_dir) / name).write_text(text, encoding="utf-8")
-            run = _run(argv, ctrl)
+            run = sandbox.run(ctrl, argv)
         if run.returncode == 0:
             return style, run
     return None
 
 
-def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths):
+def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths, sandbox=None):
     """Returns (label, reason, evidence). label is 'witnessed' or 'refuted'."""
+    sandbox = sandbox or LocalSandbox()
     overlay = _existing(repo, after_sha, test_paths)
     if not overlay:
-        return "refuted", "the fix commit contains none of the registered test paths", {}
+        return "refuted", "the fix commit contains none of the registered test paths",             {"sandbox": sandbox.describe()}
     with tempfile.TemporaryDirectory() as base_dir, tempfile.TemporaryDirectory() as before_dir, \
             tempfile.TemporaryDirectory() as after_dir:
         _export(repo, before_sha, base_dir)
         _export(repo, before_sha, before_dir)
         _export(repo, after_sha, before_dir, overlay)
         _export(repo, after_sha, after_dir)
-        before = _run(argv, before_dir)
-        after = _run(argv, after_dir)
+        before = sandbox.run(before_dir, argv)
+        after = sandbox.run(after_dir, argv)
         evidence = {
+            "sandbox": sandbox.describe(),
             "before": {"sha": before_sha, "exit": before.returncode, "tail": before.output[-800:]},
             "after": {"sha": after_sha, "exit": after.returncode, "tail": after.output[-800:]},
         }
@@ -154,12 +140,12 @@ def fail_before_pass_after(repo, before_sha, after_sha, argv, test_paths):
         if after.returncode != 0:
             return "refuted", "the test still fails with the fix", evidence
         is_dir = (Path(after_dir) / overlay[0].rstrip("/")).is_dir()
-        if not _canary_collected(base_dir, argv, overlay[0], is_dir):
+        if not _canary_collected(sandbox, base_dir, argv, overlay[0], is_dir):
             evidence["canaries"] = {"collected": False,
                                     "note": "this check's command does not run a canary placed under its "
                                             "test path, so tampering could not be checked"}
             return "witnessed", "failed before the fix, passes after it (no tamper check possible)", evidence
-        tampered = _tamper_check(after_dir, argv, overlay[0], is_dir)
+        tampered = _tamper_check(sandbox, after_dir, argv, overlay[0], is_dir)
     evidence["canaries"] = {"collected": True, "styles": list(CANARY_STYLES), "all_failed": tampered is None}
     if tampered:
         style, run = tampered

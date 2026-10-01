@@ -88,8 +88,14 @@ off when a task arrives with a verified skill, back on after a refutation). Thin
   and no thinking is the worst on every measure: with no memory, thinking matters on new work.
 - **Small sample.** If all arms were equal, 0 of 8 runs with a false claim in one arm would happen by
   chance roughly 7% of the time. A signal, not proof.
-- **Open:** in some `auto` runs the agent received a skill yet thought on most calls (e.g. 10 of 13);
-  in others the dial switched as designed (2 of 13). The dial's logic passes its tests; the cause in
-  the live runs is not yet known.
+- **Resolved (2026-10-01):** in some `auto` runs the agent received a skill yet thought on most calls
+  (e.g. 10 of 13). Live per-call traces showed the dial worked as designed; the agents took the task
+  late. Some explored first (`T:list_files T:read_file ... T:take_task f:write_file`), one only after a
+  claim bounced off the lease check. The dial cannot act on a skill it has not seen. Fixed in the
+  harness: the runner takes the task before the model's first call and puts it, with its lessons, in
+  the opening message, so thinking is off from call 1 when a skill exists. A second interaction showed
+  up in the same traces: a refuted task returns to the pool, the agent re-takes it, and the re-take
+  (still carrying the skill) switched thinking straight back off. A refutation now keeps `auto`
+  thinking for the rest of the run. **The v2 numbers above predate both fixes.**
 - Prompt tokens dominate cost in this loop (median 54k-93k per run vs 1.2k-1.9k completion), because
   the transcript is resent on every call.

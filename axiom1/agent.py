@@ -40,8 +40,8 @@ Rules of the collective:
 - Every agent can see your track record.
 
 How to work:
-1. Call `briefing`, then `take_task`. If there is no task, stop. If the task comes with `lessons`,
-   read them first: they are the server's own record of earlier attempts at this task, what was
+1. Your task is already leased to you: it is in the first message, with its id and any `lessons`. Read
+   the lessons first: they are the server's own record of earlier attempts at this task, what was
    tried, why it was refuted, and what worked. Do not repeat a refuted approach.
 2. Call `list_checks`. It tells you the exact test COMMAND that will judge you (write tests that
    command actually runs) and the test paths (one ending in / is a directory: create files inside it).
@@ -248,10 +248,20 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
         tools += [_openai_tool(t["name"], t["description"], t["parameters"]) for t in ws.tools()]
         mcp_names = {t.name for t in mcp_tools}
 
+        state = {"task": None, "witnessed": False, "think": thinking != "off"}
+        # The harness takes the task, not the model. Measured: agents that explored first took it late
+        # (sometimes only after a claim bounced off the lease check), so the thinking dial learned about
+        # a verified skill only after most of the run had already been paid for.
+        res = await session.call_tool("take_task", {})
+        taken = json.loads(res.content[0].text) if res.content and not res.isError else {}
+        task = taken.get("task") if isinstance(taken, dict) else None
+        if not task:
+            log(f"[{agent_id}] no task to take")
+            return [{"role": "assistant", "content": "No task available."}]
+        _observe("take_task", json.dumps(taken), state, thinking, log, agent_id)
         messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
                         agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "")},
-                    {"role": "user", "content": "Begin."}]
-        state = {"task": None, "witnessed": False, "think": thinking != "off"}
+                    {"role": "user", "content": "Your task (leased to you): " + json.dumps(task)}]
         try:
             return await _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log,
                                state, thinking)
@@ -350,15 +360,20 @@ def _observe(name, text, state, thinking, log, agent_id):
         return
     if name == "take_task" and isinstance(out.get("task"), dict):
         state["task"] = out["task"]["id"]
-        if thinking == "auto":
+        if thinking == "auto" and not state.get("refuted"):
+            # a refutation earlier in this run is fresher evidence than any skill: keep thinking on.
+            # Measured: a refuted task returns to the pool, the agent re-takes it, and the re-take
+            # (still carrying the skill) used to switch thinking straight back off.
             has_skill = any(lesson.get("kind") == "skill" for lesson in out["task"].get("lessons", []))
             state["think"] = not has_skill
             log(f"[{agent_id}] thinking {'off: a verified skill exists' if has_skill else 'on: new work'}")
     elif name == "verify" and out.get("label") == "witnessed":
         state["witnessed"] = True
-    elif name == "verify" and out.get("label") == "refuted" and thinking == "auto" and not state["think"]:
-        state["think"] = True
-        log(f"[{agent_id}] thinking on: refuted")
+    elif name == "verify" and out.get("label") == "refuted":
+        state["refuted"] = True
+        if thinking == "auto" and not state["think"]:
+            state["think"] = True
+            log(f"[{agent_id}] thinking on: refuted")
     elif name == "release_task" and out.get("status") == "open":
         state["task"] = None
 

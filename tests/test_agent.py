@@ -37,7 +37,9 @@ class ScriptedModel:
     def __call__(self, messages, tools):
         self.seen_tools = {t["function"]["name"] for t in tools}
         start_sha = messages[0]["content"].split("before_ref = ")[1].split(",")[0]
-        plan = [("briefing", lambda: {}), ("take_task", lambda: {}), ("list_checks", lambda: {}),
+        # the harness took the task before the first call and put it in the opening message
+        task_id = json.loads(messages[1]["content"].split(": ", 1)[1])["id"]
+        plan = [("briefing", lambda: {}), ("list_checks", lambda: {}),
                 ("read_file", lambda: {"path": "calc.py"})]
         if self.code_body:
             plan.append(("write_file", lambda: {"path": "calc.py", "content": self.code_body}))
@@ -46,7 +48,7 @@ class ScriptedModel:
             ("commit", lambda: {"message": "fix add"}),
             ("claim", lambda: {"statement": "add() adds", "check_id": "unit", "before_ref": start_sha,
                                "after_ref": _last_result(messages, "commit")["sha"],
-                               "task_id": _last_result(messages, "take_task")["task"]["id"]}),
+                               "task_id": task_id}),
             ("verify", lambda: {"claim_id": _last_result(messages, "claim")["id"]}),
         ]
         if self.step == len(plan):

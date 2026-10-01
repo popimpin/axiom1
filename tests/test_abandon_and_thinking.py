@@ -126,10 +126,23 @@ class ThinkingDial(RunnerReleases):
         ax.db.close()
         m = self.Recording(TAUTOLOGY)                # this time the agent ships a test that proves nothing
         asyncio.run(run_agent("second", self._wt("wt2"), self.db, m, log=lambda *_: None))
-        # calls: briefing, take_task (thinking on until the task arrives), then off ... until refuted
-        self.assertEqual(m.seen[:2], [True, True])
-        self.assertIn(False, m.seen)
+        # the harness took the task (and its skill) before the first call, so thinking is off from call 1
+        # until the refutation; measured live, a model left to take the task itself often did so late
+        self.assertEqual(m.seen[0], False)
         self.assertEqual(m.seen[-1], True)          # the call after the refutation thinks again
+        flip = m.seen.index(True)
+        self.assertTrue(all(s is False for s in m.seen[:flip]))
+
+    def test_a_re_take_after_a_refutation_does_not_switch_thinking_back_off(self):
+        from axiom1.agent import _observe
+        state, logs = {"task": None, "witnessed": False, "think": True}, []
+        skill = json.dumps({"task": {"id": "t1", "lessons": [{"kind": "skill"}]}})
+        _observe("take_task", skill, state, "auto", logs.append, "a")
+        self.assertFalse(state["think"])                                    # skill: replay cheaply
+        _observe("verify", json.dumps({"label": "refuted"}), state, "auto", logs.append, "a")
+        self.assertTrue(state["think"])                                     # refuted: think again
+        _observe("take_task", skill, state, "auto", logs.append, "a")       # the task came back to the pool
+        self.assertTrue(state["think"])                                     # fresher evidence wins
 
     def test_fixed_settings_are_respected(self):
         for setting, expect in (("on", True), ("off", False)):

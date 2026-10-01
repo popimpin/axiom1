@@ -165,3 +165,44 @@ Between them, one change: the harness, not the model, decides when a run is over
 "thought out loud" in a message with no tool call and the runner took that as the final answer. v2
 failures are the model's own limits: the calendar job 0/3, overdue invoices 1/3, contacts and the bank
 reconciliation 2/3 each, all ending at the 40-step limit.
+
+## Getting good at a job: one witnessed pass, then replay (2026-10-01)
+
+`examples/everyday_tasks.py series`: the 8 job types, 5 instances each, fresh data per instance (seeds
+100-104). Instance 1 is worked out by the model; a `process.py` that reproduces a witnessed delivery is
+locked in. Later instances replay it (the model fills only the entry, if any); if the check fails, the
+model repairs it, and the repair is locked only if it also passes every earlier instance. Lightning,
+thinking auto, 40 steps. `2026-10-01_everyday8_series_lightning_v1.json`.
+
+Paths per instance: M = worked out by the model, R = replayed, F = replay failed, model repaired; + verified, - not.
+
+| job | verified | paths | final process | model calls |
+|---|---|---|---|---|
+| merge-contacts | 5/5 | M+ R+ R+ R+ R+ | v1 | 36 |
+| overdue-invoices | 5/5 | M+ R+ R+ R+ R+ | v1 | 14 |
+| reconcile-bank-statement | 5/5 | M+ M+ R+ R+ R+ | v1 | 52 |
+| fill-claim-form | 5/5 | M+ F+ F+ F+ F+ | v2 | 67 |
+| receipts-to-spreadsheet | 4/5 | M- M+ F+ R+ R+ | v2 | 91 |
+| policy-answer-with-source | 4/5 | M- M+ F+ R+ F+ | v2 | 74 |
+| tidy-downloads | 3/5 | M+ M- M+ M+ M- | none | 118 |
+| calendar-from-inbox | 0/5 | M- M- M- M- M- | none | 186 |
+| **all** | **31/40** | 19 M · 14 R · 7 F | | 638 |
+
+- **A replay costs almost nothing.** 14 replays: mean **0.43 model calls, 6.5 s**. 19 model-worked
+  instances: mean **28.9 calls, 101 s**. Five replays of merge-contacts and overdue-invoices made zero calls.
+- **Replay turns the model's weak jobs into solved ones.** overdue-invoices was 1/3 for fresh agents in
+  v2; here one pass at instance 1 locked a process and the other four replayed: 5/5. Bank went 2/3 -> 5/5.
+- **The regression guard fired.** 4 repairs (3 on fill-claim-form, 1 on policy) were refused with
+  "process not locked in: it breaks N of M earlier instance(s) the current version handles". Each of those
+  deliveries was still accepted; only the method was refused. fill-claim-form never converged: every new
+  letter strayed from v2, so every instance after the first needed the model (10-14 calls each, not 0).
+  The series runner cut those notes at "(s)" (it took the last '('), so N and M are missing from these
+  rows; fixed for later runs (`trailing_note`).
+- **Two jobs never lock a process.** tidy-downloads succeeded 3/5 but the agent moved files by hand and
+  left no `process.py` that reproduces it, so each instance starts over (2 hit the step limit, no claim).
+  calendar-from-inbox is 0/5 as in v2: never a witnessed pass, so nothing to replay. It used **47% of all
+  tokens** (3.69M of 7.78M).
+- Cost: 7.36M prompt + 0.41M completion tokens, about **$0.54** (~$0.0135/job) at the prices implied by
+  the earlier receipts (~$0.06/M in, ~$0.24/M out). Without calendar, about $0.29 for 35 jobs.
+- Wrong deliveries accepted: 0 (only a server-witnessed claim counts as done).
+- Small: one model, one seed range, synthetic data, 5 instances per type.

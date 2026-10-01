@@ -971,6 +971,19 @@ def run(n_agents, max_steps, model_name, thinking, seed, only):
     return {"model": model.model, "thinking": thinking, "rows": rows}
 
 
+def trailing_note(reason):
+    """The server appends a process outcome to a witnessed claim's reason as " (note)", and the note can hold
+    parentheses of its own ("instance(s)"), so match back from the final ')' instead of taking the last '('."""
+    if not reason.endswith(")"):
+        return ""
+    depth = 0
+    for i in range(len(reason) - 1, -1, -1):
+        depth += {")": 1, "(": -1}.get(reason[i], 0)
+        if depth == 0:
+            return reason[i + 1:-1]
+    return ""
+
+
 def series(n_instances, max_steps, model_name, thinking, first_seed, only):
     """Getting good at a job: one job type, fresh data every instance (a new month of receipts, a new inbox).
 
@@ -1018,7 +1031,7 @@ def series(n_instances, max_steps, model_name, thinking, first_seed, only):
                     path = "replay failed -> model"
                 else:
                     path = "worked out by the model"
-                outcome = next((r[r.rfind("(") + 1:-1] for l, r in reversed(claims) if l == "witnessed" and "(" in r), "")
+                outcome = next((trailing_note(r) for l, r in reversed(claims) if l == "witnessed" and trailing_note(r)), "")
                 row = {"task": task["id"], "instance": i, "seed": first_seed + i, "done": done, "path": path,
                        "process_before": before_version, "process_after": after_version, "outcome": outcome,
                        "claims": [l for l, _ in claims], "model_calls": used["calls"],

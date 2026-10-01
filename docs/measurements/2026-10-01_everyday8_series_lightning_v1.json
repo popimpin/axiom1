@@ -1,0 +1,695 @@
+{
+ "model": "nvidia/Nemotron-3_5-Lightning",
+ "thinking": "auto",
+ "instances_per_type": 5,
+ "rows": [
+  {
+   "task": "receipts-to-spreadsheet",
+   "instance": 0,
+   "seed": 100,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [
+    "refuted",
+    "refuted"
+   ],
+   "model_calls": 40,
+   "prompt_tokens": 510472,
+   "completion_tokens": 29107,
+   "seconds": 147.2
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "instance": 1,
+   "seed": 101,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 34,
+   "prompt_tokens": 397502,
+   "completion_tokens": 22273,
+   "seconds": 107.1
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 1,
+   "process_after": 2,
+   "outcome": "process locked in as v2",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 15,
+   "prompt_tokens": 105048,
+   "completion_tokens": 6044,
+   "seconds": 41.2
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "replayed",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "replayed process v2",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "prompt_tokens": 141,
+   "completion_tokens": 11,
+   "seconds": 5.2
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "instance": 4,
+   "seed": 104,
+   "done": true,
+   "path": "replayed",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "replayed process v2",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "prompt_tokens": 141,
+   "completion_tokens": 11,
+   "seconds": 5.2
+  },
+  {
+   "task": "tidy-downloads",
+   "instance": 0,
+   "seed": 100,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "process.py did not reproduce it, so there is no process to lock in",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 18,
+   "prompt_tokens": 94942,
+   "completion_tokens": 6196,
+   "seconds": 52.4
+  },
+  {
+   "task": "tidy-downloads",
+   "instance": 1,
+   "seed": 101,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [],
+   "model_calls": 40,
+   "prompt_tokens": 362325,
+   "completion_tokens": 1934,
+   "seconds": 64.2
+  },
+  {
+   "task": "tidy-downloads",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "no process.py, so there is no process to lock in",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 10,
+   "prompt_tokens": 56099,
+   "completion_tokens": 693,
+   "seconds": 14.0
+  },
+  {
+   "task": "tidy-downloads",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "no process.py, so there is no process to lock in",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 10,
+   "prompt_tokens": 60341,
+   "completion_tokens": 702,
+   "seconds": 14.6
+  },
+  {
+   "task": "tidy-downloads",
+   "instance": 4,
+   "seed": 104,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [],
+   "model_calls": 40,
+   "prompt_tokens": 510063,
+   "completion_tokens": 2122,
+   "seconds": 61.0
+  },
+  {
+   "task": "merge-contacts",
+   "instance": 0,
+   "seed": 100,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "refuted",
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 36,
+   "prompt_tokens": 265500,
+   "completion_tokens": 11257,
+   "seconds": 78.0
+  },
+  {
+   "task": "merge-contacts",
+   "instance": 1,
+   "seed": 101,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 5.2
+  },
+  {
+   "task": "merge-contacts",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 5.2
+  },
+  {
+   "task": "merge-contacts",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 5.0
+  },
+  {
+   "task": "merge-contacts",
+   "instance": 4,
+   "seed": 104,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 5.0
+  },
+  {
+   "task": "policy-answer-with-source",
+   "instance": 0,
+   "seed": 100,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [
+    "refuted",
+    "refuted",
+    "refuted",
+    "refuted"
+   ],
+   "model_calls": 40,
+   "prompt_tokens": 277588,
+   "completion_tokens": 8427,
+   "seconds": 70.5
+  },
+  {
+   "task": "policy-answer-with-source",
+   "instance": 1,
+   "seed": 101,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 12,
+   "prompt_tokens": 54114,
+   "completion_tokens": 2170,
+   "seconds": 20.7
+  },
+  {
+   "task": "policy-answer-with-source",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "s) the current version handles",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 11,
+   "prompt_tokens": 49754,
+   "completion_tokens": 2226,
+   "seconds": 25.5
+  },
+  {
+   "task": "policy-answer-with-source",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "prompt_tokens": 147,
+   "completion_tokens": 12,
+   "seconds": 5.4
+  },
+  {
+   "task": "policy-answer-with-source",
+   "instance": 4,
+   "seed": 104,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 1,
+   "process_after": 2,
+   "outcome": "process locked in as v2",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 10,
+   "prompt_tokens": 44326,
+   "completion_tokens": 2051,
+   "seconds": 24.4
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "instance": 0,
+   "seed": 100,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "process.py did not reproduce it, so there is no process to lock in",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 14,
+   "prompt_tokens": 113255,
+   "completion_tokens": 19682,
+   "seconds": 80.6
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "instance": 1,
+   "seed": 101,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 35,
+   "prompt_tokens": 498668,
+   "completion_tokens": 13835,
+   "seconds": 102.0
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "prompt_tokens": 177,
+   "completion_tokens": 21,
+   "seconds": 13.3
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "prompt_tokens": 177,
+   "completion_tokens": 21,
+   "seconds": 9.2
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "instance": 4,
+   "seed": 104,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "prompt_tokens": 177,
+   "completion_tokens": 21,
+   "seconds": 13.6
+  },
+  {
+   "task": "fill-claim-form",
+   "instance": 0,
+   "seed": 100,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 21,
+   "prompt_tokens": 143729,
+   "completion_tokens": 7959,
+   "seconds": 47.2
+  },
+  {
+   "task": "fill-claim-form",
+   "instance": 1,
+   "seed": 101,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "s) the current version handles",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 10,
+   "prompt_tokens": 56462,
+   "completion_tokens": 4197,
+   "seconds": 29.7
+  },
+  {
+   "task": "fill-claim-form",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 1,
+   "process_after": 2,
+   "outcome": "process locked in as v2",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 12,
+   "prompt_tokens": 75010,
+   "completion_tokens": 3896,
+   "seconds": 29.4
+  },
+  {
+   "task": "fill-claim-form",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "s) the current version handles",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 10,
+   "prompt_tokens": 57209,
+   "completion_tokens": 4525,
+   "seconds": 30.5
+  },
+  {
+   "task": "fill-claim-form",
+   "instance": 4,
+   "seed": 104,
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "s) the current version handles",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 14,
+   "prompt_tokens": 97384,
+   "completion_tokens": 7954,
+   "seconds": 48.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [
+    "refuted",
+    "refuted"
+   ],
+   "model_calls": 40,
+   "prompt_tokens": 541859,
+   "completion_tokens": 35555,
+   "seconds": 163.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [],
+   "model_calls": 26,
+   "prompt_tokens": 368535,
+   "completion_tokens": 44121,
+   "seconds": 169.7
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [
+    "refuted"
+   ],
+   "model_calls": 40,
+   "prompt_tokens": 789854,
+   "completion_tokens": 45624,
+   "seconds": 197.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [
+    "refuted"
+   ],
+   "model_calls": 40,
+   "prompt_tokens": 824500,
+   "completion_tokens": 61898,
+   "seconds": 251.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [],
+   "model_calls": 40,
+   "prompt_tokens": 914341,
+   "completion_tokens": 61354,
+   "seconds": 244.5
+  },
+  {
+   "task": "overdue-invoices",
+   "instance": 0,
+   "seed": 100,
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 14,
+   "prompt_tokens": 93348,
+   "completion_tokens": 7107,
+   "seconds": 38.6
+  },
+  {
+   "task": "overdue-invoices",
+   "instance": 1,
+   "seed": 101,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 4.7
+  },
+  {
+   "task": "overdue-invoices",
+   "instance": 2,
+   "seed": 102,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 4.8
+  },
+  {
+   "task": "overdue-invoices",
+   "instance": 3,
+   "seed": 103,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 4.7
+  },
+  {
+   "task": "overdue-invoices",
+   "instance": 4,
+   "seed": 104,
+   "done": true,
+   "path": "replayed",
+   "process_before": 1,
+   "process_after": 1,
+   "outcome": "replayed process v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "seconds": 4.7
+  }
+ ]
+}

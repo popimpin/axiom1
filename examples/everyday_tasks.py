@@ -984,6 +984,126 @@ def trailing_note(reason):
     return ""
 
 
+# ---- form mode: the model fills a form, a fixed pipeline of engines does the rest -------------------------------
+
+def calendar_form(files):
+    """One entry per email: what kind it is (closed set) and the text it is about, copied as written."""
+    copied = "copied exactly as written in that email; '' if the email does not say"
+    return {"type": "object", "required": ["emails"], "properties": {"emails": {
+        "type": "array", "description": "one entry for EVERY email file, in any order",
+        "items": {"type": "object", "required": ["file", "kind", "meeting", "date", "time", "duration"], "properties": {
+            "file": {"type": "string", "enum": sorted(p for p in files if p.startswith("inbox/"))},
+            "kind": {"type": "string", "enum": ["add", "move", "cancel", "ignore"],
+                     "description": "add = a meeting I agreed to; move = a meeting moved to a new time and I agreed; "
+                                    "cancel = a meeting called off; ignore = declined by me, a newsletter, or anything "
+                                    "that is not a meeting I am going to"},
+            "meeting": {"type": "string", "description": "the meeting's name as written in the subject of its FIRST "
+                        "email, without 'Re:' or 'Cancelled:' (the same name for every email about that meeting)"},
+            "date": {"type": "string", "description": f"the day ONLY, e.g. 'Friday May 8' (the time goes in `time`), {copied}"},
+            "time": {"type": "string", "description": f"the start time, e.g. '1:00 pm', {copied}"},
+            "duration": {"type": "string", "description": f"how long, e.g. 'about 45 minutes', {copied}. A move that keeps "
+                         "the length ('Same length') gets '': the pipeline keeps the old length"},
+        }}}}}
+
+
+# The calendar process, written once on the engines. The model never writes this; it fills entry.json.
+CALENDAR_PIPELINE = '''import json
+from pathlib import Path
+from axiom_engines import ledger, table, time
+
+entry = json.loads(Path("entry.json").read_text(encoding="utf-8"))
+emails = sorted(entry["emails"], key=lambda e: e["file"])           # the inbox is numbered in the order it arrived
+inbox = sorted(str(p.as_posix()) for p in Path("inbox").glob("*.txt"))
+missing = sorted(set(inbox) - {e["file"] for e in emails})
+if missing or len(emails) != len({e["file"] for e in emails}):
+    raise SystemExit(f"EngineError: the form must have exactly one entry per email; missing {missing}")
+year = time.year_from_weekdays([e["date"] for e in emails if e["kind"] in ("add", "move") and e["date"]],
+                               int(entry["today"][:4]))
+events = []
+for e in emails:
+    key = e["meeting"].strip().lower()
+    if e["kind"] == "add":
+        events.append({"kind": "add", "key": key, "title": e["meeting"].strip(),
+                       "date": time.parse_date(e["date"], year), "start": time.parse_time(e["time"]),
+                       "minutes": time.parse_duration(e["duration"])})
+    elif e["kind"] == "move":
+        move = {"kind": "move", "key": key}
+        if e["date"]:
+            move["date"] = time.parse_date(e["date"], year)
+        if e["time"]:
+            move["start"] = time.parse_time(e["time"])
+        if e["duration"]:
+            move["minutes"] = time.parse_duration(e["duration"])
+        events.append(move)
+    elif e["kind"] == "cancel":
+        events.append({"kind": "cancel", "key": key})
+rows = [{k: r[k] for k in ("date", "start", "end", "title")} for r in ledger.apply_events(events)]
+table.write_csv("calendar.csv", ["date", "start", "end", "title"], rows)
+'''
+
+FORM_JOBS = {"calendar-from-inbox": {"form": calendar_form, "pipeline": CALENDAR_PIPELINE,
+                                     "verbatim": ("emails", "file", ["meeting", "date", "time", "duration"])}}
+from everyday_forms import FORMS, TASK_FILE  # noqa: E402  (the other seven jobs)
+FORM_JOBS.update(FORMS)
+
+
+def form_series(n_instances, model_name, first_seed, only, as_of=None):
+    """Form mode over fresh instances, verified by the same server check as the agents' runs."""
+    import datetime as dt
+    from axiom1 import forms
+    from axiom1.agent import ChatModel
+    as_of = as_of or dt.date.today().isoformat()
+    model = ChatModel(model_name)
+    rows = []
+    for task in TASKS:
+        if task["id"] not in FORM_JOBS or (only and task["id"] not in only):
+            continue
+        job = FORM_JOBS[task["id"]]
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            db = str(Path(tmp) / "axiom1.db")
+            for i in range(n_instances):
+                inst = Path(tmp) / f"instance{i}"
+                repo, check, files, truth = build(task, inst, first_seed + i)
+                ax = Axiom(db)
+                ax.register_check(task["id"], repo, CHECK, [], sandbox="docker", image=IMAGE, holdout=str(check),
+                                  claim_kind="deliver")
+                ax.join("former", ["human"])
+                base = git(repo, "rev-parse", "HEAD")
+                used0, t0 = dict(model.usage), time.time()
+                shown = {**files, TASK_FILE: task["ask"]} if job.get("task_file") else files
+                res = forms.fill(model, task["ask"], shown, job["form"](files), job["pipeline"],
+                                 verbatim=job["verbatim"], fixed={"today": as_of})
+                used = {k: model.usage[k] - used0[k] for k in model.usage}
+                label, reason = "not delivered", "; ".join(res["corrections"][-1:])
+                if res["ok"]:
+                    git(repo, "checkout", "-q", "-b", f"form{i}", base)
+                    produced = dict(res["produced"])
+                    for rel in produced.pop("__removed__", []):
+                        if rel != TASK_FILE:
+                            git(repo, "rm", "-q", rel)                 # moved by the pipeline, not lost
+                    deliver = {"process.py": job["pipeline"], "entry.json": json.dumps(res["entry"], indent=1),
+                               **{k: v for k, v in produced.items() if k != TASK_FILE}}
+                    for rel, text in deliver.items():
+                        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+                        (repo / rel).write_text(text, encoding="utf-8", newline="")
+                    git(repo, "add", "-A")
+                    git(repo, "-c", "user.name=former", "-c", "user.email=f@axiom1.invalid", "commit", "-q",
+                        "-m", "filled the form; the pipeline wrote the delivery")
+                    claim = ax.claim("former", "filled the form; the pipeline wrote the delivery", task["id"],
+                                     base, git(repo, "rev-parse", "HEAD"))
+                    v = ax.verify(claim["id"])
+                    label, reason = v["label"], v["reason"]
+                ax.db.close()
+                row = {"task": task["id"], "instance": i, "seed": first_seed + i, "model": model.model,
+                       "done": label == "witnessed", "label": label, "rounds": res["rounds"],
+                       "corrections": res["corrections"], "reason": reason[:300], "model_calls": used["calls"],
+                       "cut_off": used["cut_off"], "prompt_tokens": used["prompt_tokens"],
+                       "completion_tokens": used["completion_tokens"], "seconds": round(time.time() - t0, 1)}
+                rows.append(row)
+                print(json.dumps(row), flush=True)
+    return {"model": model.model, "mode": "form", "as_of": as_of, "rows": rows}
+
+
 def series(n_instances, max_steps, model_name, thinking, first_seed, only, learn_model_name=None):
     """Getting good at a job: one job type, fresh data every instance (a new month of receipts, a new inbox).
 
@@ -1063,6 +1183,13 @@ def main():
     se.add_argument("--seed", type=int, default=100)
     se.add_argument("--only", nargs="*")
     se.add_argument("--out", default=None)
+    fm = sub.add_parser("form", help="form mode: the model fills a form, a fixed pipeline of engines does the rest")
+    fm.add_argument("--instances", type=int, default=5)
+    fm.add_argument("--model", default=None)
+    fm.add_argument("--seed", type=int, default=100)
+    fm.add_argument("--only", nargs="*")
+    fm.add_argument("--as-of", default=None, help="today's date for the pipeline (default: the real one)")
+    fm.add_argument("--out", default=None)
     r = sub.add_parser("run")
     r.add_argument("--agents", type=int, default=2)
     r.add_argument("--max-steps", type=int, default=40)
@@ -1074,6 +1201,11 @@ def main():
     a = p.parse_args()
     if a.cmd == "validate":
         sys.exit(0 if validate(a.seed) else 1)
+    if a.cmd == "form":
+        result = form_series(a.instances, a.model, a.seed, a.only, a.as_of)
+        if a.out:
+            Path(a.out).write_text(json.dumps(result, indent=1), encoding="utf-8")
+        return
     if a.cmd == "series":
         result = series(a.instances, a.max_steps, a.model, a.thinking, a.seed, a.only, a.learn_model)
         if a.out:

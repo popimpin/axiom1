@@ -1,12 +1,13 @@
 """Time and date engine: parse, calculate, and compare dates, times, and durations deterministically."""
 import re
 from datetime import date
+from datetime import date as _date, timedelta as _timedelta
 
 from ._base import EngineError
 
 SPEC = {
     "name": "time",
-    "version": 1,
+    "version": 3,
     "summary": "parse and calculate dates, times, and durations deterministically without guessing",
     "functions": {
         "parse_time": {
@@ -83,6 +84,40 @@ SPEC = {
                 {"args": {"due": "2026-05-08", "as_of": "2026-05-08"}, "returns": False},
                 {"args": {"due": "2026-05-10", "as_of": "2026-05-08"}, "returns": False},
                 {"args": {"due": "invalid", "as_of": "2026-05-08"}, "refuses": "invalid"},
+            ],
+        },
+        "year_from_weekdays": {
+            "args": ["texts", "around"],
+            "returns": "the one year within around-1..around+1 in which every stated weekday matches its date",
+            "io": False,
+            "examples": [
+                {"args": {"texts": ["Friday May 15", "Thursday May 7"], "around": 2026}, "returns": 2026},
+                {"args": {"texts": ["Friday May 15", "May 20"], "around": 2027}, "returns": 2026},
+                {"args": {"texts": ["May 15", "May 20"], "around": 2026}, "refuses": "no weekday"},
+                {"args": {"texts": ["Friday May 15", "Friday May 16"], "around": 2026}, "refuses": "no year"},
+                {"args": {"texts": ["Friday May 8 at 11:30 am"], "around": 2026}, "refuses": "is not a date"},
+            ],
+        },
+        "parse_numeric_date": {
+            "args": ["text", "order"],
+            "returns": "YYYY-MM-DD from a numeric date, read in the given order (MDY = month first, DMY = day first)",
+            "io": False,
+            "examples": [
+                {"args": {"text": "03/06/2026", "order": "MDY"}, "returns": "2026-03-06"},
+                {"args": {"text": "03/06/2026", "order": "DMY"}, "returns": "2026-06-03"},
+                {"args": {"text": "2026-03-06", "order": "MDY"}, "returns": "2026-03-06"},
+                {"args": {"text": "03/24/2026", "order": "DMY"}, "refuses": "month 24"},
+                {"args": {"text": "03/06/2026", "order": "YMD"}, "refuses": "order"},
+            ],
+        },
+        "add_days": {
+            "args": ["date", "days"],
+            "returns": "YYYY-MM-DD, the ISO date plus a whole number of days",
+            "io": False,
+            "examples": [
+                {"args": {"date": "2026-01-23", "days": 14}, "returns": "2026-02-06"},
+                {"args": {"date": "2026-02-20", "days": 30}, "returns": "2026-03-22"},
+                {"args": {"date": "2026-01-23", "days": "14"}, "refuses": "whole number"},
             ],
         },
     },
@@ -383,6 +418,83 @@ def is_overdue(due, as_of):
     return d_due < d_as_of
 
 
+def year_from_weekdays(texts, around):
+    """The year the dates were written for, fixed by their weekdays: the one year in around-1..around+1 in which
+    every text that names a weekday falls on that weekday. Texts without a weekday do not constrain it. The window
+    is narrow on purpose: a month's weekdays repeat every few years (May 2020 and May 2026 are identical), so a
+    wide window would have more than one answer."""
+    if not isinstance(around, int) or isinstance(around, bool):
+        raise EngineError(f"around must be a year (int), got {around!r}")
+    if not isinstance(texts, list) or not all(isinstance(t, str) for t in texts):
+        raise EngineError("texts must be a list of date strings")
+    named = [t for t in texts if any(w in t.lower() for w in ("mon", "tue", "wed", "thu", "fri", "sat", "sun"))]
+    if not named:
+        raise EngineError("no weekday in any of the dates, so they do not fix a year; the year must be given")
+    window = (around - 1, around, around + 1)
+    per_text = {}
+    for t in named:
+        fits_t, unreadable = [], None
+        for year in window:
+            try:
+                parse_date(t, year)
+                fits_t.append(year)
+            except EngineError as e:
+                if "names a different day" not in str(e) and "does not match reference year" not in str(e):
+                    unreadable = e
+        if not fits_t and unreadable is not None:
+            # not a weekday question at all: pass the date engine's own message on, naming the text
+            raise EngineError(f"{t!r} is not a date: {unreadable}") from None
+        per_text[t] = fits_t
+    fits = [y for y in window if all(y in f for f in per_text.values())]
+    if not fits:
+        detail = "; ".join(f"{t!r} fits {f or 'no year'}" for t, f in per_text.items())
+        raise EngineError(f"no year in {around - 1}..{around + 1} has every weekday right: {detail}")
+    if len(fits) > 1:
+        raise EngineError(f"more than one year fits {named}: {fits}; the year must be given")
+    return fits[0]
+
+
+def parse_numeric_date(text, order):
+    """A numeric date read in a stated order. "03/06/2026" is March 6 or June 3 depending on where the document
+    comes from; parse_date refuses it as ambiguous, and this reads it once the order is decided (MDY or DMY).
+    ISO dates (YYYY-MM-DD) are accepted as they are, whatever the order."""
+    if order not in ("MDY", "DMY"):
+        raise EngineError(f"order must be 'MDY' (month first) or 'DMY' (day first), got {order!r}")
+    if not isinstance(text, str):
+        raise EngineError("text must be a string")
+    t = text.strip()
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", t):
+        try:
+            return date.fromisoformat(t).isoformat()
+        except ValueError as e:
+            raise EngineError(f"invalid date {t!r}: {e}") from None
+    m = re.fullmatch(r"(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})", t)
+    if not m:
+        raise EngineError(f"{t!r} is not a numeric date like 03/06/2026 or 2026-03-06")
+    a, b, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    month, day = (a, b) if order == "MDY" else (b, a)
+    if not 1 <= month <= 12:
+        raise EngineError(f"{t!r} read as {order} has month {month}, which does not exist; check the order")
+    try:
+        return date(y, month, day).isoformat()
+    except ValueError as e:
+        raise EngineError(f"{t!r} read as {order} is not a real date: {e}") from None
+
+
+def add_days(date, days):  # noqa: F811 - the SPEC names the argument "date"
+    """An ISO date plus a whole number of days (e.g. an issue date plus payment terms)."""
+    if not isinstance(days, int) or isinstance(days, bool):
+        raise EngineError(f"days must be a whole number, got {days!r}")
+    if not isinstance(date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date.strip()):
+        raise EngineError(f"invalid ISO date {date!r}; expected YYYY-MM-DD")
+    try:
+        start = _date.fromisoformat(date.strip())
+    except ValueError as e:
+        raise EngineError(f"invalid ISO date {date!r}: {e}") from None
+    return (start + _timedelta(days=days)).isoformat()
+
+
+
 GUIDE = '''Use time for every date, time and duration you read from text. Never parse them yourself.
 - `time.parse_date("Friday May 8", 2026)` -> "2026-05-08". Pass the year (the task's or the files'). If a
   weekday is given and does not match, it refuses: re-read the text.
@@ -390,4 +502,9 @@ GUIDE = '''Use time for every date, time and duration you read from text. Never 
 - `time.parse_duration("about 45 minutes")` -> 45 (int minutes).
 - `time.add_minutes("11:30", 45)` -> "12:15" (refuses crossing midnight).
 - `time.days_between(a, b)` and `time.is_overdue(due, as_of)` work on ISO dates (e.g. due dates vs today's date).
+- Numeric dates like 03/06/2026 are ambiguous: decide the order once for the whole document (a US
+  bank or a "March" folder with 03/24 in it is month first), then `time.parse_numeric_date("03/06/2026", "MDY")`.
+- Payment terms: `time.add_days("2026-01-23", 14)` -> "2026-02-06".
+- No year written? `time.year_from_weekdays(["Friday May 15", ...], 2026)` -> 2026: the weekdays fix it
+  (the second argument is the current year). It refuses if no weekday is given or more than one year fits.
 Feeds ledger (date/start/minutes) and table.'''

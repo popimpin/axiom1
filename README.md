@@ -110,20 +110,46 @@ reads `[no regression] fixed every bug`.
 - **Joining is a briefing, not a transcript.** A new agent receives checked facts, open claims,
   recent refutations, the tasks it can take and every agent's track record.
 
+## Learning from doing
+
+There is no kernel of hand-built routes to lean on, so the collective has to learn from its own work,
+and it has to decide when reasoning is worth paying for.
+
+- **Every verdict becomes a lesson, written by the server.** A refutation becomes a *lesson* (what was
+  tried, which files changed, the server's reason). An anchored witness becomes a *skill* (what
+  worked). An attempt that ends without a verified claim (a release, an expired lease, a run that
+  stops empty-handed) becomes an *abandoned* lesson: the server's observations, plus the agent's own
+  account quoted as declared and unverified. Agents cannot write any of it.
+- **The next agent receives them.** A task arrives with the lessons of earlier attempts at it, so a
+  failure is the next attempt's head start. Held-out test details never reach a lesson.
+- **Skills only from verified outcomes.** Self-improving agents that learn from *success* turn unsafe
+  shortcuts into reusable skills; here a skill exists only where the server watched the work pass,
+  and a refutation is recorded against it.
+- **The harness decides when the model thinks.** New work: thinking on. A task that arrives with a
+  verified skill: thinking off, follow the skill, and the verdict still catches a skill that no longer
+  fits. A refutation: thinking back on for the rest of the run. The runner takes the task before the
+  model's first call, so the decision is made with the lessons in hand.
+- **Portable.** `python -m axiom1 export-okf ./bundle` writes facts, skills and lessons as an OKF
+  bundle: markdown, YAML frontmatter, `[[links]]` and an index.
+
+What this does and does not show yet is in [docs/MEASUREMENTS.md](docs/MEASUREMENTS.md), including the
+runs that measured the wrong thing.
+
 ## Status
 
 Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 
 - [x] Core state, messages with hash-echo acks, declared-only memory, fail-before/pass-after
       verification, capability-matched tasks with leases, track records, briefings
-- [x] MCP server: 13 agent tools; registering checks is operator-only
+- [x] MCP server: 14 agent tools; registering checks is operator-only
 - [x] Model-driven agent runner: Nemotron on Nebius Token Factory (Lightning by default), joined over MCP
 - [ ] External-fact claims labelled `sourced` (Tavily), never `witnessed`
 - [x] Sandboxed verification: Docker (no network, read-only, unprivileged, capped)
 - [x] Held-out tests the agents never see (operator-only output)
 - [x] Hub: one process owns the database; per-agent tokens (hashed), identity from the token on every call
 - [x] Sandboxed shell for agents (`run`): worktree writable, `.git` read-only, no network; see docs/MEASUREMENTS.md
-- [x] Verified lessons: the server turns every verdict into a lesson or skill for the next agent; OKF export
+- [x] Verified lessons and skills from every verdict, abandoned attempts recorded, OKF export
+- [x] Harness-decided thinking (on for new work, off with a verified skill, on after a refutation)
 - [ ] Nebius Serverless AI job sandbox
 - [ ] Live viewer and hosted demo
 
@@ -171,7 +197,7 @@ That trusts whoever launches the process, so keep it to your own machine.
 ```
 
 Tools: `briefing`, `send`, `inbox`, `ack`, `message_status`, `remember`, `recall`, `list_checks`,
-`post_task`, `take_task`, `claim`, `verify`, `track_record`.
+`post_task`, `take_task`, `release_task`, `claim`, `verify`, `track_record`.
 
 The operator, not an agent, decides what "verified" means:
 

@@ -80,6 +80,13 @@ def sequence(model, share, n_agents, max_steps, thinking="on"):
                      for c in m.get("tool_calls", [])]
             # what the agent was actually handed: lessons inside its take_task results
             received = 0
+            # the harness takes the task before the first call: its lessons arrive in the opening message
+            opening = next((m["content"] for m in messages if m["role"] == "user"), "")
+            if opening.startswith("Your task (leased to you): "):
+                try:
+                    received = len(json.loads(opening.split(": ", 1)[1]).get("lessons", []))
+                except ValueError:
+                    pass
             for m in messages:
                 if m["role"] == "tool" and '"lessons"' in m["content"]:
                     try:

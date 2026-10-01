@@ -312,6 +312,7 @@ def _attempt_summary(messages):
 
 async def _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log, state, thinking):
     nudges = 0
+    unfinished = 0
     for step in range(max_steps):
         if hasattr(model, "thinking") and thinking != "default":
             model.thinking = state["think"]
@@ -326,6 +327,17 @@ async def _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_st
             log(f"[{agent_id}] tool call written as text, not made; asking again ({nudges}/3)")
             messages.append({"role": "user", "content": "Your last message contains a tool call written "
                              "as text, so it was not executed. Make the call through the tool interface."})
+            continue
+        if not calls and state["task"] and not state["witnessed"] and unfinished < 5:
+            # The harness decides when a run is over, not the model. Measured: agents "thought out loud"
+            # in a message with no tool call ("We need to reconcile... Let's parse.") and the run ended
+            # there, after 3 calls, with nothing delivered and nothing handed back.
+            unfinished += 1
+            log(f"[{agent_id}] stopped without a verified result; asking it to continue ({unfinished}/5)")
+            messages.append({"role": "user", "content": "Your task is not finished: nothing has been verified yet. "
+                             "Keep working with tool calls (write the files, commit, claim, verify). If you truly "
+                             "cannot finish, call release_task with a note saying what you tried and where you "
+                             "got stuck."})
             continue
         if not calls:
             log(f"[{agent_id}] final: {content.strip()[:300]}")

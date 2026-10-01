@@ -1,0 +1,312 @@
+{
+ "model": "nvidia/Nemotron-3_5-Lightning",
+ "thinking": "auto",
+ "rows": [
+  {
+   "task": "receipts-to-spreadsheet",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 16.6,
+   "model_calls": 9,
+   "prompt_tokens": 39685,
+   "completion_tokens": 2444
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "position": 1,
+   "done": false,
+   "claims": [],
+   "last_reason": "",
+   "seconds": 22.9,
+   "model_calls": 17,
+   "prompt_tokens": 72137,
+   "completion_tokens": 2837
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "position": 2,
+   "done": false,
+   "claims": [],
+   "last_reason": "",
+   "seconds": 19.9,
+   "model_calls": 17,
+   "prompt_tokens": 72682,
+   "completion_tokens": 2239
+  },
+  {
+   "task": "tidy-downloads",
+   "position": 0,
+   "done": false,
+   "claims": [
+    "refuted",
+    "refuted"
+   ],
+   "last_reason": "universal guard: files lost (deleted, and their content is nowhere else): downloads/screenshot 2026-03-02.xlsx, downloads/tax_return_2025.txt, downloads/wedding_playlist.ics",
+   "seconds": 97.5,
+   "model_calls": 40,
+   "prompt_tokens": 258145,
+   "completion_tokens": 16392
+  },
+  {
+   "task": "tidy-downloads",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "refuted",
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 95.4,
+   "model_calls": 40,
+   "prompt_tokens": 343882,
+   "completion_tokens": 11395
+  },
+  {
+   "task": "tidy-downloads",
+   "position": 2,
+   "done": false,
+   "claims": [
+    "refuted",
+    "refuted"
+   ],
+   "last_reason": "universal guard: files lost (deleted, and their content is nowhere else): downloads/IMG_4471.png",
+   "seconds": 99.5,
+   "model_calls": 40,
+   "prompt_tokens": 483837,
+   "completion_tokens": 13948
+  },
+  {
+   "task": "merge-contacts",
+   "position": 0,
+   "done": false,
+   "claims": [],
+   "last_reason": "",
+   "seconds": 17.8,
+   "model_calls": 4,
+   "prompt_tokens": 12943,
+   "completion_tokens": 4243
+  },
+  {
+   "task": "merge-contacts",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 15.9,
+   "model_calls": 8,
+   "prompt_tokens": 31545,
+   "completion_tokens": 2376
+  },
+  {
+   "task": "merge-contacts",
+   "position": 2,
+   "done": true,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 77.4,
+   "model_calls": 23,
+   "prompt_tokens": 136595,
+   "completion_tokens": 13748
+  },
+  {
+   "task": "policy-answer-with-source",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 14.8,
+   "model_calls": 10,
+   "prompt_tokens": 36077,
+   "completion_tokens": 1464
+  },
+  {
+   "task": "policy-answer-with-source",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 10.9,
+   "model_calls": 9,
+   "prompt_tokens": 33715,
+   "completion_tokens": 670
+  },
+  {
+   "task": "policy-answer-with-source",
+   "position": 2,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 11.1,
+   "model_calls": 9,
+   "prompt_tokens": 34827,
+   "completion_tokens": 665
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "position": 0,
+   "done": false,
+   "claims": [],
+   "last_reason": "",
+   "seconds": 48.5,
+   "model_calls": 6,
+   "prompt_tokens": 23372,
+   "completion_tokens": 13385
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "position": 1,
+   "done": false,
+   "claims": [],
+   "last_reason": "",
+   "seconds": 17.5,
+   "model_calls": 4,
+   "prompt_tokens": 13905,
+   "completion_tokens": 4305
+  },
+  {
+   "task": "reconcile-bank-statement",
+   "position": 2,
+   "done": false,
+   "claims": [
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 59.9,
+   "model_calls": 13,
+   "prompt_tokens": 102058,
+   "completion_tokens": 13707
+  },
+  {
+   "task": "fill-claim-form",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 15.1,
+   "model_calls": 8,
+   "prompt_tokens": 29672,
+   "completion_tokens": 2061
+  },
+  {
+   "task": "fill-claim-form",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 24.0,
+   "model_calls": 18,
+   "prompt_tokens": 89979,
+   "completion_tokens": 2278
+  },
+  {
+   "task": "fill-claim-form",
+   "position": 2,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 11.3,
+   "model_calls": 9,
+   "prompt_tokens": 36628,
+   "completion_tokens": 709
+  },
+  {
+   "task": "calendar-from-inbox",
+   "position": 0,
+   "done": false,
+   "claims": [],
+   "last_reason": "",
+   "seconds": 12.8,
+   "model_calls": 4,
+   "prompt_tokens": 14539,
+   "completion_tokens": 2534
+  },
+  {
+   "task": "calendar-from-inbox",
+   "position": 1,
+   "done": false,
+   "claims": [
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 118.0,
+   "model_calls": 17,
+   "prompt_tokens": 89464,
+   "completion_tokens": 29863
+  },
+  {
+   "task": "calendar-from-inbox",
+   "position": 2,
+   "done": false,
+   "claims": [
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 43.8,
+   "model_calls": 9,
+   "prompt_tokens": 40920,
+   "completion_tokens": 7686
+  },
+  {
+   "task": "overdue-invoices",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 25.0,
+   "model_calls": 8,
+   "prompt_tokens": 36513,
+   "completion_tokens": 5201
+  },
+  {
+   "task": "overdue-invoices",
+   "position": 1,
+   "done": false,
+   "claims": [
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 28.9,
+   "model_calls": 11,
+   "prompt_tokens": 54858,
+   "completion_tokens": 5191
+  },
+  {
+   "task": "overdue-invoices",
+   "position": 2,
+   "done": false,
+   "claims": [
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 99.5,
+   "model_calls": 40,
+   "prompt_tokens": 330307,
+   "completion_tokens": 16123
+  }
+ ]
+}

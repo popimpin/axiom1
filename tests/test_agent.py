@@ -118,6 +118,48 @@ class TextToolCalls(Runner):
         self.assertEqual(messages[-1]["content"], "No task to do.")
 
 
+class HarnessDecidesWhenItIsDone(Runner):
+    """Seen live: the agent 'thought out loud' in a message with no tool call and the run ended there."""
+
+    def test_thinking_out_loud_does_not_end_an_unverified_run(self):
+        inner = ScriptedModel(REAL_TEST, FIXED)
+        state = {"narrated": False}
+
+        def model(messages, tools):
+            if not state["narrated"]:
+                state["narrated"] = True
+                return {"role": "assistant", "content": "We need to fix add. Let's look at calc.py first."}
+            return inner(messages, tools)
+
+        messages = self._run(model)
+        self.assertEqual(messages[-1]["content"], "verdict: witnessed")
+        nudges = [m for m in messages if m["role"] == "user" and "not finished" in m["content"]]
+        self.assertEqual(len(nudges), 1)
+
+    def test_handing_the_task_back_ends_the_run_at_once(self):
+        state = {"step": 0}
+
+        def model(messages, tools):
+            state["step"] += 1
+            if state["step"] == 1:
+                task_id = json.loads(messages[1]["content"].split(": ", 1)[1])["id"]
+                return {"role": "assistant", "content": "", "tool_calls": [{"id": "r", "type": "function", "function": {
+                    "name": "release_task", "arguments": json.dumps({"task_id": task_id, "note": "stuck"})}}]}
+            return {"role": "assistant", "content": "I could not finish; I handed it back."}
+
+        messages = self._run(model)
+        self.assertEqual(state["step"], 2)                       # no nudges after an honest hand-back
+        self.assertFalse([m for m in messages if m["role"] == "user" and "not finished" in m["content"]])
+
+    def test_a_model_that_only_narrates_is_stopped_and_its_task_released(self):
+        messages = self._run(lambda m, t: {"role": "assistant", "content": "Still thinking about it."})
+        nudges = [m for m in messages if m["role"] == "user" and "not finished" in m["content"]]
+        self.assertEqual(len(nudges), 5)
+        ax = Axiom(self.db)
+        self.assertEqual(ax.track_record("nemotron-1")["released"], 1)
+        ax.db.close()
+
+
 class WorkspaceConfinement(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)

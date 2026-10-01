@@ -37,7 +37,7 @@ class Surface(unittest.TestCase):
     def test_the_full_agent_surface(self):
         self.assertEqual(sorted(self.tools), sorted([
             "briefing", "send", "inbox", "ack", "message_status", "remember", "recall", "list_checks",
-            "post_task", "take_task", "claim", "verify", "track_record"]))
+            "post_task", "take_task", "release_task", "claim", "verify", "track_record"]))
 
 
 def _data(result):

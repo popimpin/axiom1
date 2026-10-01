@@ -1,5 +1,8 @@
 """Does the collective get better because failures are recorded? Lessons on vs off.
 
+Four arms: lessons on + thinking auto (the harness decides), lessons on + thinking always on, lessons
+off + thinking on, lessons off + thinking off. Tokens and time are recorded per agent.
+
 A sequence of fresh agents takes the same job one after another (when one succeeds, the job comes
 round again). With lessons ON, each agent's take_task carries the server's record of the earlier
 attempts. With lessons OFF, the record is kept but not handed out. Same model, same checks, no shell.
@@ -16,6 +19,7 @@ import statistics
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -37,7 +41,7 @@ def git(repo, *args):
                            *args], capture_output=True, text=True, check=True).stdout.strip()
 
 
-def sequence(model, share, n_agents, max_steps):
+def sequence(model, share, n_agents, max_steps, thinking="on"):
     os.environ["AXIOM_SHARE_LESSONS"] = "1" if share else "0"
     rows = []
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
@@ -66,7 +70,12 @@ def sequence(model, share, n_agents, max_steps):
             wt = Path(tmp) / f"wt{i}"
             git(repo, "worktree", "add", "-q", "--detach", str(wt), "main")
             agent = f"agent{i}"
-            messages = asyncio.run(run_agent(agent, wt, db, model, max_steps=max_steps, log=lambda *_: None))
+            before = dict(model.usage)
+            t0 = time.time()
+            messages = asyncio.run(run_agent(agent, wt, db, model, max_steps=max_steps, log=lambda *_: None,
+                                             thinking=thinking))
+            seconds = round(time.time() - t0, 1)
+            used = {k: model.usage[k] - before[k] for k in model.usage}
             calls = [c["function"]["name"] for m in messages if m["role"] == "assistant"
                      for c in m.get("tool_calls", [])]
             # what the agent was actually handed: lessons inside its take_task results
@@ -85,7 +94,11 @@ def sequence(model, share, n_agents, max_steps):
                                              (agent,))]
             ax.db.close()
             first = labels.index("witnessed") if "witnessed" in labels else None
-            rows.append({"share": share, "position": i, "lessons_in_record": lessons_before,
+            rows.append({"arm": f"lessons_{'on' if share else 'off'}+thinking_{thinking}", "share": share,
+                         "thinking": thinking, "seconds": seconds, "completion_tokens": used["completion_tokens"],
+                         "prompt_tokens": used["prompt_tokens"], "thinking_calls": used["thinking_calls"],
+                         "model_calls": used["calls"],
+                         "position": i, "lessons_in_record": lessons_before,
                          "lessons_received": received,
                          "witnessed": first is not None,
                          "false_claims": first if first is not None else labels.count("refuted"),
@@ -94,44 +107,48 @@ def sequence(model, share, n_agents, max_steps):
     return rows
 
 
+ARMS = [(True, "auto"), (True, "on"), (False, "on"), (False, "off")]
+
+
 def summary(rows):
     out = {}
-    for share in (True, False):
-        arm = [r for r in rows if r["share"] is share]
+    for share, thinking in ARMS:
+        arm = [r for r in rows if r["share"] is share and r["thinking"] == thinking]
         if not arm:
             continue
-        by_pos = {}
-        for p in sorted({r["position"] for r in arm}):
-            at = [r for r in arm if r["position"] == p]
-            by_pos[p] = {"witnessed": f"{sum(r['witnessed'] for r in at)}/{len(at)}",
-                         "false_claims": sum(r["false_claims"] for r in at),
-                         "median_tool_calls": statistics.median(r["tool_calls"] for r in at)}
-        out["lessons_on" if share else "lessons_off"] = {
+        later = [r for r in arm if r["position"] > 0]
+        med = lambda xs: statistics.median(xs) if xs else None  # noqa: E731
+        out[f"lessons_{'on' if share else 'off'}+thinking_{thinking}"] = {
             "witnessed": f"{sum(r['witnessed'] for r in arm)}/{len(arm)}",
             "false_claims": sum(r["false_claims"] for r in arm),
-            "first_agent": by_pos.get(0), "later_agents": {
-                "witnessed": f"{sum(r['witnessed'] for r in arm if r['position'] > 0)}/"
-                             f"{sum(1 for r in arm if r['position'] > 0)}",
-                "false_claims": sum(r["false_claims"] for r in arm if r["position"] > 0),
-                "median_tool_calls": statistics.median([r["tool_calls"] for r in arm if r["position"] > 0] or [0])},
-            "by_position": by_pos}
+            "later_agents_witnessed": f"{sum(r['witnessed'] for r in later)}/{len(later)}",
+            "later_agents_median_tool_calls": med([r["tool_calls"] for r in later]),
+            "median_seconds": med([r["seconds"] for r in arm]),
+            "median_completion_tokens": med([r["completion_tokens"] for r in arm]),
+            "median_prompt_tokens": med([r["prompt_tokens"] for r in arm]),
+            "share_of_calls_thinking": round(sum(r["thinking_calls"] for r in arm) /
+                                             max(1, sum(r["model_calls"] for r in arm)), 2),
+            "lessons_received_by_later_agents": [r["lessons_received"] for r in later],
+        }
     return out
 
 
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--agents", type=int, default=4)
-    p.add_argument("--sequences", type=int, default=3)
+    p.add_argument("--sequences", type=int, default=2)
     p.add_argument("--model", default=None)
     p.add_argument("--max-steps", type=int, default=30)
     p.add_argument("--out", default=None)
     a = p.parse_args()
     model = ChatModel(a.model)
     rows = []
-    for _ in range(a.sequences):           # interleaved, so drift hits both arms alike
-        for share in (True, False):
-            rows += sequence(model, share, a.agents, a.max_steps)
-    result = {"model": model.model, "task": TITLE, "summary": summary(rows), "rows": rows}
+    for _ in range(a.sequences):           # interleaved, so drift hits every arm alike
+        for share, thinking in ARMS:
+            rows += sequence(model, share, a.agents, a.max_steps, thinking)
+    result = {"model": model.model, "task": TITLE, "arms": [f"lessons_{'on' if s else 'off'}+thinking_{t}"
+                                                           for s, t in ARMS],
+              "summary": summary(rows), "rows": rows}
     print(json.dumps(result["summary"], indent=1))
     if a.out:
         Path(a.out).write_text(json.dumps(result, indent=1), encoding="utf-8")

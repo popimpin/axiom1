@@ -1,0 +1,702 @@
+{
+ "model": "nvidia/Nemotron-3_5-Lightning",
+ "task": "add(2, 3) returns -1; it should return 5. Fix calc.py.",
+ "arms": [
+  "lessons_on+thinking_auto",
+  "lessons_on+thinking_on",
+  "lessons_off+thinking_on",
+  "lessons_off+thinking_off"
+ ],
+ "summary": {
+  "lessons_on+thinking_auto": {
+   "witnessed": "8/8",
+   "false_claims": 0,
+   "later_agents_witnessed": "6/6",
+   "later_agents_median_tool_calls": 13.5,
+   "median_seconds": 23.1,
+   "median_completion_tokens": 1426.0,
+   "median_prompt_tokens": 61726.5,
+   "share_of_calls_thinking": 0.66,
+   "lessons_received_by_later_agents": [
+    1,
+    2,
+    3,
+    1,
+    2,
+    3
+   ]
+  },
+  "lessons_on+thinking_on": {
+   "witnessed": "8/8",
+   "false_claims": 3,
+   "later_agents_witnessed": "6/6",
+   "later_agents_median_tool_calls": 15.5,
+   "median_seconds": 24.15,
+   "median_completion_tokens": 1869.5,
+   "median_prompt_tokens": 53601.5,
+   "share_of_calls_thinking": 1.0,
+   "lessons_received_by_later_agents": [
+    1,
+    3,
+    5,
+    1,
+    2,
+    4
+   ]
+  },
+  "lessons_off+thinking_on": {
+   "witnessed": "8/8",
+   "false_claims": 2,
+   "later_agents_witnessed": "6/6",
+   "later_agents_median_tool_calls": 14.0,
+   "median_seconds": 27.85,
+   "median_completion_tokens": 1795.0,
+   "median_prompt_tokens": 72939.5,
+   "share_of_calls_thinking": 1.0,
+   "lessons_received_by_later_agents": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "lessons_off+thinking_off": {
+   "witnessed": "7/8",
+   "false_claims": 4,
+   "later_agents_witnessed": "5/6",
+   "later_agents_median_tool_calls": 19.5,
+   "median_seconds": 29.8,
+   "median_completion_tokens": 1185.0,
+   "median_prompt_tokens": 93221.5,
+   "share_of_calls_thinking": 0.0,
+   "lessons_received_by_later_agents": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ },
+ "rows": [
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 29.7,
+   "completion_tokens": 2196,
+   "prompt_tokens": 76201,
+   "thinking_calls": 20,
+   "model_calls": 20,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 19
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 21.1,
+   "completion_tokens": 1314,
+   "prompt_tokens": 50023,
+   "thinking_calls": 10,
+   "model_calls": 13,
+   "position": 1,
+   "lessons_in_record": 1,
+   "lessons_received": 1,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 21.1,
+   "completion_tokens": 1157,
+   "prompt_tokens": 53424,
+   "thinking_calls": 10,
+   "model_calls": 13,
+   "position": 2,
+   "lessons_in_record": 2,
+   "lessons_received": 2,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 28.6,
+   "completion_tokens": 1538,
+   "prompt_tokens": 101481,
+   "thinking_calls": 2,
+   "model_calls": 20,
+   "position": 3,
+   "lessons_in_record": 3,
+   "lessons_received": 3,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 19
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 22.9,
+   "completion_tokens": 1600,
+   "prompt_tokens": 46067,
+   "thinking_calls": 13,
+   "model_calls": 13,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 23.7,
+   "completion_tokens": 1681,
+   "prompt_tokens": 49902,
+   "thinking_calls": 13,
+   "model_calls": 13,
+   "position": 1,
+   "lessons_in_record": 1,
+   "lessons_received": 1,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 31.7,
+   "completion_tokens": 2265,
+   "prompt_tokens": 93176,
+   "thinking_calls": 19,
+   "model_calls": 19,
+   "position": 2,
+   "lessons_in_record": 2,
+   "lessons_received": 3,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 18
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 34.2,
+   "completion_tokens": 2058,
+   "prompt_tokens": 106073,
+   "thinking_calls": 19,
+   "model_calls": 19,
+   "position": 3,
+   "lessons_in_record": 4,
+   "lessons_received": 5,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 18
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 42.8,
+   "completion_tokens": 4122,
+   "prompt_tokens": 110397,
+   "thinking_calls": 27,
+   "model_calls": 27,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 26
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 23.9,
+   "completion_tokens": 1624,
+   "prompt_tokens": 48874,
+   "thinking_calls": 13,
+   "model_calls": 13,
+   "position": 1,
+   "lessons_in_record": 1,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 37.3,
+   "completion_tokens": 3720,
+   "prompt_tokens": 95420,
+   "thinking_calls": 23,
+   "model_calls": 23,
+   "position": 2,
+   "lessons_in_record": 2,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 22
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 24.7,
+   "completion_tokens": 1627,
+   "prompt_tokens": 62382,
+   "thinking_calls": 16,
+   "model_calls": 16,
+   "position": 3,
+   "lessons_in_record": 3,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 15
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 21.7,
+   "completion_tokens": 832,
+   "prompt_tokens": 60252,
+   "thinking_calls": 0,
+   "model_calls": 16,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 15
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 29.8,
+   "completion_tokens": 1197,
+   "prompt_tokens": 94373,
+   "thinking_calls": 0,
+   "model_calls": 22,
+   "position": 1,
+   "lessons_in_record": 1,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 18
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 22.0,
+   "completion_tokens": 674,
+   "prompt_tokens": 62621,
+   "thinking_calls": 0,
+   "model_calls": 16,
+   "position": 2,
+   "lessons_in_record": 3,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 15
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 33.4,
+   "completion_tokens": 1332,
+   "prompt_tokens": 115066,
+   "thinking_calls": 0,
+   "model_calls": 24,
+   "position": 3,
+   "lessons_in_record": 4,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 23
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 20.1,
+   "completion_tokens": 1294,
+   "prompt_tokens": 42375,
+   "thinking_calls": 12,
+   "model_calls": 12,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 11
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 19.5,
+   "completion_tokens": 719,
+   "prompt_tokens": 51356,
+   "thinking_calls": 2,
+   "model_calls": 13,
+   "position": 1,
+   "lessons_in_record": 1,
+   "lessons_received": 1,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 27.5,
+   "completion_tokens": 1982,
+   "prompt_tokens": 70029,
+   "thinking_calls": 14,
+   "model_calls": 17,
+   "position": 2,
+   "lessons_in_record": 2,
+   "lessons_received": 2,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 16
+  },
+  {
+   "arm": "lessons_on+thinking_auto",
+   "share": true,
+   "thinking": "auto",
+   "seconds": 25.1,
+   "completion_tokens": 1699,
+   "prompt_tokens": 70886,
+   "thinking_calls": 12,
+   "model_calls": 16,
+   "position": 3,
+   "lessons_in_record": 3,
+   "lessons_received": 3,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 15
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 20.7,
+   "completion_tokens": 996,
+   "prompt_tokens": 45894,
+   "thinking_calls": 13,
+   "model_calls": 13,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 24.6,
+   "completion_tokens": 2100,
+   "prompt_tokens": 54103,
+   "thinking_calls": 14,
+   "model_calls": 14,
+   "position": 1,
+   "lessons_in_record": 1,
+   "lessons_received": 1,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 13
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 22.1,
+   "completion_tokens": 1420,
+   "prompt_tokens": 53100,
+   "thinking_calls": 13,
+   "model_calls": 13,
+   "position": 2,
+   "lessons_in_record": 2,
+   "lessons_received": 2,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 12
+  },
+  {
+   "arm": "lessons_on+thinking_on",
+   "share": true,
+   "thinking": "on",
+   "seconds": 33.7,
+   "completion_tokens": 2093,
+   "prompt_tokens": 115129,
+   "thinking_calls": 21,
+   "model_calls": 21,
+   "position": 3,
+   "lessons_in_record": 3,
+   "lessons_received": 4,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 20
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 34.0,
+   "completion_tokens": 2320,
+   "prompt_tokens": 83497,
+   "thinking_calls": 20,
+   "model_calls": 20,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 19
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 30.7,
+   "completion_tokens": 1963,
+   "prompt_tokens": 83947,
+   "thinking_calls": 19,
+   "model_calls": 19,
+   "position": 1,
+   "lessons_in_record": 2,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 18
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 25.0,
+   "completion_tokens": 1587,
+   "prompt_tokens": 55912,
+   "thinking_calls": 14,
+   "model_calls": 14,
+   "position": 2,
+   "lessons_in_record": 4,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 13
+  },
+  {
+   "arm": "lessons_off+thinking_on",
+   "share": false,
+   "thinking": "on",
+   "seconds": 22.8,
+   "completion_tokens": 1337,
+   "prompt_tokens": 57449,
+   "thinking_calls": 14,
+   "model_calls": 14,
+   "position": 3,
+   "lessons_in_record": 5,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 13
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 29.8,
+   "completion_tokens": 1173,
+   "prompt_tokens": 92070,
+   "thinking_calls": 0,
+   "model_calls": 22,
+   "position": 0,
+   "lessons_in_record": 0,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 1,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "tool_calls": 21
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 33.6,
+   "completion_tokens": 2167,
+   "prompt_tokens": 140603,
+   "thinking_calls": 0,
+   "model_calls": 30,
+   "position": 1,
+   "lessons_in_record": 2,
+   "lessons_received": 0,
+   "witnessed": false,
+   "false_claims": 1,
+   "claims": [
+    "refuted"
+   ],
+   "tool_calls": 30
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 30.6,
+   "completion_tokens": 1743,
+   "prompt_tokens": 96990,
+   "thinking_calls": 0,
+   "model_calls": 22,
+   "position": 2,
+   "lessons_in_record": 3,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 21
+  },
+  {
+   "arm": "lessons_off+thinking_off",
+   "share": false,
+   "thinking": "off",
+   "seconds": 24.7,
+   "completion_tokens": 786,
+   "prompt_tokens": 79271,
+   "thinking_calls": 0,
+   "model_calls": 19,
+   "position": 3,
+   "lessons_in_record": 4,
+   "lessons_received": 0,
+   "witnessed": true,
+   "false_claims": 0,
+   "claims": [
+    "witnessed"
+   ],
+   "tool_calls": 18
+  }
+ ]
+}

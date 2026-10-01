@@ -103,6 +103,12 @@ def build(ax: Axiom, agent_id: str | None = None, caps=(), identify=None) -> Fas
         return await call(ctx, lambda me: {"task": ax.take_task(me, lease_seconds)})
 
     @mcp.tool()
+    async def release_task(task_id: str, ctx: Context, note: str = "") -> dict:
+        """Give a task back if you cannot finish it. Say in `note` what you tried and where you got stuck:
+        the next agent receives it (labelled as your unverified account)."""
+        return await call(ctx, lambda me: ax.release_task(me, task_id, note))
+
+    @mcp.tool()
     async def claim(statement: str, check_id: str, before_ref: str, after_ref: str, ctx: Context,
                     task_id: str | None = None, kind: str = "fix") -> dict:
         """Claim something about commit `after_ref` relative to `before_ref`, under a registered check.

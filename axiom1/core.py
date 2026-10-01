@@ -297,6 +297,39 @@ class Axiom:
                 self.db.execute("UPDATE tasks SET status='open', holder=NULL, lease_until=NULL WHERE id=?",
                                 (t["id"],))
                 self._event("lease_expired", t["holder"], t["id"])
+                self._write_abandoned(t["id"], t["holder"], "the lease expired without a verified claim", None)
+
+    def _write_abandoned(self, task_id, agent_id, why, note):
+        """An attempt that ended without a verified claim still teaches something. The server records
+        only what it observed (who, how long, which claims); the agent's own account, if it gave one,
+        is quoted and labelled declared: unverified, like everything an agent says."""
+        task = self.db.execute("SELECT title FROM tasks WHERE id=?", (task_id,)).fetchone()
+        took = self.db.execute("SELECT at FROM events WHERE kind='take_task' AND agent=? AND subject=? "
+                               "ORDER BY id DESC LIMIT 1", (agent_id, task_id)).fetchone()
+        held = f"{self.clock() - took['at']:.0f}s" if took else "an unknown time"
+        claims = [r["label"] for r in self.db.execute(
+            "SELECT label FROM claims WHERE agent=? AND task_id=? ORDER BY made_at", (agent_id, task_id))]
+        body = (f"{agent_id} held this task for {held} and stopped: {why}. "
+                f"Its claims on it: {', '.join(claims) or 'none'}.")
+        if note:
+            body += f" Its own account (declared, unverified): {' '.join(str(note).split())[:600]}"
+        self.db.execute("INSERT INTO lessons VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                        (uuid.uuid4().hex[:12], "abandoned", "", "", task["title"] if task else None,
+                         agent_id, "abandoned", why, "[]", body, self.clock()))
+
+    @_locked
+    def release_task(self, agent_id, task_id, note=""):
+        """Give a task back without a verified claim. Honest, so not counted as an expired lease; the
+        attempt still leaves a lesson for whoever takes the task next."""
+        t = self.db.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone()
+        if t is None or t["status"] != "leased" or t["holder"] != agent_id:
+            raise AxiomError("only the current lease holder can release a task")
+        with self.db:
+            self.db.execute("UPDATE tasks SET status='open', holder=NULL, lease_until=NULL WHERE id=?",
+                            (task_id,))
+            self._event("release_task", agent_id, task_id)
+            self._write_abandoned(task_id, agent_id, "released without a verified claim", note)
+        return {"id": task_id, "status": "open"}
 
     @_locked
     def take_task(self, agent_id, lease_s=DEFAULT_LEASE_S):
@@ -485,10 +518,11 @@ class Axiom:
                                "GROUP BY label, anchored", (agent_id,)).fetchall()
         n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
                                              and (anchored is None or r["anchored"] == anchored))
-        expired = self.db.execute("SELECT COUNT(*) FROM events WHERE kind='lease_expired' AND agent=?",
-                                  (agent_id,)).fetchone()[0]
+        events = lambda kind: self.db.execute("SELECT COUNT(*) FROM events WHERE kind=? AND agent=?",  # noqa: E731
+                                              (kind, agent_id)).fetchone()[0]
         return {"witnessed": n(WITNESSED, 1), "refuted": n(REFUTED), "pending": n(DECLARED),
-                "unanchored": n(WITNESSED, 0), "leases_expired": expired}
+                "unanchored": n(WITNESSED, 0), "leases_expired": events("lease_expired"),
+                "released": events("release_task")}
 
     # ---- briefing: what a joining agent needs, not the transcript ----------
     @_locked

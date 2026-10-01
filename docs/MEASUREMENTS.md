@@ -67,3 +67,29 @@ No measurable difference. Do not read it as "lessons do not help" either:
 
 A replay of one sequence with the database inspected after each agent confirmed lessons and skills
 are written on every verdict and are present for the next agent.
+
+### v2: lessons x thinking, with abandoned attempts recorded (2026-09-30)
+
+`docs/measurements/2026-09-30_lessons_x_thinking_v2.json`. Same task. Four arms, two sequences of four
+fresh agents each, arms interleaved. Since v1: abandoned attempts leave lessons, only anchored wins
+count, lessons received are recorded, and a thinking dial exists (`auto` = the harness turns thinking
+off when a task arrives with a verified skill, back on after a refutation). Thinking is switched with
+`chat_template_kwargs.enable_thinking`, the only control that turned Lightning's reasoning off.
+
+| arm | witnessed | false claims | median seconds | later agents' median tool calls | calls thinking |
+|---|---|---|---|---|---|
+| lessons on, thinking auto | **8/8** | **0** | **23.1** | **13.5** | 66% |
+| lessons on, thinking on | 8/8 | 3 | 24.2 | 15.5 | 100% |
+| lessons off, thinking on | 8/8 | 2 | 27.9 | 14.0 | 100% |
+| lessons off, thinking off | 7/8 | 4 | 29.8 | 19.5 | 0% |
+
+- Lessons reached later agents (1-5 each) only in the lessons-on arms, as designed.
+- Lessons + harness-decided thinking is the only arm with no false claim, and the fastest. No lessons
+  and no thinking is the worst on every measure: with no memory, thinking matters on new work.
+- **Small sample.** If all arms were equal, 0 of 8 runs with a false claim in one arm would happen by
+  chance roughly 7% of the time. A signal, not proof.
+- **Open:** in some `auto` runs the agent received a skill yet thought on most calls (e.g. 10 of 13);
+  in others the dial switched as designed (2 of 13). The dial's logic passes its tests; the cause in
+  the live runs is not yet known.
+- Prompt tokens dominate cost in this loop (median 54k-93k per run vs 1.2k-1.9k completion), because
+  the transcript is resent on every call.

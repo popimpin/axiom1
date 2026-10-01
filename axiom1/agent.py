@@ -161,17 +161,30 @@ class ChatModel:
         if not self.api_key:
             raise SystemExit("set NEBIUS_API_KEY")
         self.temperature, self.max_tokens = temperature, max_tokens
+        # None = the model's default. True/False is set per call by the runner's thinking dial; on
+        # Nemotron only chat_template_kwargs.enable_thinking switches reasoning (system-prompt toggles
+        # and reasoning_effort did not, measured 2026-09-30)
+        self.thinking = None
+        self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "thinking_calls": 0}
 
     def __call__(self, messages, tools):
         body = {"model": self.model, "messages": messages, "tools": tools,
                 "temperature": self.temperature, "max_tokens": self.max_tokens}
+        if self.thinking is not None:
+            body["chat_template_kwargs"] = {"enable_thinking": bool(self.thinking)}
         req = urllib.request.Request(f"{self.base_url}/chat/completions", data=json.dumps(body).encode(),
                                      headers={"Authorization": f"Bearer {self.api_key}",
                                               "Content-Type": "application/json"})
         for attempt in range(3):
             try:
                 with urllib.request.urlopen(req, timeout=180) as r:
-                    return json.load(r)["choices"][0]["message"]
+                    data = json.load(r)
+                u = data.get("usage") or {}
+                self.usage["calls"] += 1
+                self.usage["thinking_calls"] += self.thinking is not False
+                self.usage["prompt_tokens"] += u.get("prompt_tokens") or 0
+                self.usage["completion_tokens"] += u.get("completion_tokens") or 0
+                return data["choices"][0]["message"]
             except urllib.error.HTTPError as e:
                 if e.code < 500 and e.code != 429 or attempt == 2:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
@@ -192,12 +205,19 @@ def _openai_tool(name, description, parameters):
 
 
 async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=print, hub_url=None,
-                    token=None, shell=None):
+                    token=None, shell=None, thinking="auto"):
     """Run one agent until it gives a final answer or runs out of steps. Returns the transcript.
 
     With `hub_url` the agent connects to a hub over HTTP and is whoever `token` says it is; `db` and
     `caps` are ignored (the hub owns the database, the operator set the caps). Without it, the
-    runner starts a stdio server on `db` for local development."""
+    runner starts a stdio server on `db` for local development.
+
+    `thinking` is decided by the harness, not the model: "on", "off", or "auto". Auto thinks while
+    the work is new, stops once the task arrives with a verified skill (replay is cheap, and the
+    verdict still catches a skill that no longer fits), and thinks again after a refutation.
+
+    A run that ends while holding a task without a witnessed claim releases it, with a note the
+    runner writes from what it observed, so the attempt leaves a lesson instead of nothing."""
     raw_log = log
 
     def log(line):  # a console that cannot encode the model's text must not end the run
@@ -231,42 +251,116 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
         messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
                         agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "")},
                     {"role": "user", "content": "Begin."}]
-        nudges = 0
-        for step in range(max_steps):
-            reply = model(messages, tools)
-            calls = reply.get("tool_calls") or []
-            content = reply.get("content") or ""
-            messages.append({"role": "assistant", "content": content,
-                             **({"tool_calls": calls} if calls else {})})
-            if not calls and _looks_like_a_tool_call(content) and nudges < 3:
-                # the model wrote a call as text instead of making it: that is not a final answer
-                nudges += 1
-                log(f"[{agent_id}] tool call written as text, not made; asking again ({nudges}/3)")
-                messages.append({"role": "user", "content": "Your last message contains a tool call written "
-                                 "as text, so it was not executed. Make the call through the tool interface."})
-                continue
-            if not calls:
-                log(f"[{agent_id}] final: {content.strip()[:300]}")
-                return messages
-            for call in calls:
-                name = call["function"]["name"]
+        state = {"task": None, "witnessed": False, "think": thinking != "off"}
+        try:
+            return await _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log,
+                               state, thinking)
+        finally:
+            if state["task"] and not state["witnessed"]:
+                note = _attempt_summary(messages)
                 try:
-                    args = json.loads(call["function"].get("arguments") or "{}")
-                    if name in mcp_names:
-                        res = await session.call_tool(name, args)
-                        text = res.content[0].text if res.content else "{}"
-                        if res.isError:
-                            text = json.dumps({"error": text})
-                    elif name in {t["name"] for t in ws.tools()}:
-                        text = json.dumps(getattr(ws, name)(**args))
-                    else:
-                        text = json.dumps({"error": f"no tool named {name!r}"})
-                except Exception as e:  # a bad call is reported back to the model, not fatal
-                    text = json.dumps({"error": f"{type(e).__name__}: {e}"})
-                log(f"[{agent_id}] {name}({_short(call['function'].get('arguments'))}) -> {_short(text)}")
-                messages.append({"role": "tool", "tool_call_id": call["id"], "content": text})
-        log(f"[{agent_id}] stopped after {max_steps} steps")
-        return messages
+                    await session.call_tool("release_task", {"task_id": state["task"], "note": note})
+                    log(f"[{agent_id}] released task {state['task']} without a witnessed claim")
+                except Exception as e:  # releasing is best effort; the lease expiry is the backstop
+                    log(f"[{agent_id}] could not release task: {e}")
+
+
+def _attempt_summary(messages):
+    """What the runner saw this agent do: files written, commands run, verdicts, the last error.
+    Observed by the harness, but it lands in the record as the agent's declared account."""
+    wrote, ran, verdicts, last_error = [], [], [], ""
+    calls = {c["id"]: c for m in messages if m["role"] == "assistant" for c in m.get("tool_calls", [])}
+    for m in messages:
+        if m["role"] != "tool":
+            continue
+        call = calls.get(m.get("tool_call_id"), {}).get("function", {})
+        try:
+            args = json.loads(call.get("arguments") or "{}")
+            out = json.loads(m["content"])
+        except (ValueError, TypeError):
+            continue
+        name = call.get("name")
+        if isinstance(out, dict) and out.get("error"):
+            last_error = f"{name}: {str(out['error'])[:200]}"
+        if name == "write_file" and isinstance(args, dict):
+            wrote.append(args.get("path"))
+        elif name == "run" and isinstance(out, dict):
+            ran.append(f"{str(args.get('command'))[:60]} -> exit {out.get('exit')}")
+        elif name == "verify" and isinstance(out, dict) and out.get("label"):
+            verdicts.append(f"{out['label']}: {str(out.get('reason'))[:120]}")
+    parts = [f"wrote {', '.join(dict.fromkeys(p for p in wrote if p)) or 'nothing'}"]
+    if ran:
+        parts.append("ran " + "; ".join(ran[-3:]))
+    if verdicts:
+        parts.append("verdicts " + "; ".join(verdicts[-2:]))
+    if last_error:
+        parts.append("last error " + last_error)
+    return ". ".join(parts)
+
+
+async def _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log, state, thinking):
+    nudges = 0
+    for step in range(max_steps):
+        if hasattr(model, "thinking") and thinking != "default":
+            model.thinking = state["think"]
+        reply = model(messages, tools)
+        calls = reply.get("tool_calls") or []
+        content = reply.get("content") or ""
+        messages.append({"role": "assistant", "content": content,
+                         **({"tool_calls": calls} if calls else {})})
+        if not calls and _looks_like_a_tool_call(content) and nudges < 3:
+            # the model wrote a call as text instead of making it: that is not a final answer
+            nudges += 1
+            log(f"[{agent_id}] tool call written as text, not made; asking again ({nudges}/3)")
+            messages.append({"role": "user", "content": "Your last message contains a tool call written "
+                             "as text, so it was not executed. Make the call through the tool interface."})
+            continue
+        if not calls:
+            log(f"[{agent_id}] final: {content.strip()[:300]}")
+            return messages
+        for call in calls:
+            name = call["function"]["name"]
+            try:
+                args = json.loads(call["function"].get("arguments") or "{}")
+                if name in mcp_names:
+                    res = await session.call_tool(name, args)
+                    text = res.content[0].text if res.content else "{}"
+                    if res.isError:
+                        text = json.dumps({"error": text})
+                elif name in {t["name"] for t in ws.tools()}:
+                    text = json.dumps(getattr(ws, name)(**args))
+                else:
+                    text = json.dumps({"error": f"no tool named {name!r}"})
+            except Exception as e:  # a bad call is reported back to the model, not fatal
+                text = json.dumps({"error": f"{type(e).__name__}: {e}"})
+            log(f"[{agent_id}] {name}({_short(call['function'].get('arguments'))}) -> {_short(text)}")
+            messages.append({"role": "tool", "tool_call_id": call["id"], "content": text})
+            _observe(name, text, state, thinking, log, agent_id)
+    log(f"[{agent_id}] stopped after {max_steps} steps")
+    return messages
+
+
+def _observe(name, text, state, thinking, log, agent_id):
+    """Track what the harness needs: the task held, whether it was witnessed, and the thinking dial."""
+    try:
+        out = json.loads(text)
+    except ValueError:
+        return
+    if not isinstance(out, dict):
+        return
+    if name == "take_task" and isinstance(out.get("task"), dict):
+        state["task"] = out["task"]["id"]
+        if thinking == "auto":
+            has_skill = any(lesson.get("kind") == "skill" for lesson in out["task"].get("lessons", []))
+            state["think"] = not has_skill
+            log(f"[{agent_id}] thinking {'off: a verified skill exists' if has_skill else 'on: new work'}")
+    elif name == "verify" and out.get("label") == "witnessed":
+        state["witnessed"] = True
+    elif name == "verify" and out.get("label") == "refuted" and thinking == "auto" and not state["think"]:
+        state["think"] = True
+        log(f"[{agent_id}] thinking on: refuted")
+    elif name == "release_task" and out.get("status") == "open":
+        state["task"] = None
 
 
 def _short(s, n=160):

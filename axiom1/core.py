@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS memories (id INTEGER PRIMARY KEY AUTOINCREMENT, key T
 CREATE TABLE IF NOT EXISTS checks   (id TEXT PRIMARY KEY, repo TEXT NOT NULL, argv TEXT NOT NULL,
                                      test_paths TEXT NOT NULL, registered_by TEXT NOT NULL, at REAL NOT NULL,
                                      sandbox TEXT NOT NULL DEFAULT 'local', image TEXT, holdout TEXT,
-                                     base_ref TEXT);
+                                     base_ref TEXT, claim_kind TEXT NOT NULL DEFAULT 'fix');
 CREATE TABLE IF NOT EXISTS tasks    (id TEXT PRIMARY KEY, title TEXT NOT NULL, caps TEXT NOT NULL,
                                      posted_by TEXT NOT NULL, status TEXT NOT NULL, holder TEXT,
                                      lease_until REAL, at REAL NOT NULL);
@@ -63,6 +63,7 @@ MIGRATIONS = [
     ("claims", "kind", "TEXT NOT NULL DEFAULT 'fix'"),
     ("checks", "base_ref", "TEXT"),
     ("claims", "anchored", "INTEGER NOT NULL DEFAULT 1"),
+    ("checks", "claim_kind", "TEXT NOT NULL DEFAULT 'fix'"),
 ]
 
 # What a claim can assert, how the server checks it, and how a witnessed one is written down. The
@@ -70,6 +71,7 @@ MIGRATIONS = [
 CLAIM_KINDS = {
     "fix": ("fixed", verifier.fail_before_pass_after),
     "no_regression": ("no regression", verifier.no_regression),
+    "deliver": ("delivered", verifier.deliver),
 }
 
 
@@ -230,7 +232,7 @@ class Axiom:
     # ---- operator API: NOT exposed to agents ------------------------------
     @_locked
     def register_check(self, check_id, repo, argv, test_paths, registered_by="operator",
-                       sandbox="local", image=None, holdout=None, base=None):
+                       sandbox="local", image=None, holdout=None, base=None, claim_kind="fix"):
         """A human registers what "verified" means for a repo. Agents cannot add or edit checks.
         `sandbox` is where the command runs: "local" (development only) or "docker" (needs `image`).
         `holdout` is a directory of tests the agents never see, run against every fix. It must live
@@ -248,6 +250,10 @@ class Axiom:
             sandboxes.from_check(sandbox, image)
         except ValueError as e:
             raise AxiomError(str(e)) from None
+        if claim_kind not in CLAIM_KINDS:
+            raise AxiomError(f"unknown claim kind {claim_kind!r}")
+        if claim_kind == "deliver" and holdout is None:
+            raise AxiomError("a deliver check needs `holdout`: the directory holding the acceptance check")
         if holdout is not None:
             held, root = Path(holdout).resolve(), Path(repo).resolve()
             if not held.is_dir():
@@ -256,9 +262,9 @@ class Axiom:
                 raise AxiomError("held-out tests must live outside the repo, where agents cannot read them")
             holdout = str(held)
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?,?,?)",
+            self.db.execute("INSERT OR REPLACE INTO checks VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                             (check_id, str(repo), json.dumps(list(argv)), json.dumps(list(test_paths)),
-                             registered_by, self.clock(), sandbox, image, holdout, base))
+                             registered_by, self.clock(), sandbox, image, holdout, base, claim_kind))
             self._event("register_check", registered_by, check_id)
 
     @_locked
@@ -270,11 +276,12 @@ class Axiom:
                  "sandbox": sandboxes.from_check(r["sandbox"], r["image"]).describe(),
                  "holdout": r["holdout"] is not None,
                  "base": r["base_ref"],
+                 "claim_kind": r["claim_kind"],
                  "note": "a test path ending in / is a directory; put new test files inside it"
                          + ("; this check also runs held-out tests you cannot see, so fix the behaviour "
                             "in general, not just the case your test checks" if r["holdout"] else "")
                          + f"; only claims whose before_ref is on {r['base_ref']!r} count toward your record"}
-                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image, holdout, base_ref "
+                for r in self.db.execute("SELECT id, argv, test_paths, sandbox, image, holdout, base_ref, claim_kind "
                                          "FROM checks ORDER BY id")]
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
@@ -377,7 +384,7 @@ class Axiom:
         else:
             kind = "lesson"
             body = f"Tried: {c['statement']}. Changed {', '.join(changed) or 'nothing'}. Refuted: {reason}."
-            if not tests:
+            if not tests and c["kind"] == "fix":
                 body += " The commit contained no test under the check's test path."
             tail = (evidence.get("after") or {}).get("tail", "")
             if "still fails" in reason and tail:   # the agent's OWN test output; never held-out output
@@ -434,6 +441,10 @@ class Axiom:
         check = self.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone()
         if check is None:
             raise AxiomError(f"no registered check {check_id!r}")
+        if check["claim_kind"] == "deliver":
+            kind = "deliver"          # a deliver check judges delivered files, whatever the agent asked for
+        elif kind == "deliver":
+            raise AxiomError(f"check {check_id!r} judges code; claim kind 'fix' or 'no_regression'")
         if task_id is not None:
             self._expire_leases()
             t = self.db.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone()
@@ -507,6 +518,8 @@ class Axiom:
             self._write_lesson(c, check, label, reason, evidence, anchored)
             if "holdout_tail" in private:  # operator-only: the event log is not on the agent surface
                 self._event("holdout_failed", c["agent"], claim_id, tail=private["holdout_tail"])
+            if "check_output" in private:  # a deliver check's full output may hold the hidden truth
+                self._event("check_output", c["agent"], claim_id, tail=private["check_output"])
         return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence, "counts": anchored}
 
     # ---- track record: honesty and reliability are separate ----------------

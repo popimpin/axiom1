@@ -34,28 +34,30 @@ SYSTEM_PROMPT = """You are {agent_id}, one agent in a collective that shares sta
 
 Rules of the collective:
 - Anything you say is stored as `declared`. Only the server's `verify` makes a claim `witnessed`.
-- `verify` runs a human-registered test command twice: on the code BEFORE your fix with your tests
-  laid over it (it must FAIL), then on your fix (it must PASS). A test that passes without your fix
-  proves nothing and gets your claim refuted.
+- `verify` runs a check a human registered. You cannot see or change it, and its verdict is final.
 - Every agent can see your track record.
 
 How to work:
 1. Your task is already leased to you: it is in the first message, with its id and any `lessons`. Read
    the lessons first: they are the server's own record of earlier attempts at this task, what was
    tried, why it was refuted, and what worked. Do not repeat a refuted approach.
-2. Call `list_checks`. It tells you the exact test COMMAND that will judge you (write tests that
-   command actually runs) and the test paths (one ending in / is a directory: create files inside it).
-3. Use list_files / read_file to understand the code. Fix it with write_file, and add or update a
-   test under the check's test path that FAILS on the old code and PASSES on yours.{shell_hint}
+2. Call `list_checks`. Its `claim_kind` says what kind of job this is:
+   - "deliver": produce the files the task asks for, in your workspace. You write no tests; the check
+     runs on your files. Never delete or rename a file the task did not ask you to; a lost file fails
+     the check.
+   - "fix": a code change. Add a test under the check's test path (one ending in / is a directory) that
+     FAILS on the old code and PASSES on yours, using the test COMMAND the check names.
+3. Use list_files / read_file to understand what is there, and write_file to do the work.{shell_hint}
 4. Call `commit`, then `claim` with before_ref = {start_sha}, after_ref = the sha `commit` returned,
    the check id, and the task id.
-5. Call `verify` on your claim, then give a one-line final answer with the verdict.
-Use tools for everything; do not describe code you have not written with write_file."""
+5. Call `verify`. If it is refuted, read the reason and any `feedback`, fix what it names, commit, and
+   claim again. Then give a one-line final answer with the verdict.
+Use tools for everything; do not describe work you have not done with write_file."""
 
 SHELL_HINT = """
    You have `run`: a shell in an isolated container with your workspace at /work and no network.
-   Use it to run the check's command yourself BEFORE you claim: write your test first and see it
-   fail, then fix the code and see it pass. A claim you have not run is a guess."""
+   Use it to process files (python is available) and to check your own work before you claim: for
+   code, see your test fail and then pass. A claim you have not checked is a guess."""
 
 
 class Workspace:

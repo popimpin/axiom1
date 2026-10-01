@@ -203,6 +203,118 @@ def _verify(repo, before_sha, after_sha, argv, test_paths, sandbox, holdout):
             evidence, private)
 
 
+CHECK_DIR = ".axiom_check"
+
+
+def _install_check(tree, holdout):
+    """Put the operator's acceptance check into a tree at verification time. Whatever the agent left
+    at that path is removed first, so a planted 'check' never runs."""
+    target = Path(tree) / CHECK_DIR
+    if target.is_dir():
+        shutil.rmtree(target)
+    elif target.exists():
+        target.unlink()
+    shutil.copytree(holdout, target)
+
+
+def _public(output):
+    """Only lines the check marks PUBLIC: reach the agent. The rest may hold the hidden truth."""
+    return [line[len("PUBLIC:"):].strip() for line in output.splitlines() if line.startswith("PUBLIC:")][:20]
+
+
+def _blobs(repo, sha):
+    """{path: content hash} for every file at `sha`."""
+    out = {}
+    for line in _git(repo, "ls-tree", "-r", sha).stdout.splitlines():
+        meta, path = line.split("\t", 1)
+        out[path] = meta.split()[2]
+    return out
+
+
+def universal_guards(repo, before_sha, after_sha, allow_deleting=()):
+    """Guards that hold for EVERY delivery, whatever the task: what lets a person stop checking.
+
+    - nothing lost: each file that existed before still exists at its path, or (moved) its exact
+      content exists somewhere after. Editing in place is fine; vanishing is not, unless the task's
+      check allows deleting that path (`allow_deleting` globs).
+    - well-formed: every added or changed .csv parses with one column count; every .json loads.
+    Returns a list of problems, each phrased so the agent can act on it."""
+    import csv
+    import fnmatch
+    import json as _json
+    before, after = _blobs(repo, before_sha), _blobs(repo, after_sha)
+    after_contents = set(after.values())
+    problems = []
+    lost = [p for p, h in before.items() if p not in after and h not in after_contents
+            and not any(fnmatch.fnmatch(p, g) for g in allow_deleting)]
+    if lost:
+        problems.append(f"files lost (deleted, and their content is nowhere else): {', '.join(sorted(lost)[:10])}")
+    for path, h in after.items():
+        if before.get(path) == h:
+            continue
+        low = path.lower()
+        if not (low.endswith(".csv") or low.endswith(".json")):
+            continue
+        data = _git(repo, "cat-file", "-p", h, text=False).stdout[:5_000_000]
+        try:
+            text = data.decode("utf-8-sig")
+            if low.endswith(".json"):
+                _json.loads(text)
+            else:
+                rows = [r for r in csv.reader(io.StringIO(text)) if r]
+                widths = {len(r) for r in rows}
+                if len(widths) > 1:
+                    problems.append(f"{path}: rows have different numbers of columns {sorted(widths)}")
+        except (UnicodeDecodeError, ValueError, csv.Error) as e:
+            problems.append(f"{path}: does not parse ({type(e).__name__})")
+    return problems
+
+
+def deliver(repo, before_sha, after_sha, argv, test_paths, sandbox=None, holdout=None):
+    """'I did the job': the deliverable is files (a spreadsheet, a tidied folder, a report), not code.
+    Returns (label, reason, evidence, private).
+
+    The operator's acceptance check (the holdout directory, installed at `.axiom_check/` only at
+    verification time) runs twice:
+
+      1. on BEFORE's files  -> must FAIL (the job was not already done)
+      2. on AFTER's files   -> must PASS
+
+    The agent writes no tests. The check should run isolated (`python -I`) and read the work as data,
+    so nothing the agent leaves behind runs as code inside it. Its output is private except lines it
+    marks `PUBLIC:`, which come back to the agent as feedback without revealing the hidden truth."""
+    sandbox = sandbox or LocalSandbox()
+    evidence, private = {"sandbox": sandbox.describe(), "kind": "deliver"}, {}
+    if not holdout:
+        return "refuted", "a deliver check needs the operator's acceptance check; none is registered", \
+            evidence, private
+    settings = {}
+    if (Path(holdout) / "guards.json").exists():
+        import json as _json
+        settings = _json.loads((Path(holdout) / "guards.json").read_text(encoding="utf-8"))
+    problems = universal_guards(repo, before_sha, after_sha, settings.get("allow_deleting", ()))
+    evidence["guards"] = {"checked": ["nothing lost", "well-formed csv/json"], "problems": problems}
+    if problems:
+        return "refuted", "universal guard: " + "; ".join(problems), evidence, private
+    with tempfile.TemporaryDirectory() as before_dir, tempfile.TemporaryDirectory() as after_dir:
+        _export(repo, before_sha, before_dir)
+        _export(repo, after_sha, after_dir)
+        _install_check(before_dir, holdout)
+        _install_check(after_dir, holdout)
+        before = sandbox.run(before_dir, argv)
+        after = sandbox.run(after_dir, argv)
+    evidence["before"] = {"sha": before_sha, "exit": before.returncode, "feedback": _public(before.output)}
+    evidence["after"] = {"sha": after_sha, "exit": after.returncode, "feedback": _public(after.output)}
+    private["check_output"] = after.output[-2000:]
+    if before.returncode == 0:
+        return ("refuted", "the acceptance check already passes on the files before your change, so the change "
+                           "proves nothing", evidence, private)
+    if after.returncode != 0:
+        return "refuted", "the delivered files do not pass the acceptance check", evidence, private
+    return "witnessed", "the acceptance check failed before the work and passes on what was delivered", \
+        evidence, private
+
+
 def _replace_tests(tree, repo, sha, test_paths):
     """Swap `tree`'s tests for the ones at `sha`: the paths are emptied first, so tests deleted
     since then come back and tests added since then are gone."""

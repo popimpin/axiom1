@@ -1,0 +1,544 @@
+{
+ "model": "qwen3:1.7b",
+ "mode": "form, one item at a time",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_team.txt: duration 'Same length': unrecognized or vague duration 'Same length'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'",
+    "inbox/08_re_team.txt: duration '45 minutes' is not in this file; copy it exactly",
+    "inbox/08_re_team.txt: duration '45 minutes' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/08_re_team.txt: duration '45 minutes' is not in this file; copy it exactly",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "time": "1:00 pm",
+     "date": "Friday May 15",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "time": "9:30am",
+     "date": "Thursday May 7",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/03_call.txt",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "3:00 pm",
+     "date": "Tuesday May 5",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/04_kids'.txt",
+     "date": "Monday May 11",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "11:00"
+    },
+    {
+     "file": "inbox/05_coffee.txt",
+     "duration": "",
+     "kind": "not_agreed",
+     "my_reply": "Sorry, I can't make that, I'm away that week.",
+     "refers_to": "",
+     "date": "",
+     "time": ""
+    },
+    {
+     "file": "inbox/06_car.txt",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "1pm",
+     "date": "Sunday May 24",
+     "duration": "about 45 minutes",
+     "kind": "agreed"
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-15",
+     "start": "13:00",
+     "end": "14:00",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "11:00",
+     "end": "11:30",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-24",
+     "start": "13:00",
+     "end": "13:45",
+     "title": "Car service"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 7236,
+   "completion_tokens": 646,
+   "seconds": 18.1
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: duration '6pm': unrecognized or vague duration '6pm'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'",
+    "inbox/99_newsletter.txt: duration '6pm': unrecognized or vague duration '6pm'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'",
+    "inbox/99_newsletter.txt: duration '6pm': unrecognized or vague duration '6pm'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'"
+   ],
+   "reason": "inbox/99_newsletter.txt: duration '6pm': unrecognized or vague duration '6pm'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'",
+   "model_calls": 11,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "10:00",
+     "date": "Wednesday May 20",
+     "duration": "about 45 minutes",
+     "kind": "agreed"
+    },
+    {
+     "file": "inbox/02_dentist.txt",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "15:00",
+     "date": "Tuesday May 19",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/03_kids'.txt",
+     "date": "Monday May 18",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "9:30 am"
+    },
+    {
+     "file": "inbox/04_coffee.txt",
+     "date": "Saturday May 9",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "9:30 am"
+    },
+    {
+     "file": "inbox/05_call.txt",
+     "duration": "",
+     "kind": "not_agreed",
+     "my_reply": "Sorry, I can't make that, I'm away that week.",
+     "refers_to": "",
+     "time": "",
+     "date": ""
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "15:30",
+     "date": "Monday May 11",
+     "duration": "about 45 minutes",
+     "kind": "agreed"
+    },
+    {
+     "file": "inbox/08_re_dentist.txt",
+     "my_reply": "No problem, moved.",
+     "refers_to": "inbox/02_dentist.txt",
+     "time": "5:00 pm",
+     "date": "Wednesday May 20",
+     "duration": "",
+     "kind": "moved_and_agreed"
+    },
+    {
+     "file": "inbox/09_cancel_kids'.txt",
+     "date": "",
+     "duration": "",
+     "kind": "cancelled_by_them",
+     "my_reply": "I'll be in touch.",
+     "refers_to": "inbox/03_kids'.txt",
+     "time": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-20",
+     "start": "10:00",
+     "end": "10:45",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-20",
+     "start": "17:00",
+     "end": "17:45",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-09",
+     "start": "09:30",
+     "end": "10:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "15:30",
+     "end": "16:15",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8773,
+   "completion_tokens": 814,
+   "seconds": 23.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_call.txt: duration 'Same length': unrecognized or vague duration 'Same length'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'",
+    "inbox/08_re_call.txt: duration '1h30' is not in this file; copy it exactly",
+    "inbox/08_re_call.txt: duration '1h30' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/08_re_call.txt: duration '1h30' is not in this file; copy it exactly",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "date": "Saturday May 16",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "11:30am"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "time": "9:00 am",
+     "date": "Friday May 22",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/03_car.txt",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "1:00 pm",
+     "date": "Saturday May 16",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/04_coffee.txt",
+     "time": "9am",
+     "date": "Friday May 8",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/05_budget.txt",
+     "date": "",
+     "duration": "",
+     "kind": "not_agreed",
+     "my_reply": "Sorry, I can't make that, I'm away that week.",
+     "refers_to": "",
+     "time": ""
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "15:00",
+     "date": "Monday May 11",
+     "duration": "about 45 minutes"
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-16",
+     "start": "11:30",
+     "end": "12:30",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "11:00",
+     "end": "12:00",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "09:00",
+     "end": "10:00",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "15:00",
+     "end": "15:45",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 7215,
+   "completion_tokens": 632,
+   "seconds": 17.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 10,
+   "corrections": [
+    "inbox/09_cancel_dentist.txt: my_reply \"I'm afraid we'll be unable to attend the dentist appointment.\" is not in this file; copy it exactly",
+    "inbox/09_cancel_dentist.txt: my_reply \"I'm afraid we'll be unable to attend the dentist appointment.\" is not in this file; copy it exactly",
+    "inbox/09_cancel_dentist.txt: my_reply \"I'm afraid we'll be unable to attend the dentist appointment.\" is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/09_cancel_dentist.txt: my_reply \"I'm afraid we'll be unable to attend the dentist appointment.\" is not in this file; copy it exactly",
+   "model_calls": 10,
+   "answers": [
+    {
+     "file": "inbox/01_call.txt",
+     "refers_to": "",
+     "time": "1:30pm",
+     "date": "Sunday May 24",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then."
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "1pm",
+     "date": "Thursday May 7",
+     "duration": "about 30 minutes",
+     "kind": "agreed"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "time": "14:00",
+     "date": "Monday May 11",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/04_budget.txt",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "09:00",
+     "date": "Monday May 11",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/05_coffee.txt",
+     "kind": "not_agreed",
+     "my_reply": "Sorry, I can't make that, I'm away that week.",
+     "refers_to": "",
+     "time": "",
+     "date": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "16:30",
+     "date": "Sunday May 17"
+    },
+    {
+     "file": "inbox/08_re_team.txt",
+     "date": "Friday May 8",
+     "duration": "",
+     "kind": "moved_and_agreed",
+     "my_reply": "No problem, moved.",
+     "refers_to": "inbox/02_team.txt",
+     "time": "3pm"
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-24",
+     "start": "13:30",
+     "end": "14:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "09:00",
+     "end": "10:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 7789,
+   "completion_tokens": 716,
+   "seconds": 19.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_dentist.txt: duration 'Same length': unrecognized or vague duration 'Same length'; expected e.g. '45 minutes', '1.5 hours', '1h30', 'half an hour'",
+    "inbox/08_re_dentist.txt: duration '45 minutes' is not in this file; copy it exactly",
+    "inbox/08_re_dentist.txt: duration '45 minutes' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/08_re_dentist.txt: duration '45 minutes' is not in this file; copy it exactly",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_budget.txt",
+     "time": "16:00",
+     "date": "Friday May 8",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/02_dentist.txt",
+     "date": "Thursday May 7",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "10:00 am"
+    },
+    {
+     "file": "inbox/03_call.txt",
+     "date": "Sunday May 24",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "4:30pm"
+    },
+    {
+     "file": "inbox/04_team.txt",
+     "date": "Sunday May 24",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": "",
+     "time": "09:00"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "kind": "not_agreed",
+     "my_reply": "Sorry, I can't make that, I'm away that week.",
+     "refers_to": "",
+     "time": "",
+     "date": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "time": "15:30",
+     "date": "Saturday May 9",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "my_reply": "Sounds good, see you then.",
+     "refers_to": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-08",
+     "start": "16:00",
+     "end": "16:30",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "12:00",
+     "end": "12:30",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-24",
+     "start": "09:00",
+     "end": "10:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-09",
+     "start": "15:30",
+     "end": "16:15",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 7232,
+   "completion_tokens": 659,
+   "seconds": 17.9
+  }
+ ]
+}

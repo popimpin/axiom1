@@ -1,0 +1,567 @@
+{
+ "model": "qwen3:1.7b",
+ "mode": "form, one item at a time",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: No form was submitted. Call `submit` with the form."
+   ],
+   "reason": "inbox/99_newsletter.txt: No form was submitted. Call `submit` with the form.",
+   "model_calls": 11,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:00 pm",
+     "date": "Friday May 15",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "date": "Thursday May 7",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "9:30am"
+    },
+    {
+     "file": "inbox/03_call.txt",
+     "date": "Tuesday May 5",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "3:00 pm"
+    },
+    {
+     "file": "inbox/04_kids'.txt",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:00",
+     "date": "Monday May 11"
+    },
+    {
+     "file": "inbox/05_coffee.txt",
+     "date": "",
+     "duration": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": ""
+    },
+    {
+     "file": "inbox/06_car.txt",
+     "date": "Sunday May 24",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1pm"
+    },
+    {
+     "file": "inbox/08_re_team.txt",
+     "date": "Friday May 8",
+     "duration": "",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_team.txt",
+     "time": "11:30 am"
+    },
+    {
+     "file": "inbox/09_cancel_call.txt",
+     "time": "",
+     "date": "",
+     "duration": "",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_call.txt"
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-15",
+     "start": "13:00",
+     "end": "14:00",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "11:00",
+     "end": "11:30",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-24",
+     "start": "13:00",
+     "end": "13:45",
+     "title": "Car service"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8318,
+   "completion_tokens": 645,
+   "seconds": 19.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: No form was submitted. Call `submit` with the form."
+   ],
+   "reason": "inbox/99_newsletter.txt: No form was submitted. Call `submit` with the form.",
+   "model_calls": 11,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "date": "Wednesday May 20",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10:00"
+    },
+    {
+     "file": "inbox/02_dentist.txt",
+     "date": "Tuesday May 19",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:00"
+    },
+    {
+     "file": "inbox/03_kids'.txt",
+     "date": "Monday May 18",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "9:30 am"
+    },
+    {
+     "file": "inbox/04_coffee.txt",
+     "date": "Saturday May 9",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "9:30 am"
+    },
+    {
+     "file": "inbox/05_call.txt",
+     "date": "",
+     "duration": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": ""
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "date": "Monday May 11",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:30"
+    },
+    {
+     "file": "inbox/08_re_dentist.txt",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_dentist.txt",
+     "time": "5:00 pm",
+     "date": "Wednesday May 20",
+     "duration": ""
+    },
+    {
+     "file": "inbox/09_cancel_kids'.txt",
+     "refers_to": "inbox/03_kids'.txt",
+     "time": "",
+     "date": "",
+     "duration": "",
+     "kind": "cancelled_by_them"
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-20",
+     "start": "10:00",
+     "end": "10:45",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-20",
+     "start": "17:00",
+     "end": "17:45",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-09",
+     "start": "09:30",
+     "end": "10:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "15:30",
+     "end": "16:15",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8312,
+   "completion_tokens": 643,
+   "seconds": 19.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed"
+   ],
+   "reason": "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+   "model_calls": 11,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "date": "Saturday May 16",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:30am"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "9:00 am",
+     "date": "Friday May 22"
+    },
+    {
+     "file": "inbox/03_car.txt",
+     "date": "Saturday May 16",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:00 pm"
+    },
+    {
+     "file": "inbox/04_coffee.txt",
+     "date": "Friday May 8",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "9am"
+    },
+    {
+     "file": "inbox/05_budget.txt",
+     "duration": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": "",
+     "date": ""
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "date": "Monday May 11",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:00"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "time": "11am",
+     "date": "Saturday May 23",
+     "duration": "",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_call.txt"
+    },
+    {
+     "file": "inbox/09_cancel_car.txt",
+     "refers_to": "inbox/03_car.txt",
+     "time": "",
+     "date": "",
+     "duration": "",
+     "kind": "cancelled_by_them"
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-16",
+     "start": "11:30",
+     "end": "12:30",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "11:00",
+     "end": "12:00",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "09:00",
+     "end": "10:00",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "15:00",
+     "end": "15:45",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8309,
+   "completion_tokens": 657,
+   "seconds": 19.3
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: No form was submitted. Call `submit` with the form."
+   ],
+   "reason": "inbox/99_newsletter.txt: No form was submitted. Call `submit` with the form.",
+   "model_calls": 11,
+   "answers": [
+    {
+     "file": "inbox/01_call.txt",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:30pm",
+     "date": "Sunday May 24"
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "date": "Thursday May 7",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1pm"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "refers_to": "",
+     "time": "14:00",
+     "date": "Monday May 11",
+     "duration": "about 30 minutes",
+     "kind": "agreed"
+    },
+    {
+     "file": "inbox/04_budget.txt",
+     "refers_to": "",
+     "time": "09:00",
+     "date": "Monday May 11",
+     "duration": "about 60 minutes",
+     "kind": "agreed"
+    },
+    {
+     "file": "inbox/05_coffee.txt",
+     "date": "",
+     "duration": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": ""
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "time": "16:30",
+     "date": "Sunday May 17",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "refers_to": ""
+    },
+    {
+     "file": "inbox/08_re_team.txt",
+     "date": "Friday May 8",
+     "duration": "",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_team.txt",
+     "time": "3pm"
+    },
+    {
+     "file": "inbox/09_cancel_dentist.txt",
+     "date": "",
+     "duration": "",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_dentist.txt",
+     "time": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-24",
+     "start": "13:30",
+     "end": "14:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "09:00",
+     "end": "10:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8280,
+   "completion_tokens": 641,
+   "seconds": 19.3
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+    "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed"
+   ],
+   "reason": "inbox/99_newsletter.txt: an agreed meeting needs its duration: pick it from the options this email gives. If I did not say yes in this email, the kind is not_agreed",
+   "model_calls": 11,
+   "answers": [
+    {
+     "file": "inbox/01_budget.txt",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "16:00",
+     "date": "Friday May 8"
+    },
+    {
+     "file": "inbox/02_dentist.txt",
+     "date": "Thursday May 7",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10:00 am"
+    },
+    {
+     "file": "inbox/03_call.txt",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "4:30pm",
+     "date": "Sunday May 24"
+    },
+    {
+     "file": "inbox/04_team.txt",
+     "date": "Sunday May 24",
+     "duration": "about 60 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "09:00"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "date": "",
+     "duration": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": ""
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 45 minutes",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:30",
+     "date": "Saturday May 9"
+    },
+    {
+     "file": "inbox/08_re_dentist.txt",
+     "duration": "",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_dentist.txt",
+     "time": "12:00 pm",
+     "date": "Friday May 8"
+    },
+    {
+     "file": "inbox/09_cancel_call.txt",
+     "duration": "",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_call.txt",
+     "time": "",
+     "date": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-08",
+     "start": "16:00",
+     "end": "16:30",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "12:00",
+     "end": "12:30",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-24",
+     "start": "09:00",
+     "end": "10:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-09",
+     "start": "15:30",
+     "end": "16:15",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8309,
+   "completion_tokens": 657,
+   "seconds": 19.5
+  }
+ ]
+}

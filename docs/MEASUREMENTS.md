@@ -247,3 +247,33 @@ For reference: Lightning 0/5 and Super 0/5 on Nebius, without engines.
   calendars were all refuted by the hidden check.
 - So on this form, size mattered. But the failures are about the form's shape (nine emails in one list,
   meetings linked by retyped names), which is the next thing to change, not a verdict on small models.
+
+## The presentation, not the model: one email at a time (2026-10-01)
+
+Adrian: *"so then its how the task is presnted to the small model"*. Same 5 calendar inboxes, Bee, thinking
+off. Each version changed only how the task was shown to the model, one failure at a time, each found by
+reading the model's actual answer (rows keep answers and truth from v5 on).
+
+| version | change | qwen3:1.7b | ornith:9b | Ornith 35B |
+|---|---|---|---|---|
+| whole-inbox form | all 9 emails in one form | 0/5 | 1/5 | 4/5 |
+| v4 | one email per call; replies pick the earlier email from a menu; titles from subjects | 0/5 | | |
+| v5 | blank fields; a move's duration only if that email states one | 2/5 | | |
+| v6 | the whole job is background, "your only part: this one file" | 1/5 (partial) | 1/2 (partial) | |
+| v7 | the email's own dates/times/durations are the menu; labels about agreeing | 0/4 (partial) | | |
+| v8 | the model copies "my reply" | 0/4 (partial) | | |
+| **v9** | **the harness reads who wrote what; the agreed meeting with the same subject is marked** | **4/5** | **4/5** | **5/5** |
+
+v9 per model: 1.7B 49 calls, 40k tokens, **20.5 s per inbox**; 9B 46 calls, 48k tokens, 94 s; 35B 51 calls,
+52k tokens, 75 s. The open-ended agent with the manual: 5/5, 856k tokens, 3.5 min per inbox.
+
+- **A 1.7B model ties the 35B on the form and runs 4x faster.** It went 0/5 on every version until the
+  presentation stopped asking it to do what is not reading: keeping nine emails straight, retyping names,
+  reformatting times, telling who wrote a line.
+- **What each model still misses is a reading.** 1.7B: "Sorry, I can't make that" filed as agreed. 9B: a
+  cancellation filed as not_agreed (the context said "My reply: none", and a cancellation needs none: the
+  label should say so). Both were refuted by the hidden check; nothing wrong was accepted, in any version.
+- **The 35B made more presentation slips than the 1.7B** (converting a date to 2025-05-16, a time in the
+  date field); the menus caught them as corrections.
+- Every version's fixes were found in the model's own output. Several were the harness being pedantic
+  (spacing, a field that did not apply, a field left out), not the model being wrong.

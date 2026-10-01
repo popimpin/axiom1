@@ -388,6 +388,483 @@ TASKS = [
 
 
 # ---------------------------------------------------------------------------------------------------
+# 5. reconcile a budget against the bank statement
+# ---------------------------------------------------------------------------------------------------
+PAYEES = ["Corner Cafe", "Metro Transit", "Hardware World", "Green Grocer", "City Power & Light", "Netstream",
+          "Page Turners Books", "Fuel Stop", "Pharmacy Plus", "Gym Central"]
+
+
+def bank_data(rng):
+    days = sorted(rng.sample(range(1, 29), 14))
+    tx = [{"day": d, "payee": rng.choice(PAYEES), "amount": round(rng.uniform(5, 250), 2)} for d in days]
+    missing = rng.sample(range(len(tx)), 3)
+    mismatch = rng.choice([i for i in range(len(tx)) if i not in missing])
+    extra_day = rng.choice([d for d in range(1, 29) if d not in days])
+    statement = [["Date", "Description", "Amount"]]
+    for t in tx:
+        statement.append([f"2026-03-{t['day']:02d}", f"POS {rng.randint(1000, 9999)} {t['payee'].upper()}",
+                          f"-{t['amount']:.2f}"])
+    ledger, truth = [["Date", "Payee", "Amount"]], []
+    for i, t in enumerate(tx):
+        if i in missing:
+            truth.append({"date": f"2026-03-{t['day']:02d}", "issue": "missing_from_budget", "amount": t["amount"]})
+            continue
+        amount = t["amount"]
+        if i == mismatch:
+            amount = round(amount * 1.1 + 1, 2)
+            truth.append({"date": f"2026-03-{t['day']:02d}", "issue": "amount_mismatch", "amount": t["amount"]})
+        ledger.append([f"03/{t['day']:02d}/2026", t["payee"], f"{amount:.2f}"])
+    cash = round(rng.uniform(5, 60), 2)
+    ledger.append([f"03/{extra_day:02d}/2026", "Farmers Market (cash)", f"{cash:.2f}"])
+    truth.append({"date": f"2026-03-{extra_day:02d}", "issue": "not_on_statement", "amount": cash})
+    ledger = [ledger[0]] + sorted(ledger[1:], key=lambda r: r[0])
+
+    def to_csv(rows):
+        buf = io.StringIO()
+        csv.writer(buf).writerows(rows)
+        return buf.getvalue()
+    return {"statement.csv": to_csv(statement), "ledger.csv": to_csv(ledger)}, truth
+
+
+BANK_CHECK = r'''
+import csv, json, re, sys
+from pathlib import Path
+truth = json.loads(Path(".axiom_check/truth.json").read_text())
+out = Path("reconciliation.csv")
+if not out.exists():
+    print("PUBLIC: reconciliation.csv was not found in the workspace"); sys.exit(1)
+rows = [{k.strip().lower(): (v or "").strip() for k, v in r.items()} for r in csv.DictReader(out.open(encoding="utf-8-sig"))]
+if not rows or not {"date", "description", "amount", "issue"} <= set(rows[0]):
+    print("PUBLIC: reconciliation.csv needs the columns date, description, amount, issue"); sys.exit(1)
+def iso(s):
+    if m := re.match(r"(\d{4})-(\d{2})-(\d{2})$", s): return s
+    if m := re.match(r"(\d{1,2})/(\d{1,2})/(\d{4})$", s): return f"{m.group(3)}-{int(m.group(1)):02d}-{int(m.group(2)):02d}"
+    return s
+got = {(iso(r["date"]), r["issue"].lower()): r for r in rows}
+want = {(t["date"], t["issue"]): t for t in truth}
+problems = []
+names = {"missing_from_budget": "on the statement but missing from the budget",
+         "not_on_statement": "in the budget but not on the statement", "amount_mismatch": "with amounts that differ"}
+for issue, words in names.items():
+    lost = [k for k in want if k[1] == issue and k not in got]
+    if lost:
+        problems.append(f"PUBLIC: {len(lost)} difference(s) {words} are not listed (issue = {issue})")
+extra = [k for k in got if k not in want]
+if extra:
+    problems.append(f"PUBLIC: {len(extra)} listed row(s) are not real differences, or have the wrong issue")
+def money(s):
+    try: return round(abs(float(s.replace("$", "").replace(",", ""))), 2)
+    except ValueError: return None
+bad = [k for k, t in want.items() if k in got and t["issue"] != "amount_mismatch" and money(got[k]["amount"]) != t["amount"]]
+if bad:
+    problems.append(f"PUBLIC: {len(bad)} listed difference(s) have the wrong amount")
+if problems:
+    print("\n".join(problems)); print("expected", sorted(want)); sys.exit(1)
+print("PUBLIC: every difference between the budget and the statement is listed, and nothing else")
+'''
+
+
+def bank_gold(files, truth):
+    stmt = [(r["Date"], r["Description"], abs(float(r["Amount"]))) for r in csv.DictReader(io.StringIO(files["statement.csv"]))]
+    ledg = []
+    for r in csv.DictReader(io.StringIO(files["ledger.csv"])):
+        m, d, y = r["Date"].split("/")
+        ledg.append((f"{y}-{m}-{d}", r["Payee"], float(r["Amount"])))
+    out, used = [], set()
+    for date, desc, amt in stmt:
+        same = [i for i, l in enumerate(ledg) if l[0] == date and i not in used]
+        exact = [i for i in same if abs(ledg[i][2] - amt) < 0.005]
+        if exact:
+            used.add(exact[0])
+        elif same:
+            used.add(same[0])
+            out.append([date, desc, f"{amt:.2f}", "amount_mismatch"])
+        else:
+            out.append([date, desc, f"{amt:.2f}", "missing_from_budget"])
+    for i, (date, payee, amt) in enumerate(ledg):
+        if i not in used:
+            out.append([date, payee, f"{amt:.2f}", "not_on_statement"])
+    buf = io.StringIO()
+    csv.writer(buf).writerows([["date", "description", "amount", "issue"]] + sorted(out))
+    return {"reconciliation.csv": buf.getvalue()}
+
+
+def bank_controls(files, truth):
+    gold = bank_gold(files, truth)["reconciliation.csv"].splitlines()
+    one_way = [gold[0]] + [l for l in gold[1:] if l.endswith("missing_from_budget")]
+    split = [gold[0]]
+    for l in gold[1:]:
+        if l.endswith("amount_mismatch"):
+            split += [l.replace("amount_mismatch", "missing_from_budget"), l.replace("amount_mismatch", "not_on_statement")]
+        else:
+            split.append(l)
+    everything = [gold[0]] + [f"{r['Date']},{r['Description']},{r['Amount'].lstrip('-')},missing_from_budget"
+                              for r in csv.DictReader(io.StringIO(files["statement.csv"]))]
+    return {"only one direction checked": {"reconciliation.csv": "\n".join(one_way) + "\n"},
+            "a mismatch reported as missing + extra": {"reconciliation.csv": "\n".join(split) + "\n"},
+            "every transaction listed": {"reconciliation.csv": "\n".join(everything) + "\n"},
+            "right list, but the statement deleted": {"reconciliation.csv": "\n".join(gold) + "\n",
+                                                       "__delete__": ["statement.csv"]}}
+
+
+# ---------------------------------------------------------------------------------------------------
+# 6. fill a claim form from a customer's letter
+# ---------------------------------------------------------------------------------------------------
+FIRST = ["Maria", "Tom", "Aisha", "Lukas", "Priya", "Owen"]
+LAST = ["Fernandes", "Brooks", "Nwosu", "Becker", "Raman", "Doyle"]
+STREETS = ["14 Elm Street", "220 Harbor Road", "7 Mill Lane", "91 Oak Avenue"]
+CITIES = [("Springfield", "62704"), ("Riverton", "82501"), ("Fairview", "37062"), ("Lakeside", "92040")]
+ORD = {1: "1st", 2: "2nd", 3: "3rd", 21: "21st", 22: "22nd", 23: "23rd", 31: "31st"}
+
+
+def form_data(rng):
+    name = f"{rng.choice(FIRST)} {rng.choice(LAST)}"
+    street = rng.choice(STREETS)
+    city, postal = rng.choice(CITIES)
+    policy = f"HP-{rng.randint(100000, 999999)}"
+    day = rng.randint(1, 28)
+    phone = f"555{rng.randint(1000000, 9999999)}"
+    date_text = rng.choice([f"the {ORD.get(day, f'{day}th')} of March", f"March {ORD.get(day, f'{day}th')}",
+                            f"Tuesday, March {day}"])
+    phone_text = rng.choice([f"({phone[:3]}) {phone[3:6]}-{phone[6:]}", f"{phone[:3]}.{phone[3:6]}.{phone[6:]}",
+                             f"{phone[:3]} {phone[3:6]} {phone[6:]}"])
+    letter = (f"Dear Claims Team,\n\nMy name is {name} and I hold policy number {policy}. On {date_text} 2026 a pipe "
+              f"burst under my kitchen sink, and the water damaged the floor and two cabinets before I could shut "
+              f"it off.\n\nYou can reach me on {phone_text}, or write to me at {street}, {city} {postal}.\n\n"
+              f"Kind regards,\n{name}\n")
+    template = {"full_name": "", "street": "", "city": "", "postal_code": "", "phone": "", "email": "",
+                "policy_number": "", "incident_date": "YYYY-MM-DD", "description": ""}
+    truth = {"full_name": name, "street": street, "city": city, "postal_code": postal, "phone": phone,
+             "email": "", "policy_number": policy, "incident_date": f"2026-03-{day:02d}"}
+    return {"letters/claim_letter.txt": letter, "forms/form_template.json": json.dumps(template, indent=2)}, truth
+
+
+FORM_CHECK = r'''
+import json, re, sys
+from pathlib import Path
+truth = json.loads(Path(".axiom_check/truth.json").read_text())
+out = Path("claim_form.json")
+if not out.exists():
+    print("PUBLIC: claim_form.json was not found in the workspace"); sys.exit(1)
+try:
+    form = json.loads(out.read_text(encoding="utf-8"))
+except ValueError:
+    print("PUBLIC: claim_form.json is not valid JSON"); sys.exit(1)
+def norm(key, value):
+    if key == "phone":
+        return re.sub(r"\D", "", str(value))[-10:]       # any formatting, same ten digits
+    return " ".join(str(value).split()).lower()
+problems = []
+for key, value in truth.items():
+    got = form.get(key)
+    if got is None:
+        problems.append(f"PUBLIC: the field {key} is missing from the form")
+    elif value == "" and str(got).strip():
+        problems.append(f"PUBLIC: {key} is filled in, but the letter does not say it (leave it empty, do not guess)")
+    elif value and norm(key, got) != norm(key, value):
+        problems.append(f"PUBLIC: {key} does not match the letter" + (" (use YYYY-MM-DD)" if key == "incident_date" else ""))
+desc = str(form.get("description", "")).lower()
+if not any(w in desc for w in ("water", "pipe", "leak")):
+    problems.append("PUBLIC: the description should say what happened")
+if problems:
+    print("\n".join(problems)); sys.exit(1)
+print("PUBLIC: every field matches the letter, and nothing was guessed")
+'''
+
+
+def form_gold(files, truth):
+    """A real solution, from the letter only."""
+    letter = files["letters/claim_letter.txt"]
+    name = re.search(r"My name is (.+?) and", letter).group(1)
+    policy = re.search(r"policy number ([A-Z]+-\d+)", letter).group(1)
+    m = re.search(r"(?:March (\d{1,2})|the (\d{1,2})\w\w of March)", letter)
+    day = int(m.group(1) or m.group(2))
+    phone = re.sub(r"\D", "", re.search(r"reach me on ([\d(). -]+?),", letter).group(1))
+    street, rest = re.search(r"write to me at (.+?)\.\n", letter).group(1).split(", ")
+    city, postal = rest.rsplit(" ", 1)
+    form = {"full_name": name, "street": street, "city": city, "postal_code": postal, "phone": phone, "email": "",
+            "policy_number": policy, "incident_date": f"2026-03-{day:02d}",
+            "description": "A pipe burst under the kitchen sink; water damaged the floor and two cabinets."}
+    return {"claim_form.json": json.dumps(form, indent=2)}
+
+
+def form_controls(files, truth):
+    gold = json.loads(form_gold(files, truth)["claim_form.json"])
+    invented = dict(gold, email=gold["full_name"].lower().replace(" ", ".") + "@gmail.com")
+    us_date = dict(gold, incident_date=f"03/{gold['incident_date'][-2:]}/2026")
+    no_policy = dict(gold, policy_number="")
+    swapped = dict(gold, city=gold["postal_code"], postal_code=gold["city"])
+    return {"an email invented": {"claim_form.json": json.dumps(invented)},
+            "the date in the wrong format": {"claim_form.json": json.dumps(us_date)},
+            "the policy number left out": {"claim_form.json": json.dumps(no_policy)},
+            "city and postal code swapped": {"claim_form.json": json.dumps(swapped)}}
+
+
+# ---------------------------------------------------------------------------------------------------
+# 7. a calendar from the inbox
+# ---------------------------------------------------------------------------------------------------
+MEETINGS = ["Budget review", "Dentist", "Coffee with Sam", "Team retro", "Car service", "Call with the landlord",
+            "Kids' school play"]
+WEEKDAY = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+
+def _time_text(rng, h, m):
+    return rng.choice([f"{h:02d}:{m:02d}", f"{(h - 1) % 12 + 1}:{m:02d} {'am' if h < 12 else 'pm'}",
+                       f"{(h - 1) % 12 + 1}{'' if m == 0 else f':{m:02d}'}{'am' if h < 12 else 'pm'}"])
+
+
+def calendar_data(rng):
+    import datetime as dt
+    titles = rng.sample(MEETINGS, 6)
+    slots, used = [], set()
+    while len(slots) < 6:
+        day = rng.randint(4, 24)
+        h = rng.choice([9, 10, 11, 13, 14, 15, 16])
+        if (day, h) not in used and (day, h + 1) not in used and (day, h - 1) not in used:
+            used.add((day, h))
+            slots.append((day, h, rng.choice([0, 30]), rng.choice([30, 45, 60])))
+    files, truth = {}, []
+    def when(day, h, m):
+        d = dt.date(2026, 5, day)
+        return f"{WEEKDAY[d.weekday()]} May {day}", _time_text(rng, h, m)
+    for i, (title, (day, h, m, dur)) in enumerate(zip(titles, slots)):
+        date_text, time_text = when(day, h, m)
+        ask = f"Subject: {title}\n\nHi! Could we do {title.lower()} on {date_text} at {time_text}? It should take about {dur} minutes.\n"
+        if i == 4:
+            files[f"inbox/{i + 1:02d}_{title.split()[0].lower()}.txt"] = ask + "\n> Me: Sorry, I can't make that, I'm away that week.\n"
+            continue
+        files[f"inbox/{i + 1:02d}_{title.split()[0].lower()}.txt"] = ask + "\n> Me: Sounds good, see you then.\n"
+        start = (day, h, m)
+        if i == 1:      # moved later
+            nday = day + 1 if (day + 1, h) not in used and day < 28 else day
+            nh = h + 2 if h + 2 <= 17 else h - 2
+            ndate_text, ntime = when(nday, nh, m)
+            files[f"inbox/{i + 7:02d}_re_{title.split()[0].lower()}.txt"] = (
+                f"Subject: Re: {title}\n\nSomething came up, sorry! Can we move {title.lower()} to {ndate_text} at "
+                f"{ntime} instead? Same length.\n\n> Me: No problem, moved.\n")
+            start = (nday, nh, m)
+        if i == 2:      # cancelled
+            files[f"inbox/{i + 7:02d}_cancel_{title.split()[0].lower()}.txt"] = (
+                f"Subject: Cancelled: {title}\n\nI'm afraid we'll have to cancel {title.lower()}. I'll be in touch.\n")
+            continue
+        d, hh, mm = start
+        end_minutes = hh * 60 + mm + dur
+        truth.append({"date": f"2026-05-{d:02d}", "start": f"{hh:02d}:{mm:02d}",
+                      "end": f"{end_minutes // 60:02d}:{end_minutes % 60:02d}", "title": title})
+    wday, wh = rng.randint(4, 24), rng.choice([12, 18])
+    wdate, wtime = when(wday, wh, 0)
+    files["inbox/99_newsletter.txt"] = (f"Subject: Webinar: Spring savings\n\nJoin our free webinar on {wdate} at "
+                                        f"{wtime}! Spaces are limited.\n\nUnsubscribe | View in browser\n")
+    return files, truth
+
+
+CALENDAR_CHECK = r'''
+import csv, json, re, sys
+from pathlib import Path
+truth = json.loads(Path(".axiom_check/truth.json").read_text())
+out = Path("calendar.csv")
+if not out.exists():
+    print("PUBLIC: calendar.csv was not found in the workspace"); sys.exit(1)
+rows = [{k.strip().lower(): (v or "").strip() for k, v in r.items()} for r in csv.DictReader(out.open(encoding="utf-8-sig"))]
+if not rows or not {"date", "start", "end", "title"} <= set(rows[0]):
+    print("PUBLIC: calendar.csv needs the columns date, start, end, title"); sys.exit(1)
+def hm(s):
+    m = re.match(r"(\d{1,2}):(\d{2})", s)
+    return f"{int(m.group(1)):02d}:{m.group(2)}" if m else s
+got = {(r["date"], hm(r["start"]), hm(r["end"])) for r in rows}
+want = {(t["date"], t["start"], t["end"]) for t in truth}
+problems = []
+if want - got:
+    problems.append(f"PUBLIC: {len(want - got)} agreed meeting(s) are missing or at the wrong date or time "
+                    "(dates YYYY-MM-DD, times 24-hour HH:MM; use the latest time if a meeting was moved)")
+if got - want:
+    problems.append(f"PUBLIC: {len(got - want)} event(s) should not be in the calendar (declined, cancelled, "
+                    "moved, or never agreed)")
+if problems:
+    print("\n".join(problems)); print("expected", sorted(want)); sys.exit(1)
+print("PUBLIC: every agreed meeting is in the calendar at its final time, and nothing else")
+'''
+
+
+def calendar_gold(files, truth):
+    """A real solution, from the inbox only."""
+    def parse_time(t):
+        m = re.match(r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)?", t.strip())
+        h, mm, ap = int(m.group(1)), int(m.group(2) or 0), m.group(3)
+        if ap == "pm" and h != 12:
+            h += 12
+        if ap == "am" and h == 12:
+            h = 0
+        return h, mm
+    events, cancelled = {}, set()
+    for rel in sorted(files):
+        text = files[rel]
+        subject = text.split("\n", 1)[0].removeprefix("Subject: ")
+        if subject.startswith("Cancelled: "):
+            cancelled.add(subject.removeprefix("Cancelled: "))
+            continue
+        if "Me:" not in text or "can't" in text.split("Me:")[1]:
+            continue
+        title = subject.removeprefix("Re: ")
+        m = re.search(r"on \w+ May (\d{1,2}) at ([\d:]+\s*(?:am|pm)?)", text) or \
+            re.search(r"to \w+ May (\d{1,2}) at ([\d:]+\s*(?:am|pm)?)", text)
+        day, (h, mm) = int(m.group(1)), parse_time(m.group(2))
+        dur = int(re.search(r"about (\d+) minutes", text).group(1)) if "about" in text else events[title][3]
+        events[title] = (day, h, mm, dur)
+    rows = [["date", "start", "end", "title"]]
+    for title, (day, h, mm, dur) in sorted(events.items()):
+        if title in cancelled:
+            continue
+        end = h * 60 + mm + dur
+        rows.append([f"2026-05-{day:02d}", f"{h:02d}:{mm:02d}", f"{end // 60:02d}:{end % 60:02d}", title])
+    buf = io.StringIO()
+    csv.writer(buf).writerows(rows)
+    return {"calendar.csv": buf.getvalue()}
+
+
+def calendar_controls(files, truth):
+    gold = calendar_gold(files, truth)["calendar.csv"].splitlines()
+    cancelled_title = next(files[r].split("\n", 1)[0].removeprefix("Subject: Cancelled: ") for r in files if "cancel_" in r)
+    kept = gold + [f"2026-05-01,10:00,10:30,{cancelled_title}"]
+    hdr, body = gold[0], gold[1:]
+    webinar = gold + ["2026-05-20,12:00,13:00,Webinar: Spring savings"]
+    return {"a cancelled meeting kept": {"calendar.csv": "\n".join(kept) + "\n"},
+            "a meeting left out": {"calendar.csv": "\n".join([hdr] + body[1:]) + "\n"},
+            "the newsletter webinar added": {"calendar.csv": "\n".join(webinar) + "\n"},
+            "12-hour times": {"calendar.csv": "\n".join([hdr] + [re.sub(r",1([3-7]):", lambda m: f",{int(m.group(1)) - 2}:", l)
+                                                               for l in body]) + "\n"}}
+
+
+# ---------------------------------------------------------------------------------------------------
+# 8. overdue invoices and what each client owes
+# ---------------------------------------------------------------------------------------------------
+CLIENTS = ["Bluebird Bakery", "Northwind Studio", "Hillside Dental", "Oak & Iron Fitness"]
+
+
+def invoice_data(rng):
+    import datetime as dt
+    today = dt.date(2026, 4, 15)
+    files, overdue = {}, []
+    for n in range(10):
+        client = CLIENTS[n % 4]
+        issued = dt.date(2026, 1, 5) + dt.timedelta(days=rng.randint(0, 95))
+        net = rng.choice([None, 14, 30])
+        due = issued + dt.timedelta(days=net or 30) if net else issued + dt.timedelta(days=rng.randint(10, 40))
+        amount = round(rng.uniform(80, 2400), 2)
+        paid = rng.random() < 0.3
+        lines = [f"INVOICE #{1040 + n}", f"Billed to: {client}", f"Issued: {issued.strftime('%B %d, %Y')}"]
+        lines.append(f"Terms: Net {net}" if net else f"Due date: {due.strftime('%d %b %Y')}")
+        lines.append(f"Amount due: ${amount:,.2f}")
+        if paid:
+            lines.append(f"PAID {(issued + dt.timedelta(days=rng.randint(3, 20))).isoformat()} - thank you")
+        files[f"invoices/invoice_{1040 + n}.txt"] = "\n".join(lines) + "\n"
+        if not paid and due < today:
+            overdue.append({"invoice": str(1040 + n), "client": client, "due_date": due.isoformat(), "amount": amount})
+    totals = {}
+    for o in overdue:
+        totals[o["client"]] = round(totals.get(o["client"], 0) + o["amount"], 2)
+    return files, {"overdue": overdue, "totals": totals}
+
+
+INVOICE_CHECK = r'''
+import csv, json, sys
+from pathlib import Path
+truth = json.loads(Path(".axiom_check/truth.json").read_text())
+problems = []
+def read(name, cols):
+    p = Path(name)
+    if not p.exists():
+        problems.append(f"PUBLIC: {name} was not found in the workspace"); return None
+    rows = [{k.strip().lower(): (v or "").strip() for k, v in r.items()} for r in csv.DictReader(p.open(encoding="utf-8-sig"))]
+    if rows and not set(cols) <= set(rows[0]):
+        problems.append(f"PUBLIC: {name} needs the columns {', '.join(cols)}"); return None
+    return rows
+money = lambda s: round(float(s.replace("$", "").replace(",", "")), 2)
+od = read("overdue.csv", ["invoice", "client", "due_date", "amount"])
+tot = read("owed_by_client.csv", ["client", "total"])
+if od is not None:
+    got = {r["invoice"].lstrip("#") for r in od}
+    want = {o["invoice"] for o in truth["overdue"]}
+    if want - got: problems.append(f"PUBLIC: {len(want - got)} overdue invoice(s) are missing")
+    if got - want: problems.append(f"PUBLIC: {len(got - want)} listed invoice(s) are not overdue (paid already, or not yet due)")
+if tot is not None:
+    got_t = {r["client"].lower(): r["total"] for r in tot}
+    wrong = [c for c, v in truth["totals"].items() if c.lower() not in got_t or money(got_t[c.lower()]) != v]
+    extra = [c for c in got_t if c not in {k.lower() for k in truth["totals"]} and money(got_t[c]) != 0]
+    if wrong: problems.append(f"PUBLIC: {len(wrong)} client total(s) are missing or wrong")
+    if extra: problems.append(f"PUBLIC: {len(extra)} client(s) are listed as owing money but have nothing overdue")
+if problems:
+    print("\n".join(problems)); print("expected", truth); sys.exit(1)
+print("PUBLIC: the overdue invoices and every client's total are right")
+'''
+
+
+def invoice_gold(files, truth):
+    """A real solution, from the invoice files only."""
+    import datetime as dt
+    today = dt.date(2026, 4, 15)
+    rows, totals = [], {}
+    for rel in sorted(files):
+        text = files[rel]
+        if "PAID" in text:
+            continue
+        no = re.search(r"#(\d+)", text).group(1)
+        client = re.search(r"Billed to: (.+)", text).group(1).strip()
+        issued = dt.datetime.strptime(re.search(r"Issued: (.+)", text).group(1).strip(), "%B %d, %Y").date()
+        if m := re.search(r"Net (\d+)", text):
+            due = issued + dt.timedelta(days=int(m.group(1)))
+        else:
+            due = dt.datetime.strptime(re.search(r"Due date: (.+)", text).group(1).strip(), "%d %b %Y").date()
+        amount = float(re.search(r"\$([\d,]+\.\d{2})", text).group(1).replace(",", ""))
+        if due < today:
+            rows.append([no, client, due.isoformat(), f"{amount:.2f}"])
+            totals[client] = round(totals.get(client, 0) + amount, 2)
+    a, b = io.StringIO(), io.StringIO()
+    csv.writer(a).writerows([["invoice", "client", "due_date", "amount"]] + rows)
+    csv.writer(b).writerows([["client", "total"]] + [[c, f"{t:.2f}"] for c, t in sorted(totals.items())])
+    return {"overdue.csv": a.getvalue(), "owed_by_client.csv": b.getvalue()}
+
+
+def invoice_controls(files, truth):
+    gold = invoice_gold(files, truth)
+    paid = next(r for r in files if "PAID" in files[r])
+    paid_no = re.search(r"#(\d+)", files[paid]).group(1)
+    with_paid = gold["overdue.csv"].rstrip("\n") + f"\n{paid_no},Someone,2026-01-01,10.00\n"
+    no_totals = {"overdue.csv": gold["overdue.csv"]}
+    inflated = gold["owed_by_client.csv"].splitlines()
+    inflated = [inflated[0]] + [f"{l.split(',')[0]},{float(l.split(',')[1]) + 100:.2f}" for l in inflated[1:]]
+    return {"a paid invoice counted as overdue": {"overdue.csv": with_paid, "owed_by_client.csv": gold["owed_by_client.csv"]},
+            "the per-client totals missing": no_totals,
+            "totals that include invoices not yet due": {"overdue.csv": gold["overdue.csv"],
+                                                         "owed_by_client.csv": "\n".join(inflated) + "\n"}}
+
+
+TASKS += [
+    {"id": "reconcile-bank-statement", "data": bank_data, "check": BANK_CHECK,
+     "gold": bank_gold, "controls": bank_controls,
+     "ask": "Can you reconcile my budget spreadsheet (ledger.csv) against my bank statement (statement.csv) for "
+            "March? Make a reconciliation.csv listing every difference, with the columns date, description, amount "
+            "and issue, where issue is missing_from_budget (on the statement but not in my budget), not_on_statement "
+            "(in my budget but not on the statement) or amount_mismatch."},
+    {"id": "fill-claim-form", "data": form_data, "check": FORM_CHECK,
+     "gold": form_gold, "controls": form_controls,
+     "ask": "Please fill in the insurance claim form (forms/form_template.json) using the customer's letter in the "
+            "letters folder, and save it as claim_form.json. Leave anything the letter doesn't say empty. Don't "
+            "guess."},
+    {"id": "calendar-from-inbox", "data": calendar_data, "check": CALENDAR_CHECK,
+     "gold": calendar_gold, "controls": calendar_controls,
+     "ask": "Go through the emails in my inbox folder and put every meeting I've agreed to into calendar.csv, with "
+            "the columns date, start, end and title. If something was moved, use the new time, and leave out "
+            "anything that was cancelled or that I said no to."},
+    {"id": "overdue-invoices", "data": invoice_data, "check": INVOICE_CHECK,
+     "gold": invoice_gold, "controls": invoice_controls,
+     "ask": "Which of my invoices (in the invoices folder) are overdue as of April 15, 2026, and how much does each "
+            "client owe me in total? Put the overdue invoices in overdue.csv (invoice, client, due_date, amount) and "
+            "the totals in owed_by_client.csv (client, total)."},
+]
+
+
+# ---------------------------------------------------------------------------------------------------
 def git(repo, *args):
     return subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", *args],
                           capture_output=True, text=True, check=True).stdout.strip()

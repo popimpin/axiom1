@@ -1084,7 +1084,9 @@ def calendar_item_form_for(files):
                 return {"type": "string", "enum": options + [""], "description": f"{what}: pick the one this email "
                         "gives for the meeting (for a moved meeting, the NEW one); '' if it gives none"}
             return {"type": "string", "description": f"{what}, as written in this email; '' if it gives none"}
-        return {"type": "object", "required": ["kind", "refers_to", "date", "time", "duration"], "properties": {
+        return {"type": "object", "required": ["my_reply", "kind", "refers_to", "date", "time", "duration"], "properties": {
+            "my_reply": {"type": "string", "description": "my own reply in this email, copied exactly (the line where "
+                                                          "I answer); '' if I did not reply"},
             "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
                      "description": "agreed = I said yes to a new appointment or meeting; moved_and_agreed = one of "
                                     "the meetings agreed so far gets a new time and I said yes; cancelled_by_them = the "
@@ -1114,8 +1116,12 @@ def calendar_relevant(a, text=""):
     A field left out is a field not given. A move's duration counts only if that email states one: 'Same length',
     or the old length carried over (seen live: a 1.7B model filled in the original 45 minutes), means unchanged."""
     a = {k: ("" if v is None else v) for k, v in dict(a).items()}
-    for field in ("refers_to", "date", "time", "duration"):
+    for field in ("my_reply", "refers_to", "date", "time", "duration"):
         a.setdefault(field, "")
+    # agreeing needs a reply from me: with none, it is not_agreed whatever it looked like (seen live: qwen3:1.7b
+    # filed a newsletter's webinar as agreed on every inbox, and no correction moved it)
+    if CALENDAR_KINDS.get(a.get("kind")) in ("add", "move") and not a["my_reply"].strip():
+        a["kind"] = "not_agreed"
     kind = CALENDAR_KINDS.get(a.get("kind"))
     if kind in ("add", "ignore"):
         a["refers_to"] = ""
@@ -1165,7 +1171,7 @@ def calendar_same(today):
                 continue
         raise ValueError(text)
     return {"time": _same_by(t.parse_time, CAL_TIME), "date": _same_by(date_key, CAL_DATE),
-            "duration": _same_by(t.parse_duration, CAL_DURATION)}
+            "duration": _same_by(t.parse_duration, CAL_DURATION), "my_reply": None}
 
 
 def calendar_item_checks(today):

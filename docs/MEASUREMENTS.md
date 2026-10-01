@@ -206,3 +206,16 @@ Paths per instance: M = worked out by the model, R = replayed, F = replay failed
   the earlier receipts (~$0.06/M in, ~$0.24/M out). Without calendar, about $0.29 for 35 jobs.
 - Wrong deliveries accepted: 0 (only a server-witnessed claim counts as done).
 - Small: one model, one seed range, synthetic data, 5 instances per type.
+
+## A bigger model on the job Lightning cannot do: Super, calendar-from-inbox (2026-10-01)
+
+`series --only calendar-from-inbox --learn-model nvidia/nemotron-3-super-120b-a12b`: Super works the job
+until a process is locked, then Lightning replays. Same inboxes (seeds 100-104) as Lightning's 0/5.
+`2026-10-01_calendar_series_super_learns_lightning_replays.json`.
+
+**Super: 0/5.** Every instance used all 40 steps and ended with one refuted claim; nothing was locked, so
+Lightning never ran. 2.11M prompt + 0.14M completion tokens, 15 minutes. A model ten times the size did
+not get further on its own: the job as posed asks the model to write a parser (four time formats,
+durations, moves and cancellations linked back to the original) and to get every row exact.
+That is the case for engines (`axiom1/engines/`): the deterministic parts are written once and tested,
+and the model only reads each email and says what it is.

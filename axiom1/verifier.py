@@ -215,6 +215,25 @@ CHECK_DIR = ".axiom_check"
 # variable parts in ENTRY_FILE. Verified by re-running it; once witnessed it is locked in and replayed.
 PROCESS_FILE = "process.py"
 ENTRY_FILE = "entry.json"
+# The engines a process imports (`from axiom_engines import time`). Installed by the harness before every run of a
+# process, over whatever the agent left at that path, so a process always runs on the real, tested engines.
+ENGINES_DIR = "axiom_engines"
+
+
+def process_argv(python):
+    """How a process is run. -E -s keep the environment and user site-packages out; unlike -I they leave the
+    script's own folder importable, which is where the engines are installed."""
+    return [python, "-E", "-s", PROCESS_FILE]
+
+
+def install_engines(tree):
+    target = Path(tree) / ENGINES_DIR
+    if target.is_dir():
+        shutil.rmtree(target)
+    elif target.exists():
+        target.unlink()
+    shutil.copytree(Path(__file__).resolve().parent / "engines", target,
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
 
 
 def _install_check(tree, holdout):
@@ -319,7 +338,8 @@ def deliver(repo, before_sha, after_sha, argv, test_paths, sandbox=None, holdout
             for name in (PROCESS_FILE, ENTRY_FILE):
                 if (Path(after_dir) / name).is_file():
                     shutil.copy2(Path(after_dir) / name, Path(replay_dir) / name)
-            ran = sandbox.run(replay_dir, [sandbox.python, "-I", PROCESS_FILE], writable=True)
+            install_engines(replay_dir)
+            ran = sandbox.run(replay_dir, process_argv(sandbox.python), writable=True)
             _install_check(replay_dir, holdout)
             replayed = sandbox.run(replay_dir, argv)
         _install_check(before_dir, holdout)
@@ -357,7 +377,8 @@ def replay_on(repo, base_sha, script, entry, argv, holdout, sandbox=None):
         (Path(tree) / PROCESS_FILE).write_text(script, encoding="utf-8")
         if entry:
             (Path(tree) / ENTRY_FILE).write_text(entry, encoding="utf-8")
-        ran = sandbox.run(tree, [sandbox.python, "-I", PROCESS_FILE], writable=True)
+        install_engines(tree)
+        ran = sandbox.run(tree, process_argv(sandbox.python), writable=True)
         if ran.returncode != 0:
             return False, [f"the process exited {ran.returncode}"]
         _install_check(tree, holdout)

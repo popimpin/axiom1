@@ -984,15 +984,19 @@ def trailing_note(reason):
     return ""
 
 
-def series(n_instances, max_steps, model_name, thinking, first_seed, only):
+def series(n_instances, max_steps, model_name, thinking, first_seed, only, learn_model_name=None):
     """Getting good at a job: one job type, fresh data every instance (a new month of receipts, a new inbox).
 
     Instance 1 is worked out by the model; a process that reproduces a witnessed result is locked in.
     Later instances replay it (the model fills only the entry, if any). When new data strays from what the
     process handles, the model repairs it, and the repair is locked only if it still passes every earlier
-    instance. Every instance's files are kept, because they ARE the regression set."""
+    instance. Every instance's files are kept, because they ARE the regression set.
+
+    learn_model_name: a (larger) model that works the job while it has no locked process. Once a process is
+    locked, the main model does everything after it, replays and repairs."""
     from axiom1.agent import ChatModel, run_agent
     model = ChatModel(model_name)
+    learner = ChatModel(learn_model_name) if learn_model_name else model
     rows = []
     for task in TASKS:
         if only and task["id"] not in only:
@@ -1011,10 +1015,11 @@ def series(n_instances, max_steps, model_name, thinking, first_seed, only):
                 ax.db.close()
                 wt = inst / "wt"
                 git(repo, "worktree", "add", "-q", "--detach", str(wt), "main")
-                used0, t0 = dict(model.usage), time.time()
-                messages = asyncio.run(run_agent(f"agent{i}", wt, db, model, max_steps=max_steps, log=lambda *_: None,
+                worker = learner if before_version is None else model
+                used0, t0 = dict(worker.usage), time.time()
+                messages = asyncio.run(run_agent(f"agent{i}", wt, db, worker, max_steps=max_steps, log=lambda *_: None,
                                                  shell=DockerSandbox(IMAGE), thinking=thinking))
-                used = {k: model.usage[k] - used0[k] for k in model.usage}
+                used = {k: worker.usage[k] - used0[k] for k in worker.usage}
                 ax = Axiom(db)
                 claim_rows = ax.db.execute("SELECT label, reason, statement FROM claims WHERE agent=? ORDER BY made_at",
                                            (f"agent{i}",)).fetchall()
@@ -1032,14 +1037,16 @@ def series(n_instances, max_steps, model_name, thinking, first_seed, only):
                 else:
                     path = "worked out by the model"
                 outcome = next((trailing_note(r) for l, r in reversed(claims) if l == "witnessed" and trailing_note(r)), "")
-                row = {"task": task["id"], "instance": i, "seed": first_seed + i, "done": done, "path": path,
+                row = {"task": task["id"], "instance": i, "seed": first_seed + i, "model": worker.model,
+                       "done": done, "path": path,
                        "process_before": before_version, "process_after": after_version, "outcome": outcome,
                        "claims": [l for l, _ in claims], "model_calls": used["calls"],
                        "prompt_tokens": used["prompt_tokens"], "completion_tokens": used["completion_tokens"],
                        "seconds": round(time.time() - t0, 1)}
                 rows.append(row)
                 print(json.dumps(row), flush=True)
-    return {"model": model.model, "thinking": thinking, "instances_per_type": n_instances, "rows": rows}
+    return {"model": model.model, "learn_model": learner.model, "thinking": thinking,
+            "instances_per_type": n_instances, "rows": rows}
 
 
 def main():
@@ -1051,6 +1058,7 @@ def main():
     se.add_argument("--instances", type=int, default=5)
     se.add_argument("--max-steps", type=int, default=40)
     se.add_argument("--model", default=None)
+    se.add_argument("--learn-model", default=None, help="works the job until a process is locked")
     se.add_argument("--thinking", default="auto", choices=["auto", "on", "off"])
     se.add_argument("--seed", type=int, default=100)
     se.add_argument("--only", nargs="*")
@@ -1067,7 +1075,7 @@ def main():
     if a.cmd == "validate":
         sys.exit(0 if validate(a.seed) else 1)
     if a.cmd == "series":
-        result = series(a.instances, a.max_steps, a.model, a.thinking, a.seed, a.only)
+        result = series(a.instances, a.max_steps, a.model, a.thinking, a.seed, a.only, a.learn_model)
         if a.out:
             Path(a.out).write_text(json.dumps(result, indent=1), encoding="utf-8")
         return

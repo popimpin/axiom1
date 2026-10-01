@@ -18,6 +18,7 @@ import json
 import os
 import subprocess
 import sys
+import textwrap
 import time
 import urllib.error
 import urllib.request
@@ -26,6 +27,9 @@ from pathlib import Path
 
 from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
+
+from . import engines
+from .verifier import ENGINES_DIR, install_engines, process_argv
 
 DEFAULT_BASE_URL = "https://api.tokenfactory.nebius.com/v1"
 DEFAULT_MODEL = "nvidia/Nemotron-3_5-Lightning"
@@ -49,6 +53,12 @@ How to work:
      original files: a process that reproduces the result is locked in, so this kind of job never has to
      be worked out again. You write no tests. Never delete or rename a file the task did not ask you
      to; a lost file fails the check.
+     Do not hand-write parsing or arithmetic. ENGINES do the parts with one right answer (times, dates,
+     durations, amounts, writing tables) and refuse with an error instead of guessing. process.py
+     imports them: `from axiom_engines import table` (they are installed in your workspace; do not
+     edit or commit them). Try any pure function first with the `engine` tool. Your part is reading
+     the files and deciding what each item is; the engines' part is everything else. Engines:
+{engines}
    - "fix": a code change. Add a test under the check's test path (one ending in / is a directory) that
      FAILS on the old code and PASSES on yours, using the test COMMAND the check names.
 3. Use list_files / read_file to understand what is there, and write_file to do the work.{shell_hint}
@@ -126,6 +136,21 @@ class Workspace:
                   "commit", "-q", "--allow-empty", "-m", message)
         return {"sha": self.head()}
 
+    def install_engines(self):
+        """Put the engines in the workspace for process.py to import, kept out of git so they are never
+        part of a delivery (the verifier installs its own copy before running a process anyway)."""
+        install_engines(self.root)
+        exclude = Path(self._git("rev-parse", "--git-path", "info/exclude"))
+        exclude = exclude if exclude.is_absolute() else self.root / exclude
+        lines = exclude.read_text(encoding="utf-8").splitlines() if exclude.exists() else []
+        if f"/{ENGINES_DIR}/" not in lines:
+            exclude.parent.mkdir(parents=True, exist_ok=True)
+            exclude.write_text("\n".join(lines + [f"/{ENGINES_DIR}/"]) + "\n", encoding="utf-8")
+
+    def engine(self, name: str, function: str, args: dict | None = None) -> dict:
+        result = engines.call(name, function, args or {})
+        return {"result": json.loads(json.dumps(result, default=str))}   # Decimals come back as text
+
     def run(self, command: str) -> dict:
         if self.shell is None:
             raise ValueError("no shell in this workspace")
@@ -154,6 +179,13 @@ class Workspace:
         {"name": "commit", "description": "Commit everything in your workspace. Returns the commit sha.",
          "parameters": {"type": "object", "properties": {"message": {"type": "string"}},
                         "required": ["message"]}},
+        {"name": "engine", "description": "Call a pure engine function to try it, e.g. name='table', "
+         "function='csv_text', args={...}. An engine that cannot be sure returns an error instead of guessing. "
+         "In process.py, import the same engines from axiom_engines.",
+         "parameters": {"type": "object", "properties": {"name": {"type": "string"},
+                                                         "function": {"type": "string"},
+                                                         "args": {"type": "object"}},
+                        "required": ["name", "function"]}},
     ]
 
 
@@ -234,6 +266,7 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
 
     ws = Workspace(workspace, shell)
     start_sha = ws.head()
+    ws.install_engines()
     async with AsyncExitStack() as stack:
         if hub_url:
             from mcp.client.streamable_http import streamablehttp_client
@@ -285,7 +318,8 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
                        f"these files and did not pass: {replay['note']}\nprocess.py and entry.json from that run are in "
                        "your workspace. Repair process.py (or entry.json), run it, then commit, claim and verify.")
         messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
-                        agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "")},
+                        agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "",
+                        engines=textwrap.indent(engines.summary(), "       "))},
                     {"role": "user", "content": opening}]
         try:
             return await _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log,
@@ -332,7 +366,7 @@ async def _replay(agent_id, task, model, ws, session, start_sha, log):
         except (ValueError, RuntimeError):
             entry = None
         ws.write_file("entry.json", json.dumps(entry) if isinstance(entry, dict) else proc["entry_example"])
-    ran = ws.run("python -I process.py")
+    ran = ws.run(" ".join(process_argv("python")))
     sha = ws.commit(f"replay locked process v{proc['version']}")["sha"]
     note = ""
     try:

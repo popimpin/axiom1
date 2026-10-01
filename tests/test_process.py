@@ -162,6 +162,62 @@ class RegressionProtected(Locking):
         self.assertEqual(p["proven"], ["April receipts", "May receipts"])
 
 
+# the same job, with the table written by the engine instead of by hand
+ENGINE_PROCESS = '''from pathlib import Path
+from axiom_engines import table
+rows = []
+for p in sorted(Path("receipts").glob("*.txt")):
+    shop, amount = p.read_text().splitlines()[:2]
+    rows.append({"vendor": shop, "amount": f"{float(amount):.2f}"})
+table.write_csv("summary.csv", ["vendor", "amount"], rows)
+'''
+# an engine an agent might commit to rig its own run: it writes the right file whatever it is given
+RIGGED_TABLE = '''def write_csv(path, columns, rows):
+    open(path, "w").write(%r)
+''' % GOOD
+
+
+class EnginesInProcesses(Locking):
+    """A process imports the harness's engines, and only ever the harness's own copy."""
+
+    def _no_install(self):
+        from unittest import mock
+        return mock.patch("axiom1.verifier.install_engines", lambda tree: None)
+
+    def test_a_process_built_on_engines_is_locked_in(self):
+        v = self._verify({"process.py": ENGINE_PROCESS, "summary.csv": GOOD})
+        self.assertEqual(v["label"], "witnessed", v["reason"])
+        self.assertTrue(v["evidence"]["process"]["reproduced"], v["evidence"]["process"])
+        self.assertEqual(self.ax.process_for("receipts")["version"], 1)
+
+    def test_control_without_the_engines_installed_it_cannot_run(self):
+        with self._no_install():
+            v = self._verify({"process.py": ENGINE_PROCESS, "summary.csv": GOOD})
+        self.assertFalse(v["evidence"]["process"]["reproduced"])
+        self.assertIn("axiom_engines", v["evidence"]["process"]["run_tail"])
+
+    def test_engines_an_agent_commits_are_replaced_by_the_real_ones(self):
+        # the rigged engine ignores its input; the process feeds it nothing. Only the real engine,
+        # writing exactly the rows it is given, shows the process produces nothing.
+        empty = ENGINE_PROCESS.replace("rows.append(", "0 and rows.append(")
+        files = {"process.py": empty, "summary.csv": GOOD, "axiom_engines/__init__.py": "",
+                 "axiom_engines/table.py": RIGGED_TABLE}
+        v = self._verify(files)
+        self.assertFalse(v["evidence"]["process"]["reproduced"])
+        self.assertIsNone(self.ax.process_for("receipts"))
+
+    def test_planted_engines_never_reach_the_replay_at_all(self):
+        # Why the rig fails: the replay starts from the ORIGINAL files plus only process.py and entry.json.
+        # With the harness's install switched off, the agent's committed engine is simply not there.
+        empty = ENGINE_PROCESS.replace("rows.append(", "0 and rows.append(")
+        files = {"process.py": empty, "summary.csv": GOOD, "axiom_engines/__init__.py": "",
+                 "axiom_engines/table.py": RIGGED_TABLE}
+        with self._no_install():
+            v = self._verify(files)
+        self.assertFalse(v["evidence"]["process"]["reproduced"])
+        self.assertIn("No module named 'axiom_engines'", v["evidence"]["process"]["run_tail"])
+
+
 @unittest.skipUnless(DOCKER, f"docker daemon or {IMAGE} not available")
 class Replay(unittest.TestCase):
     """The runner end to end: replay with no model, replay with an entry, and repair when input strays."""

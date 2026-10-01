@@ -113,6 +113,23 @@ class WorkspaceConfinement(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.ws.read_file(".git/config")
 
+    def test_a_file_in_the_way_is_named_and_can_be_removed(self):
+        # the trap seen live: write_file("tests", "") makes a FILE, then tests/test_x.py can never be created
+        self.ws.write_file("tests", "")
+        with self.assertRaises(ValueError) as e:
+            self.ws.write_file("tests/test_add.py", "x = 1\n")
+        self.assertIn("'tests' is a file", str(e.exception))
+        self.ws.delete_file("tests")
+        self.ws.write_file("tests/test_add.py", "x = 1\n")
+        self.assertTrue((self.repo.root / "tests" / "test_add.py").is_file())
+
+    def test_delete_file_is_confined(self):
+        for bad in ("../outside.txt", ".git/config"):
+            with self.assertRaises(ValueError, msg=bad):
+                self.ws.delete_file(bad)
+        with self.assertRaises(ValueError):
+            self.ws.delete_file(".")
+
     def test_inside_is_fine(self):
         self.ws.write_file("pkg/new.py", "x = 1\n")
         self.assertEqual(self.ws.read_file("pkg/new.py")["content"], "x = 1\n")

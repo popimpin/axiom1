@@ -17,6 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from axiom1 import Axiom  # noqa: E402
 from axiom1.agent import ChatModel, run_agent  # noqa: E402
+from axiom1.sandbox import DockerSandbox  # noqa: E402
 
 BUGGY = "def add(a, b):\n    return a - b\n"
 # The operator's held-out tests: they live outside the repo, and the agent never sees them.
@@ -36,6 +37,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--model", default=None)
     p.add_argument("--max-steps", type=int, default=30)
+    p.add_argument("--shell", action="store_true",
+                   help="give the agent a sandboxed shell (Docker) to run tests before claiming")
     p.add_argument("--sandbox", default="docker", choices=["docker", "local"],
                    help="where verification runs (docker needs python:3.13-slim pulled)")
     a = p.parse_args()
@@ -68,7 +71,8 @@ def main():
         model = ChatModel(a.model)
         print(f"model: {model.model}   verification sandbox: {a.sandbox}\n")
         t = time.time()
-        asyncio.run(run_agent("nemotron-1", wt, db, model, max_steps=a.max_steps))
+        shell = DockerSandbox("python:3.13-slim") if a.shell else None
+        asyncio.run(run_agent("nemotron-1", wt, db, model, max_steps=a.max_steps, shell=shell))
         ax = Axiom(db)
         print(f"\n{time.time() - t:.1f}s  track record: {json.dumps(ax.track_record('nemotron-1'))}")
         for c in ax.db.execute("SELECT label, reason FROM claims"):

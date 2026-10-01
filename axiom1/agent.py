@@ -44,18 +44,28 @@ How to work:
 2. Call `list_checks`. It tells you the exact test COMMAND that will judge you (write tests that
    command actually runs) and the test paths (one ending in / is a directory: create files inside it).
 3. Use list_files / read_file to understand the code. Fix it with write_file, and add or update a
-   test under the check's test path that FAILS on the old code and PASSES on yours.
+   test under the check's test path that FAILS on the old code and PASSES on yours.{shell_hint}
 4. Call `commit`, then `claim` with before_ref = {start_sha}, after_ref = the sha `commit` returned,
    the check id, and the task id.
 5. Call `verify` on your claim, then give a one-line final answer with the verdict.
 Use tools for everything; do not describe code you have not written with write_file."""
 
+SHELL_HINT = """
+   You have `run`: a shell in an isolated container with your workspace at /work and no network.
+   Use it to run the check's command yourself BEFORE you claim: write your test first and see it
+   fail, then fix the code and see it pass. A claim you have not run is a guess."""
+
 
 class Workspace:
-    """File access confined to one git worktree. The model cannot reach outside it, or into .git."""
+    """File access confined to one git worktree. The model cannot reach outside it, or into .git.
 
-    def __init__(self, root):
+    With a `shell` (a DockerSandbox) the model also gets `run`: commands execute in a container that
+    sees only this worktree, writable, with its `.git` file mounted read-only on top. Without one
+    there is no shell tool at all; it never falls back to running on the host."""
+
+    def __init__(self, root, shell=None):
         self.root = Path(root).resolve()
+        self.shell = shell
 
     def _path(self, rel):
         p = (self.root / rel).resolve()
@@ -80,15 +90,47 @@ class Workspace:
 
     def write_file(self, path: str, content: str) -> dict:
         p = self._path(path)
+        # a FILE where a directory must go is a dead end the model cannot see: "FileExistsError" alone
+        # sent agents into write-retry loops until their step budget ran out. Name the blocker.
+        for parent in reversed(p.relative_to(self.root).parents):
+            blocker = self.root / parent
+            if parent != Path(".") and blocker.is_file():
+                raise ValueError(f"cannot create {path!r}: {parent.as_posix()!r} is a file, not a directory. "
+                                 f"Delete it with delete_file first.")
+        if p.is_dir():
+            raise ValueError(f"{path!r} is a directory; write a file inside it")
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(content, encoding="utf-8")
         return {"path": path, "bytes": len(content.encode("utf-8"))}
+
+    def delete_file(self, path: str) -> dict:
+        p = self._path(path)
+        if p == self.root or p.is_dir():
+            raise ValueError(f"{path!r} is a directory; delete_file removes files only")
+        if not p.exists():
+            raise ValueError(f"{path!r} does not exist")
+        p.unlink()
+        return {"deleted": path}
 
     def commit(self, message: str) -> dict:
         self._git("add", "-A")
         self._git("-c", "user.name=axiom1-agent", "-c", "user.email=agent@axiom1.invalid",
                   "commit", "-q", "--allow-empty", "-m", message)
         return {"sha": self.head()}
+
+    def run(self, command: str) -> dict:
+        if self.shell is None:
+            raise ValueError("no shell in this workspace")
+        result = self.shell.run(str(self.root), ["sh", "-c", command], writable=True, protect=(".git",))
+        return {"exit": result.returncode, "output": result.output[-3000:]}
+
+    def tools(self):
+        return self.TOOLS + ([self.RUN_TOOL] if self.shell is not None else [])
+
+    RUN_TOOL = {"name": "run", "description": "Run a shell command in an isolated container: your workspace "
+                "is /work (writable), there is no network. Returns the exit code and the last of the output.",
+                "parameters": {"type": "object", "properties": {"command": {"type": "string"}},
+                               "required": ["command"]}}
 
     TOOLS = [
         {"name": "list_files", "description": "List the files in your workspace.",
@@ -99,6 +141,8 @@ class Workspace:
          "parameters": {"type": "object", "properties": {"path": {"type": "string"},
                                                          "content": {"type": "string"}},
                         "required": ["path", "content"]}},
+        {"name": "delete_file", "description": "Delete a file from your workspace (files only).",
+         "parameters": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}},
         {"name": "commit", "description": "Commit everything in your workspace. Returns the commit sha.",
          "parameters": {"type": "object", "properties": {"message": {"type": "string"}},
                         "required": ["message"]}},
@@ -139,13 +183,21 @@ def _openai_tool(name, description, parameters):
 
 
 async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=print, hub_url=None,
-                    token=None):
+                    token=None, shell=None):
     """Run one agent until it gives a final answer or runs out of steps. Returns the transcript.
 
     With `hub_url` the agent connects to a hub over HTTP and is whoever `token` says it is; `db` and
     `caps` are ignored (the hub owns the database, the operator set the caps). Without it, the
     runner starts a stdio server on `db` for local development."""
-    ws = Workspace(workspace)
+    raw_log = log
+
+    def log(line):  # a console that cannot encode the model's text must not end the run
+        try:
+            raw_log(line)
+        except UnicodeEncodeError:
+            raw_log(line.encode("ascii", "replace").decode("ascii"))
+
+    ws = Workspace(workspace, shell)
     start_sha = ws.head()
     async with AsyncExitStack() as stack:
         if hub_url:
@@ -164,10 +216,11 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
         await session.initialize()
         mcp_tools = (await session.list_tools()).tools
         tools = [_openai_tool(t.name, t.description, t.inputSchema) for t in mcp_tools]
-        tools += [_openai_tool(t["name"], t["description"], t["parameters"]) for t in Workspace.TOOLS]
+        tools += [_openai_tool(t["name"], t["description"], t["parameters"]) for t in ws.tools()]
         mcp_names = {t.name for t in mcp_tools}
 
-        messages = [{"role": "system", "content": SYSTEM_PROMPT.format(agent_id=agent_id, start_sha=start_sha)},
+        messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
+                        agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "")},
                     {"role": "user", "content": "Begin."}]
         for step in range(max_steps):
             reply = model(messages, tools)
@@ -186,7 +239,7 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
                         text = res.content[0].text if res.content else "{}"
                         if res.isError:
                             text = json.dumps({"error": text})
-                    elif name in {t["name"] for t in Workspace.TOOLS}:
+                    elif name in {t["name"] for t in ws.tools()}:
                         text = json.dumps(getattr(ws, name)(**args))
                     else:
                         text = json.dumps({"error": f"no tool named {name!r}"})

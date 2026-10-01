@@ -381,3 +381,13 @@ def is_overdue(due, as_of):
         raise EngineError(f"invalid ISO date: {e}") from None
 
     return d_due < d_as_of
+
+
+GUIDE = '''Use time for every date, time and duration you read from text. Never parse them yourself.
+- `time.parse_date("Friday May 8", 2026)` -> "2026-05-08". Pass the year (the task's or the files'). If a
+  weekday is given and does not match, it refuses: re-read the text.
+- `time.parse_time("1pm")` -> "13:00". Bare "11" is refused (am or pm?): look for more context in the text.
+- `time.parse_duration("about 45 minutes")` -> 45 (int minutes).
+- `time.add_minutes("11:30", 45)` -> "12:15" (refuses crossing midnight).
+- `time.days_between(a, b)` and `time.is_overdue(due, as_of)` work on ISO dates (e.g. due dates vs today's date).
+Feeds ledger (date/start/minutes) and table.'''

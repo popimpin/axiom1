@@ -162,3 +162,10 @@ def apply_moves(moves):
         src.rename(dst)
 
     return {"moved": len(to_execute)}
+
+
+GUIDE = '''Use sorter to tidy files into folders without losing any.
+- `moves = sorter.plan_moves(files, [{"match": "*.pdf", "folder": "Documents"}, ...])` plans; files matching
+  no rule stay put. It refuses a file matched by two rules or two files landing on one name - fix the rules.
+- `sorter.apply_moves(moves)` moves them all or none; it never overwrites or deletes.
+List the files with your list_files tool; the rules come from the task.'''

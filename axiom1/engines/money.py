@@ -350,3 +350,12 @@ def format_amount(amount):
         raise EngineError(f"cannot format amount of type {type(amount).__name__}")
 
     return f"{d:.2f}"
+
+
+GUIDE = '''Use money for every amount you read. Never use float.
+- `money.parse_amount("$1,234.50")` -> Decimal("1234.50"). Dollar or no symbol only; another currency is
+  refused - then use `money.parse_money(text)` -> {amount, currency}.
+- `money.add([...])` sums; `money.total_by(rows, "client", "amount")` -> {client: total}. Mixing currencies is refused.
+- `money.format_amount(d)` -> "1234.50" for a CSV cell.
+If it refuses "1.234,50" or "12,5": the format is ambiguous; say so rather than pick a reading.
+Feeds matcher (amounts) and table.'''

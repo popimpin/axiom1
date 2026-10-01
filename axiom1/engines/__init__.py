@@ -54,6 +54,37 @@ def call(engine, function, args=None, allow_io=False):
     return getattr(mods[engine], function)(**args)
 
 
+def _call_text(engine, fn, args, limit=260):
+    text = f"{engine}.{fn}({', '.join(repr(v) for v in args.values())})"
+    return text if len(text) <= limit else text[:limit] + " ...)"
+
+
+def manual(names=None, examples=True):
+    """The how-to for agents: each engine's GUIDE, then every function with worked examples. The examples are
+    re-run here, so what the manual shows is what the engine does today, refusal messages included.
+    examples=False gives the guides and signatures only (the short form that goes in every prompt)."""
+    mods = {mod.SPEC["name"]: mod for mod in _modules()}
+    unknown = [n for n in (names or []) if n not in mods]
+    if unknown:
+        raise EngineError(f"no engine named {', '.join(unknown)}; engines: {', '.join(sorted(mods))}")
+    parts = []
+    for name in (names or sorted(mods)):
+        mod, spec = mods[name], mods[name].SPEC
+        lines = [f"## {name} (v{spec['version']}): {spec['summary']}", mod.GUIDE.strip(), ""]
+        for fn, fs in spec["functions"].items():
+            lines.append(f"{name}.{fn}({', '.join(fs['args'])}) -> {fs['returns']}" + ("   [reads/writes files]" if fs["io"] else ""))
+            shown = ([e for e in fs["examples"] if "returns" in e][:2] + [e for e in fs["examples"] if "refuses" in e][:1]
+                     if examples else [])
+            for ex in shown:
+                try:
+                    got = repr(getattr(mod, fn)(**ex["args"]))
+                except EngineError as e:
+                    got = f"refused: {e}"
+                lines.append(f"    {_call_text(name, fn, ex['args'])}\n      -> {got[:300]}")
+        parts.append("\n".join(lines))
+    return "\n\n".join(parts)
+
+
 def summary():
     """One line per function, for the agent's briefing."""
     lines = []

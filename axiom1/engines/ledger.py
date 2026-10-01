@@ -240,3 +240,16 @@ def apply_events(events):
     ]
     entries.sort(key=lambda x: (x["date"], x["start"], x["key"]))
     return entries
+
+
+GUIDE = '''Use ledger to turn a series of emails into a calendar: you decide what each email is, ledger applies them in order.
+Events (dicts), in the order the emails happened:
+  {"kind": "add", "key": "retro", "title": "Team retro", "date": "2026-05-07", "start": "09:30", "minutes": 45}
+  {"kind": "move", "key": "retro", "date": "2026-05-08", "start": "11:30"}    (only the fields that change)
+  {"kind": "cancel", "key": "retro"}
+`ledger.apply_events(events)` -> [{key, title, date, start, end}] sorted by date and start.
+- key: one id per meeting, the same in the original email and in any later move/cancel about it.
+- Only add meetings that were agreed to. A declined invitation or a newsletter is simply not added.
+- date/start/minutes come from time.parse_date / time.parse_time / time.parse_duration.
+If it refuses a move/cancel naming a key: you linked that email to a meeting that does not exist - re-read it.
+Then drop "key" and write the rows with table.write_csv.'''

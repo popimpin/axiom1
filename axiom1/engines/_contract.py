@@ -38,6 +38,15 @@ def problems(module):
     if not isinstance(spec.get("summary"), str) or not spec.get("summary", "").strip():
         out.append(f"{name}: summary must be a non-empty string")
 
+    guide = getattr(module, "GUIDE", None)
+    if not isinstance(guide, str) or not guide.strip():
+        out.append(f"{name}: needs a GUIDE: how to use it, what a refusal means, what it combines with")
+    elif isinstance(spec.get("functions"), dict):
+        # the manual is how an agent learns the engine; a function the guide never shows is one it will guess at
+        unnamed = [fn for fn in spec["functions"] if f"{fn}(" not in guide]
+        if unnamed:
+            out.append(f"{name}: GUIDE never shows how to call {unnamed}")
+
     for mod, level in _imports(inspect.getsource(module)):
         if level:
             continue                                   # another engine or _base, relatively

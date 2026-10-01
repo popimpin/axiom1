@@ -243,3 +243,11 @@ def merge_records(records, match_on):
             merged.append(merged_row)
 
     return {"merged": merged, "conflicts": conflicts}
+
+
+GUIDE = '''Use merge to combine the same people from several exports.
+- `merge.merge_records(records, ["email", "phone"])` -> {merged, conflicts}. Records are dicts ("" for blank).
+  Two records are one person if any match field is equal after normalising.
+- It never invents a value: a field blank everywhere stays "". A field that disagrees puts the whole group in
+  `conflicts` - those are YOUR call: read the sources and decide, or report them.
+- `merge.normalize_email(text)` and `merge.normalize_phone(text)` clean single values.'''

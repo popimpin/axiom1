@@ -288,3 +288,12 @@ def match_amount_date(left, right, amount_field, date_field, max_days):
         "right_only": right_only,
         "ambiguous": ambiguous,
     }
+
+
+GUIDE = '''Use matcher to pair rows between two lists (budget vs bank statement, invoices vs payments).
+- `matcher.match_amount_date(left, right, "amount", "date", 3)` pairs equal amounts within 3 days.
+- `matcher.match_on(left, right, ["invoice_id"])` pairs on exact keys.
+Both return {pairs, left_only, right_only, ambiguous}. Rows are your dicts, unchanged.
+`ambiguous` is YOUR decision: two candidates were equally good, so the engine did not choose. Read those rows and
+decide from their descriptions. left_only / right_only are the unmatched items the task usually asks about.
+Dates must already be ISO (use time.parse_date first).'''

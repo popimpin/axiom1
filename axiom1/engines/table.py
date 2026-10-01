@@ -137,3 +137,12 @@ def read_csv(path):
             raise EngineError(f"{path!r} line {n} has {len(cells)} cells; the header has {len(columns)}")
         rows.append(dict(zip(columns, cells)))
     return {"columns": columns, "rows": rows}
+
+
+GUIDE = '''Use table for every file you deliver: it writes exactly the columns asked for, in order.
+- Build rows as dicts with every column (None for a blank cell), then
+  `table.write_csv("calendar.csv", ["date", "start", "end", "title"], rows)`.
+- Amounts: pass strings or Decimals (from money), never floats. It refuses a float.
+- `table.read_csv(path)` reads an input CSV into {columns, rows}; a ragged line is refused, not padded.
+- `table.csv_text(columns, rows)` / `table.json_text(data)` give the text without writing; `table.write_json(path, data)` writes JSON.
+If it refuses: a row is missing a column or has an extra one. Fix the row, never the column list.'''

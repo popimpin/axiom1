@@ -34,6 +34,7 @@ def double(n):
     if not isinstance(n, int):
         raise EngineError("n must be a number")
     return 2 * n
+GUIDE = "Call fake.double(n) to double a whole number; anything else is refused."
 '''
 
 
@@ -78,6 +79,14 @@ class TheContractCatchesBadEngines(unittest.TestCase):
         # engines are copied into a job as `axiom_engines/`; `import axiom1` would not exist there
         found = _contract.problems(fake_engine("import axiom1.engines._base\n" + GOOD))
         self.assertTrue(any("'axiom1'" in p for p in found), found)
+
+    def test_a_missing_guide_is_caught(self):
+        bad = GOOD.replace('GUIDE = "Call fake.double(n) to double a whole number; anything else is refused."', "")
+        self.assertTrue(any("needs a GUIDE" in p for p in _contract.problems(fake_engine(bad))))
+
+    def test_a_guide_that_never_shows_a_function_is_caught(self):
+        bad = GOOD.replace("Call fake.double(n) to", "Use this to")
+        self.assertTrue(any("never shows how to call ['double']" in p for p in _contract.problems(fake_engine(bad))))
 
     def test_spec_args_must_match_the_signature(self):
         bad = GOOD.replace('"args": ["n"]', '"args": ["m"]')

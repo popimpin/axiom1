@@ -159,3 +159,10 @@ def excerpt(text, start_line, end_line):
         raise EngineError(f"line range {start_line}..{end_line} is out of range for text with {total} lines")
 
     return "\n".join(lines[start_line - 1 : end_line])
+
+
+GUIDE = '''Use quote whenever an answer must cite its source.
+- `quote.find_lines(text, ["refund", "days"])` finds candidate lines (all terms, any case), with line numbers.
+- `quote.verify_quote(text, "Refunds are issued within 30 days")` proves the exact passage is in the source
+  and returns its line. Check every quotation you deliver with it; a refusal means you misquoted - copy the words exactly.
+- `quote.excerpt(text, start_line, end_line)` returns exact lines to quote.'''

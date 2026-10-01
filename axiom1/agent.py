@@ -54,10 +54,15 @@ How to work:
      be worked out again. You write no tests. Never delete or rename a file the task did not ask you
      to; a lost file fails the check.
      Do not hand-write parsing or arithmetic. ENGINES do the parts with one right answer (times, dates,
-     durations, amounts, writing tables) and refuse with an error instead of guessing. process.py
-     imports them: `from axiom_engines import table` (they are installed in your workspace; do not
-     edit or commit them). Try any pure function first with the `engine` tool. Your part is reading
-     the files and deciding what each item is; the engines' part is everything else. Engines:
+     durations, amounts, matching, writing tables) and refuse with an error instead of guessing.
+     How to build the process:
+       a. Read the input files. For each item, decide what it is (that is your judgement; write those
+          readings into entry.json, or have process.py read them from the files).
+       b. In process.py, `from axiom_engines import time, table` (and any engine below) and turn
+          those readings into the deliverable: normalise with the engines, apply, write with table.
+       c. Try a function first with the `engine` tool; `engine_help` shows an engine's worked
+          examples and exact refusal messages. A refusal names what is wrong: fix that input.
+     The engines are installed in your workspace; do not edit or commit them. The manual:
 {engines}
    - "fix": a code change. Add a test under the check's test path (one ending in / is a directory) that
      FAILS on the old code and PASSES on yours, using the test COMMAND the check names.
@@ -151,6 +156,9 @@ class Workspace:
         result = engines.call(name, function, args or {})
         return {"result": json.loads(json.dumps(result, default=str))}   # Decimals come back as text
 
+    def engine_help(self, name: str) -> dict:
+        return {"manual": engines.manual([name])}
+
     def run(self, command: str) -> dict:
         if self.shell is None:
             raise ValueError("no shell in this workspace")
@@ -186,6 +194,9 @@ class Workspace:
                                                          "function": {"type": "string"},
                                                          "args": {"type": "object"}},
                         "required": ["name", "function"]}},
+        {"name": "engine_help", "description": "One engine's manual: how to use it, every function with worked "
+         "examples, and the exact messages it refuses with.",
+         "parameters": {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}},
     ]
 
 
@@ -328,7 +339,7 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
                        "your workspace. Repair process.py (or entry.json), run it, then commit, claim and verify.")
         messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
                         agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "",
-                        engines=textwrap.indent(engines.summary(), "       "))},
+                        engines=textwrap.indent(engines.manual(examples=False), "       "))},
                     {"role": "user", "content": opening}]
         try:
             return await _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log,
@@ -345,7 +356,28 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
 
 ENTRY_PROMPT = """A known, verified process will do this job. Your only part is its entry: the values that change
 from one run to the next. Return ONLY a JSON object with exactly the same keys as the example, filled in
-for THIS task. No other text."""
+for THIS task and THESE files (the example was filled for different files). No other text."""
+ENTRY_FILES_BUDGET = 12000      # characters of the job's files shown to the entry step
+
+
+def _input_files(ws, budget=ENTRY_FILES_BUDGET):
+    """The job's own files, for an entry that is a reading of them (which emails were accepted, which rows
+    match). Without them the entry step can only copy the example, which was filled for other files."""
+    parts, used = [], 0
+    for path in ws.list_files()["files"]:
+        if path in ("process.py", "entry.json") or path.startswith(ENGINES_DIR + "/"):
+            continue
+        try:
+            text = ws.read_file(path)["content"]
+        except (ValueError, UnicodeDecodeError):
+            continue
+        block = f"--- {path}\n{text}"
+        if used + len(block) > budget:
+            parts.append(f"--- (more files not shown: the {budget}-character budget is used)")
+            break
+        parts.append(block)
+        used += len(block)
+    return "\n".join(parts)
 
 
 def _json_object(text):
@@ -369,7 +401,8 @@ async def _replay(agent_id, task, model, ws, session, start_sha, log):
         try:
             reply = model([{"role": "system", "content": ENTRY_PROMPT},
                            {"role": "user", "content": f"Task: {task['title']}\n\nExample entry from an earlier run:\n"
-                                                       f"{proc['entry_example']}"}], [])
+                                                       f"{proc['entry_example']}\n\nThis job's files:\n"
+                                                       f"{_input_files(ws)}"}], [])
             entry = _json_object(reply.get("content"))
             messages.append({"role": "assistant", "content": reply.get("content") or ""})
         except (ValueError, RuntimeError):

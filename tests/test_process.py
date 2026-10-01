@@ -286,6 +286,21 @@ class Replay(unittest.TestCase):
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0], [])                            # no tools offered: it fills a form, nothing else
 
+    def test_the_entry_step_sees_this_jobs_files(self):
+        # an entry can be a reading of the files (which emails were accepted); the example was filled for others
+        self._lock_v1(with_entry=True)
+        _, wt = self._instance("second")
+        seen = []
+
+        def entry_only(messages, tools):
+            seen.append(messages[-1]["content"])
+            return {"role": "assistant", "content": '{"output": "summary.csv"}'}
+        asyncio.run(run_agent("worker", wt, self.db, entry_only, log=lambda *_: None, shell=DockerSandbox(IMAGE)))
+        receipt = next(p for p in sorted(Path(wt).rglob("*.txt")) if "axiom_engines" not in p.parts)
+        self.assertIn(receipt.read_text(encoding="utf-8").strip().splitlines()[0], seen[0])
+        self.assertIn(f"--- {receipt.relative_to(wt).as_posix()}", seen[0])
+        self.assertNotIn("--- process.py", seen[0])
+
     def test_input_that_strays_from_the_process_brings_in_the_model_to_repair_it(self):
         self._lock_v1(with_entry=False)
         _, wt = self._instance("strayed", {"receipts/c.txt": "Corner Cafe\nTotal: $7.25\n"})

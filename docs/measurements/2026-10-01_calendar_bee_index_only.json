@@ -1,0 +1,45 @@
+{
+ "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+ "where": "Bee :11435 (Ollama, local)",
+ "thinking": "off (reasoning_effort none)",
+ "engines": "all 8, agent given the function INDEX only (no manual)",
+ "note": "stopped after instances 0-1 to free Bee for the manual run",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [],
+   "model_calls": 40,
+   "cut_off": 0,
+   "prompt_tokens": 602990,
+   "completion_tokens": 16580,
+   "seconds": 726.9
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": false,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": null,
+   "outcome": "",
+   "claims": [
+    "refuted"
+   ],
+   "model_calls": 40,
+   "cut_off": 0,
+   "prompt_tokens": 295500,
+   "completion_tokens": 4915,
+   "seconds": 249.6
+  }
+ ]
+}

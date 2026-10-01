@@ -1,0 +1,622 @@
+{
+ "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+ "mode": "form, one item at a time",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 500,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (process locked in as v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_kids'.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Sunday May 10",
+     "time": "4:00 pm",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Friday May 22",
+     "time": "3pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/03_car.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Sunday May 10",
+     "time": "11:00 am",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Wednesday May 13",
+     "time": "9:00 am",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/05_dentist.txt",
+     "said_yes": "no",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_coffee.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Friday May 8",
+     "time": "1:00 pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/08_re_team.txt",
+     "said_yes": "yes",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_team.txt",
+     "date": "Saturday May 23",
+     "time": "17:00",
+     "duration": ""
+    },
+    {
+     "file": "inbox/09_cancel_car.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_car.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-10",
+     "start": "16:00",
+     "end": "16:45",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "17:00",
+     "end": "17:30",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-13",
+     "start": "09:00",
+     "end": "09:45",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "13:00",
+     "end": "13:30",
+     "title": "Coffee with Sam"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8831,
+   "completion_tokens": 816,
+   "seconds": 89.1
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 501,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_call.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Thursday May 14",
+     "time": "2:30 pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/02_coffee.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Thursday May 14",
+     "time": "11:30",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/03_kids'.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Monday May 18",
+     "time": "9:30am",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/04_dentist.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Monday May 4",
+     "time": "16:30",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "said_yes": "no",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Friday May 8",
+     "time": "10:30am",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/08_re_coffee.txt",
+     "said_yes": "yes",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_coffee.txt",
+     "date": "Friday May 15",
+     "time": "13:30",
+     "duration": ""
+    },
+    {
+     "file": "inbox/09_cancel_kids'.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_kids'.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-14",
+     "start": "14:30",
+     "end": "15:00",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-15",
+     "start": "13:30",
+     "end": "14:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-04",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-08",
+     "start": "10:30",
+     "end": "11:15",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8874,
+   "completion_tokens": 821,
+   "seconds": 66.3
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 502,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Sunday May 17",
+     "time": "4pm",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/02_coffee.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Saturday May 16",
+     "time": "2pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Thursday May 14",
+     "time": "10:00",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Thursday May 14",
+     "time": "4pm",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/05_team.txt",
+     "said_yes": "no",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Tuesday May 5",
+     "time": "4pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/08_re_coffee.txt",
+     "said_yes": "yes",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_coffee.txt",
+     "date": "Sunday May 17",
+     "time": "16:00",
+     "duration": ""
+    },
+    {
+     "file": "inbox/09_cancel_dentist.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_dentist.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-17",
+     "start": "16:00",
+     "end": "17:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "16:00",
+     "end": "16:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-14",
+     "start": "16:00",
+     "end": "17:00",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-05",
+     "start": "16:00",
+     "end": "16:30",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8801,
+   "completion_tokens": 820,
+   "seconds": 65.7
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 503,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Friday May 8",
+     "time": "3:00 pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/02_kids'.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Sunday May 17",
+     "time": "15:00",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Tuesday May 5",
+     "time": "3:30 pm",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Wednesday May 6",
+     "time": "16:30",
+     "duration": "about 45 minutes"
+    },
+    {
+     "file": "inbox/05_team.txt",
+     "said_yes": "no",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_car.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Tuesday May 12",
+     "time": "13:30",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/08_re_kids'.txt",
+     "said_yes": "yes",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_kids'.txt",
+     "date": "Monday May 18",
+     "time": "5:00 pm",
+     "duration": ""
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_coffee.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-08",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "17:00",
+     "end": "17:30",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-06",
+     "start": "16:30",
+     "end": "17:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-12",
+     "start": "13:30",
+     "end": "14:30",
+     "title": "Car service"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8881,
+   "completion_tokens": 834,
+   "seconds": 66.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 504,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_team.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Friday May 8",
+     "time": "10:30am",
+     "duration": "about 60 minutes"
+    },
+    {
+     "file": "inbox/02_car.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Wednesday May 20",
+     "time": "2:30pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Thursday May 14",
+     "time": "15:00",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/04_budget.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Sunday May 17",
+     "time": "11:00",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/05_kids'.txt",
+     "said_yes": "no",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/06_call.txt",
+     "said_yes": "yes",
+     "kind": "agreed",
+     "refers_to": "",
+     "date": "Monday May 18",
+     "time": "4:30pm",
+     "duration": "about 30 minutes"
+    },
+    {
+     "file": "inbox/08_re_car.txt",
+     "said_yes": "yes",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_car.txt",
+     "date": "Thursday May 21",
+     "time": "16:30",
+     "duration": ""
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_coffee.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": ""
+    }
+   ],
+   "truth": [
+    {
+     "date": "2026-05-08",
+     "start": "10:30",
+     "end": "11:30",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-21",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "11:00",
+     "end": "11:30",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Call with the landlord"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 8798,
+   "completion_tokens": 942,
+   "seconds": 70.1
+  }
+ ]
+}

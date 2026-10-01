@@ -277,3 +277,27 @@ v9 per model: 1.7B 49 calls, 40k tokens, **20.5 s per inbox**; 9B 46 calls, 48k 
   date field); the menus caught them as corrections.
 - Every version's fixes were found in the model's own output. Several were the harness being pedantic
   (spacing, a field that did not apply, a field left out), not the model being wrong.
+
+## Fresh seeds, and the one decision that does not shrink (2026-10-01)
+
+v9 on seeds 500-504 (never used while tuning): qwen3:1.7b 3/5, ornith:9b 0/3. Every miss was the agree/decline
+reading inside the 4-way kind (1.7B: "Sorry, I can't make that" as agreed; 9B: "Sounds good" for a school play
+and a car service as not agreed). v10 asks it alone and first: said_yes yes/no, with my reply quoted (asked only
+when I replied); the harness derives the kind from it.
+
+| v10, seeds 500-504 | witnessed | calls | s/inbox |
+|---|---|---|---|
+| qwen3:1.7b | 3/5 | 45 | 21 |
+| ornith:9b | **5/5** (v9: 0/3) | 73 | 140 |
+| Ornith 35B | **5/5** | 45 | ~70 |
+
+- The 9B's misreadings all went away when the decision stood alone. It spent extra rounds writing the reply
+  text into said_yes; the field's name invites copying.
+- **qwen3:1.7b cannot make this decision.** It answered said_yes = yes for every email, including "Sorry, I
+  can't make that". Asked the bare question with nothing else in the prompt, it said "yes" to "I can't, sorry."
+  This is a limit of the model, not of the presentation: everything else in the calendar form it now does.
+- So the unit to size is the decision, not the job: kind, links and menu picks on the 1.7B; yes/no on a reply
+  from a frozen table of witnessed answers, else a model that can read it. That is the mesh's routing
+  (tier 0 table / tier 1 small / tier 2 large), applied per decision. Not built yet.
+- Seeds 500-504 informed v10 (the 1.7B's decline error was also seen on the tuning seeds); a confirmation on
+  untouched seeds is still owed.

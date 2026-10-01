@@ -1,0 +1,116 @@
+{
+ "model": "nvidia/Nemotron-3_5-Lightning",
+ "thinking": "auto",
+ "lessons": true,
+ "agents_per_task": 1,
+ "rows": [
+  {
+   "task": "file-in-the-way",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 97.7,
+   "model_calls": 40,
+   "thinking_calls": 40,
+   "prompt_tokens": 536395,
+   "completion_tokens": 11236
+  },
+  {
+   "task": "unicode-log-crash",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 31.7,
+   "model_calls": 9,
+   "thinking_calls": 9,
+   "prompt_tokens": 67881,
+   "completion_tokens": 5033
+  },
+  {
+   "task": "tool-call-as-text",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 73.2,
+   "model_calls": 40,
+   "thinking_calls": 40,
+   "prompt_tokens": 620138,
+   "completion_tokens": 4506
+  },
+  {
+   "task": "dial-off-after-refutation",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 85.5,
+   "model_calls": 17,
+   "thinking_calls": 17,
+   "prompt_tokens": 261708,
+   "completion_tokens": 13322
+  },
+  {
+   "task": "tamper-verdict-crash",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 90.2,
+   "model_calls": 40,
+   "thinking_calls": 40,
+   "prompt_tokens": 552979,
+   "completion_tokens": 8371
+  },
+  {
+   "task": "event-kind-clash",
+   "position": 0,
+   "witnessed": false,
+   "claims": [
+    "refuted"
+   ],
+   "reasons": [
+    "the test still fails with the fix"
+   ],
+   "lessons_received": 0,
+   "seconds": 194.7,
+   "model_calls": 40,
+   "thinking_calls": 40,
+   "prompt_tokens": 730499,
+   "completion_tokens": 7583
+  },
+  {
+   "task": "calibration-accuses-honest-fix",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 83.9,
+   "model_calls": 40,
+   "thinking_calls": 40,
+   "prompt_tokens": 562537,
+   "completion_tokens": 5408
+  },
+  {
+   "task": "cli-swallows-tests-flag",
+   "position": 0,
+   "witnessed": false,
+   "claims": [],
+   "reasons": [],
+   "lessons_received": 0,
+   "seconds": 110.8,
+   "model_calls": 40,
+   "thinking_calls": 40,
+   "prompt_tokens": 293168,
+   "completion_tokens": 17093
+  }
+ ]
+}

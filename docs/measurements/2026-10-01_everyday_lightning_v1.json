@@ -1,0 +1,116 @@
+{
+ "model": "nvidia/Nemotron-3_5-Lightning",
+ "thinking": "auto",
+ "rows": [
+  {
+   "task": "receipts-to-spreadsheet",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 17.9,
+   "model_calls": 9,
+   "prompt_tokens": 39576,
+   "completion_tokens": 2434
+  },
+  {
+   "task": "receipts-to-spreadsheet",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 56.5,
+   "model_calls": 28,
+   "prompt_tokens": 156566,
+   "completion_tokens": 3251
+  },
+  {
+   "task": "tidy-downloads",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "refuted",
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 89.1,
+   "model_calls": 33,
+   "prompt_tokens": 216629,
+   "completion_tokens": 11509
+  },
+  {
+   "task": "tidy-downloads",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 32.5,
+   "model_calls": 21,
+   "prompt_tokens": 163062,
+   "completion_tokens": 1986
+  },
+  {
+   "task": "merge-contacts",
+   "position": 0,
+   "done": false,
+   "claims": [
+    "refuted",
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 204.1,
+   "model_calls": 40,
+   "prompt_tokens": 416631,
+   "completion_tokens": 43151
+  },
+  {
+   "task": "merge-contacts",
+   "position": 1,
+   "done": false,
+   "claims": [
+    "refuted"
+   ],
+   "last_reason": "the delivered files do not pass the acceptance check",
+   "seconds": 97.3,
+   "model_calls": 20,
+   "prompt_tokens": 122790,
+   "completion_tokens": 22218
+  },
+  {
+   "task": "policy-answer-with-source",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 12.5,
+   "model_calls": 8,
+   "prompt_tokens": 28332,
+   "completion_tokens": 924
+  },
+  {
+   "task": "policy-answer-with-source",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 35.7,
+   "model_calls": 23,
+   "prompt_tokens": 110556,
+   "completion_tokens": 3938
+  }
+ ]
+}

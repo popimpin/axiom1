@@ -1,5 +1,9 @@
 # Measurements
 
+**Every number before 2026-10-01 comes from ONE trivial task** (fix `add()` in a two-file repo), repeated.
+Those runs test mechanics, not usefulness, and they sit at ceiling. The sections from 2026-10-01 on use
+real work: bugs from this repository's history, and everyday jobs a non-coder would hand off.
+
 Every number here comes from a script in `examples/` and a results file in `docs/measurements/`.
 Runs that turned out to measure the wrong thing stay in, labelled, so nobody re-quotes them.
 
@@ -99,3 +103,47 @@ off when a task arrives with a verified skill, back on after a refutation). Thin
   thinking for the rest of the run. **The v2 numbers above predate both fixes.**
 - Prompt tokens dominate cost in this loop (median 54k-93k per run vs 1.2k-1.9k completion), because
   the transcript is resent on every call.
+
+## Everyday jobs for people who will not check the result (2026-10-01)
+
+`examples/everyday_tasks.py`. Four jobs asked the way a person would ask: receipts into a spreadsheet
+for an accountant, tidy a downloads folder, merge two contact exports, answer a customer from the
+policy documents quoting the exact sentence. Messy synthetic data. Each check is written once per task
+type and derives the truth from the data; its feedback says what is wrong, never the answer. Every
+delivery also passes the universal guards (nothing lost, well-formed CSV/JSON). Validated before use:
+untouched data fails, a solver that reads only the visible files passes, and 14 wrong-but-plausible
+deliveries are each rejected for their own reason.
+
+Model `nvidia/Nemotron-3_5-Lightning`, thinking `auto`, lessons on, sandboxed shell, two agents per job.
+
+| | |
+|---|---|
+| jobs completed, verified by the harness | **8/8** |
+| completed on the first delivery | 3/8 |
+| wrong deliveries caught before acceptance | **6** |
+| wrong results accepted | **0** |
+| median time per job | 36 s |
+| cost per job | **$0.0073** (844k tokens in, 34k out, all 8 jobs) |
+
+Files: `2026-10-01_everyday_lightning_v1.json` (receipts, downloads, policy) and
+`2026-10-01_everyday_contacts_v2.json` (contacts).
+
+- **The contacts task was first unsolvable, by our mistake.** Both agents "failed" it in v1. Three
+  people appear only in the email export, whose phone column is blank, yet the check demanded their
+  number. Validation had passed because the gold solutions were written from the hidden truth. Fixed:
+  the check requires a phone only where a source has one (inventing one now fails), and every gold
+  is a solver that reads only the files the agent sees. The old check, run against that solver, is
+  refuted, so validation now rejects an unsolvable task. v1's contacts rows are excluded above.
+- Small: 4 task types, 2 agents each, synthetic data. A demonstration that the loop works for a
+  non-coder's errand, not a rate.
+
+## Real bugs from this repository, Lightning alone (2026-10-01)
+
+`examples/real_tasks.py`: 8 bugs we hit building Axiom-1, given as the symptom we observed, in a fresh
+one-commit repo, judged by the real regression test (hidden). Validated: each holdout fails on the buggy
+code for the bug's own reason and passes on the real fix.
+
+`2026-10-01_real_code_tasks_lightning_pilot.json`: one agent per bug, 40 steps, the code-only
+instructions of the time. **0/8 solved.** One claim, refuted ("the test still fails with the fix").
+6 of 8 agents hit the step limit. 3.6M prompt tokens (about $0.22). The smallest model does not fix
+real bugs in this codebase unaided; this is the baseline for larger models.

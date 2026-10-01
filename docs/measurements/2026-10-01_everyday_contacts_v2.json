@@ -1,0 +1,33 @@
+{
+ "model": "nvidia/Nemotron-3_5-Lightning",
+ "thinking": "auto",
+ "rows": [
+  {
+   "task": "merge-contacts",
+   "position": 0,
+   "done": true,
+   "claims": [
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 23.3,
+   "model_calls": 11,
+   "prompt_tokens": 52670,
+   "completion_tokens": 2865
+  },
+  {
+   "task": "merge-contacts",
+   "position": 1,
+   "done": true,
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "last_reason": "the acceptance check failed before the work and passes on what was delivered",
+   "seconds": 46.2,
+   "model_calls": 16,
+   "prompt_tokens": 76419,
+   "completion_tokens": 6848
+  }
+ ]
+}

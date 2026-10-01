@@ -1,0 +1,95 @@
+{
+ "model": "qwen3:1.7b",
+ "mode": "form, one item at a time",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "qwen3:1.7b",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (process locked in as v1)",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 5782,
+   "completion_tokens": 570,
+   "seconds": 15.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "refuted",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the delivered files do not pass the acceptance check",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 5792,
+   "completion_tokens": 592,
+   "seconds": 15.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 11,
+   "corrections": [
+    "inbox/99_newsletter.txt: a new meeting needs its date, time and duration",
+    "inbox/99_newsletter.txt: a new meeting needs its date, time and duration",
+    "inbox/99_newsletter.txt: duration '1 hour' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/99_newsletter.txt: duration '1 hour' is not in this file; copy it exactly",
+   "model_calls": 11,
+   "cut_off": 0,
+   "prompt_tokens": 7331,
+   "completion_tokens": 679,
+   "seconds": 14.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly",
+    "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly",
+    "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 1953,
+   "completion_tokens": 168,
+   "seconds": 4.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "qwen3:1.7b",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 5768,
+   "completion_tokens": 591,
+   "seconds": 15.5
+  }
+ ]
+}

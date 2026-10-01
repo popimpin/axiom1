@@ -247,6 +247,10 @@ class ChatModel:
                 if e.code < 500 and e.code != 429 or attempt == 2:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
                                        f"{e.read()[:300].decode(errors='replace')}") from None
+            except (TimeoutError, urllib.error.URLError) as e:
+                # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes)
+                if attempt == 2:
+                    raise RuntimeError(f"model endpoint did not answer: {e}") from None
             time.sleep(2 ** attempt)
 
 

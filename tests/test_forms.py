@@ -141,7 +141,7 @@ class FillEach(unittest.TestCase):
     def test_a_field_that_does_not_apply_is_cleared_not_judged(self):
         # seen live: qwen3:1.7b put the file it was reading into refers_to on every "add"
         model = scripted({"kind": "add", "refers_to": "a.txt", "when": "1pm"})
-        clear = lambda a: {**a, "refers_to": ""} if a["kind"] == "add" else a          # noqa: E731
+        clear = lambda a, text: {**a, "refers_to": ""} if a["kind"] == "add" else a    # noqa: E731
         self.assertFalse(forms.fill_each(model, "t", self.ITEMS[:1], self.form, max_rounds=1)["ok"])
         res = forms.fill_each(scripted({"kind": "add", "refers_to": "a.txt", "when": "1pm"}), "t", self.ITEMS[:1],
                               self.form, relevant=clear, max_rounds=1)

@@ -23,6 +23,16 @@ from pathlib import Path
 
 from .verifier import ENTRY_FILE, PROCESS_FILE, install_engines, process_argv
 
+# A form answer is a few hundred characters. A small output budget turns a runaway reply into a quick failed
+# round instead of minutes of generation (seen on Bee: one 9B call ran 3 minutes).
+FORM_MAX_TOKENS = 512
+
+
+def _small_budget(model):
+    if hasattr(model, "max_tokens"):
+        model.max_tokens = min(model.max_tokens, FORM_MAX_TOKENS)
+
+
 FORM_PROMPT = """You fill in a form about the files below. Read them and call `submit` once with the form.
 Copy text exactly as it is written in the files: do not convert, reformat, complete or invent anything.
 A pipeline then does every conversion and checks your form. If it refuses, you get its message: fix
@@ -140,6 +150,7 @@ def fill(model, task, files, schema, pipeline, verbatim=None, fixed=None, max_ro
     "corrections", "produced"}: the entry is the form plus `fixed`, ready to be entry.json."""
     if hasattr(model, "thinking"):
         model.thinking = False                         # selection, not deliberation
+    _small_budget(model)
     tool = {"type": "function", "function": {"name": "submit", "description": "Submit the filled-in form.",
                                              "parameters": schema}}
     shown = "\n\n".join(f"--- {path}\n{text}" for path, text in sorted(files.items()))
@@ -174,9 +185,13 @@ def fill(model, task, files, schema, pipeline, verbatim=None, fixed=None, max_ro
     return {"ok": False, "entry": None, "rounds": max_rounds, "corrections": corrections, "produced": {}}
 
 
-ITEM_PROMPT = """You fill in a short form about ONE file, shown below. Call `submit` once with the form.
-Copy text exactly as it is written in this file: do not convert, reformat, complete or invent anything, and
-never use text from any other file. If the form is refused, you get the reason: fix it and submit again."""
+# The whole job's wording ("go through the emails...") pulled a 9B model into planning the whole job and asking
+# for the other files until its reply ran out, though it had read the one email right. The job is background.
+ITEM_PROMPT = """You fill in a short form about ONE file, shown below, and call `submit` once with it. That is
+your whole job: the system handles the other files and does all the rest. Do not plan the overall task or ask
+for other files. Copy text exactly as it is written in this file: do not convert, reformat, complete or invent
+anything, and never use text from any other file. If the form is refused, you get the reason: fix it and
+submit again."""
 
 
 def fill_each(model, task, items, item_form, copied=(), item_problems=None, context=None, relevant=None,
@@ -188,7 +203,7 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
     items: [(name, text)] in order. item_form(name, answers) -> JSON schema for this item.
     copied: fields whose text must appear in this item. item_problems(name, text, answer, answers) -> problems
     (e.g. an engine that cannot read a copied time). context(name, answers) -> text shown above the item.
-    relevant(answer) -> answer with the fields that do not apply to its choice cleared, before anything is
+    relevant(answer, text) -> answer with the fields that do not apply to its choice cleared, before anything is
     judged: a small model fills every field it is shown, and refusing an "add" over a field only a "move" uses
     is the harness being pedantic, not the model being wrong.
     copied may also be a dict field -> same(value, text) -> bool, for fields where an engine decides what counts as
@@ -197,6 +212,7 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
     value outside a menu only lists the menu)."""
     if hasattr(model, "thinking"):
         model.thinking = False
+    _small_budget(model)
     answers, corrections, rounds = [], [], 0
     for name, text in items:
         schema = item_form(name, answers)
@@ -204,7 +220,9 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
                                                  "parameters": schema}}
         above = (context(name, answers) + "\n\n") if context else ""
         messages = [{"role": "system", "content": ITEM_PROMPT},
-                    {"role": "user", "content": f"Task: {task}\n\n{above}The file:\n--- {name}\n{text}"}]
+                    {"role": "user", "content": f"Background - the overall job, which the system does, not you: "
+                                                f"{task}\n\n{above}Your only part: the form for this one file.\n"
+                                                f"--- {name}\n{text}"}]
         for _ in range(max_rounds):
             rounds += 1
             reply = model(messages, [tool])
@@ -212,7 +230,7 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
             messages.append({"role": "assistant", "content": json.dumps(form) if form is not None
                              else (reply.get("content") or "")})
             if form is not None and relevant:
-                form = relevant(form)
+                form = relevant(form, text)
             if form is None:
                 problems = ["No form was submitted. Call `submit` with the form."]
             else:

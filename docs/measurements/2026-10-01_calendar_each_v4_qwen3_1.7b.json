@@ -1,0 +1,107 @@
+{
+ "model": "qwen3:1.7b",
+ "mode": "form, one item at a time",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_team.txt: form is missing 'duration'",
+    "inbox/08_re_team.txt: form is missing 'time'",
+    "inbox/08_re_team.txt: form is missing 'time'"
+   ],
+   "reason": "inbox/08_re_team.txt: form is missing 'time'",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 6014,
+   "completion_tokens": 555,
+   "seconds": 13.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+    "inbox/08_re_dentist.txt: form is missing 'time'",
+    "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 6077,
+   "completion_tokens": 579,
+   "seconds": 12.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_call.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+    "inbox/08_re_call.txt: form is missing 'time'",
+    "inbox/08_re_call.txt: duration 'about 45 minutes' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/08_re_call.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 6043,
+   "completion_tokens": 560,
+   "seconds": 12.2
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly",
+    "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly",
+    "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/01_call.txt: time '1pm' is not in this file; copy it exactly",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 1953,
+   "completion_tokens": 168,
+   "seconds": 4.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 9,
+   "corrections": [
+    "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+    "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+    "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly"
+   ],
+   "reason": "inbox/08_re_dentist.txt: duration 'about 45 minutes' is not in this file; copy it exactly",
+   "model_calls": 9,
+   "cut_off": 0,
+   "prompt_tokens": 6074,
+   "completion_tokens": 600,
+   "seconds": 12.1
+  }
+ ]
+}

@@ -1081,17 +1081,23 @@ def calendar_context(files):
     return context
 
 
-def calendar_relevant(a):
+def calendar_relevant(a, text=""):
     """refers_to only means something for a move or a cancel; date, time and duration only for an add or a move.
-    'Same length' on a move says the length does not change: that is no duration, not a vague one."""
-    a = dict(a)
+    A field left out is a field not given. A move's duration counts only if that email states one: 'Same length',
+    or the old length carried over (seen live: a 1.7B model filled in the original 45 minutes), means unchanged."""
+    a = {k: ("" if v is None else v) for k, v in dict(a).items()}
+    for field in ("refers_to", "date", "time", "duration"):
+        a.setdefault(field, "")
     kind = CALENDAR_KINDS.get(a.get("kind"))
     if kind in ("add", "ignore"):
         a["refers_to"] = ""
     if kind in ("cancel", "ignore"):
         a.update(date="", time="", duration="")
-    if kind == "move" and re.match(r"\s*same\b", a.get("duration") or "", re.I):
-        a["duration"] = ""
+    if kind == "move" and a["duration"]:
+        stated = calendar_same("2026-01-01")["duration"]       # the year does not matter for a duration
+        written = re.sub(r"\s+", "", a["duration"]).lower() in re.sub(r"\s+", "", text).lower()
+        if re.match(r"\s*same\b", a["duration"], re.I) or not (written or stated(a["duration"], text)):
+            a["duration"] = ""
     return a
 
 
@@ -1291,6 +1297,8 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                 row = {"task": task["id"], "instance": i, "seed": first_seed + i, "model": model.model,
                        "done": label == "witnessed", "label": label, "rounds": res["rounds"],
                        "corrections": res["corrections"], "reason": reason[:300], "model_calls": used["calls"],
+                       "answers": res.get("answers") or (res.get("entry") or {}),     # to trace a refutation
+                       "truth": truth,
                        "cut_off": used["cut_off"], "prompt_tokens": used["prompt_tokens"],
                        "completion_tokens": used["completion_tokens"], "seconds": round(time.time() - t0, 1)}
                 rows.append(row)

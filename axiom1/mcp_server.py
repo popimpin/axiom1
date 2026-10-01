@@ -92,9 +92,11 @@ def build(ax: Axiom, agent_id: str | None = None, caps=(), identify=None) -> Fas
         return await call(ctx, lambda me: {"checks": ax.list_checks()})
 
     @mcp.tool()
-    async def post_task(title: str, ctx: Context, caps: list[str] | None = None) -> dict:
-        """Post work to the collective. `caps` are what an agent needs to take it."""
-        return await call(ctx, lambda me: ax.post_task(me, title, caps or []))
+    async def post_task(title: str, ctx: Context, caps: list[str] | None = None,
+                        check_id: str | None = None) -> dict:
+        """Post work to the collective. `caps` are what an agent needs to take it; `check_id` names the
+        check that will judge it (whoever takes it then also gets that check's locked-in process)."""
+        return await call(ctx, lambda me: ax.post_task(me, title, caps or [], check_id))
 
     @mcp.tool()
     async def take_task(ctx: Context, lease_seconds: int = 600) -> dict:

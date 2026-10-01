@@ -52,6 +52,9 @@ CREATE TABLE IF NOT EXISTS lessons  (id TEXT PRIMARY KEY, kind TEXT NOT NULL, cl
                                      check_id TEXT NOT NULL, task_title TEXT, agent TEXT NOT NULL,
                                      label TEXT NOT NULL, reason TEXT NOT NULL, changed TEXT NOT NULL,
                                      body TEXT NOT NULL, at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS processes(check_id TEXT NOT NULL, version INTEGER NOT NULL, script TEXT NOT NULL,
+                                     entry TEXT, claim_id TEXT NOT NULL, agent TEXT NOT NULL, at REAL NOT NULL,
+                                     PRIMARY KEY (check_id, version));
 """
 
 # columns added after a table first shipped; applied to older database files on open
@@ -64,6 +67,7 @@ MIGRATIONS = [
     ("checks", "base_ref", "TEXT"),
     ("claims", "anchored", "INTEGER NOT NULL DEFAULT 1"),
     ("checks", "claim_kind", "TEXT NOT NULL DEFAULT 'fix'"),
+    ("tasks", "check_id", "TEXT"),
 ]
 
 # What a claim can assert, how the server checks it, and how a witnessed one is written down. The
@@ -286,12 +290,15 @@ class Axiom:
 
     # ---- tasks: posted to the collective, taken by capability, held by lease ----
     @_locked
-    def post_task(self, agent_id, title, caps=()):
+    def post_task(self, agent_id, title, caps=(), check_id=None):
+        """`check_id` names the check that will judge the work, so whoever takes the task also gets that
+        check's locked-in process, if one exists."""
         self._agent(agent_id)
         task_id = uuid.uuid4().hex[:12]
         with self.db:
-            self.db.execute("INSERT INTO tasks VALUES (?,?,?,?,'open',NULL,NULL,?)",
-                            (task_id, title, json.dumps(sorted(set(caps))), agent_id, self.clock()))
+            self.db.execute("INSERT INTO tasks (id, title, caps, posted_by, status, at, check_id) "
+                            "VALUES (?,?,?,?,'open',?,?)",
+                            (task_id, title, json.dumps(sorted(set(caps))), agent_id, self.clock(), check_id))
             self._event("post_task", agent_id, task_id, title=title)
         return {"id": task_id, "status": "open"}
 
@@ -349,9 +356,39 @@ class Axiom:
                     self.db.execute("UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
                                     (agent_id, self.clock() + lease_s, t["id"]))
                     self._event("take_task", agent_id, t["id"])
-                return {"id": t["id"], "title": t["title"], "lease_s": lease_s,
-                        "lessons": self._lessons_for(t["title"])}
+                out = {"id": t["id"], "title": t["title"], "lease_s": lease_s,
+                       "lessons": self._lessons_for(t["title"])}
+                if t["check_id"]:
+                    out["check_id"] = t["check_id"]
+                    proc = self._process_for(t["check_id"])
+                    if proc:
+                        out["process"] = proc
+                return out
         return None
+
+    # ---- processes: one witnessed pass locks in the deterministic part of a job ----
+    def _lock_process(self, c, check):
+        """Store the process that a witnessed delivery used, as the next version for its check. Only the
+        server writes these, and only when it re-ran the process itself and the check passed on its output."""
+        script = verifier.git_show(check["repo"], c["after_sha"], verifier.PROCESS_FILE)
+        entry = verifier.git_show(check["repo"], c["after_sha"], verifier.ENTRY_FILE)
+        row = self.db.execute("SELECT MAX(version) AS v FROM processes WHERE check_id=?", (check["id"],)).fetchone()
+        version = (row["v"] or 0) + 1
+        self.db.execute("INSERT INTO processes VALUES (?,?,?,?,?,?,?)",
+                        (check["id"], version, script, entry, c["id"], c["agent"], self.clock()))
+        self._event("process_locked", c["agent"], check["id"], version=version, claim=c["id"])
+
+    def _process_for(self, check_id):
+        r = self.db.execute("SELECT * FROM processes WHERE check_id=? ORDER BY version DESC LIMIT 1",
+                            (check_id,)).fetchone()
+        if not r:
+            return None
+        return {"version": r["version"], "script": r["script"], "entry_example": r["entry"],
+                "locked_by": r["agent"], "from_claim": r["claim_id"]}
+
+    @_locked
+    def process_for(self, check_id):
+        return self._process_for(check_id)
 
     # ---- lessons: what the collective learned, written by the server from its own verdicts ----
     def _lessons_for(self, task_title, limit=5):
@@ -516,6 +553,8 @@ class Axiom:
                                 "lease_until=NULL WHERE id=?", (status, status, c["task_id"]))
             self._event(label, c["agent"], claim_id, reason=reason)
             self._write_lesson(c, check, label, reason, evidence, anchored)
+            if label == WITNESSED and anchored and (evidence.get("process") or {}).get("reproduced"):
+                self._lock_process(c, check)
             if "holdout_tail" in private:  # operator-only: the event log is not on the agent surface
                 self._event("holdout_failed", c["agent"], claim_id, tail=private["holdout_tail"])
             if "check_output" in private:  # a deliver check's full output may hold the hidden truth

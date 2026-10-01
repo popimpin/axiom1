@@ -48,6 +48,13 @@ def resolve(repo, ref):
     return _git(repo, "rev-parse", "--verify", f"{ref}^{{commit}}").stdout.strip()
 
 
+def git_show(repo, sha, path):
+    """A file's content at a commit, or None if it is not there."""
+    r = subprocess.run(["git", "-C", str(repo), "show", f"{sha}:{path}"], capture_output=True,
+                       stdin=subprocess.DEVNULL)
+    return r.stdout.decode("utf-8", "replace") if r.returncode == 0 else None
+
+
 def changed_files(repo, before_sha, after_sha):
     return _git(repo, "diff", "--name-only", before_sha, after_sha).stdout.split()
 
@@ -204,6 +211,10 @@ def _verify(repo, before_sha, after_sha, argv, test_paths, sandbox, holdout):
 
 
 CHECK_DIR = ".axiom_check"
+# A deliver job's PROCESS: a program that turns the original files into the deliverable, with the job's
+# variable parts in ENTRY_FILE. Verified by re-running it; once witnessed it is locked in and replayed.
+PROCESS_FILE = "process.py"
+ENTRY_FILE = "entry.json"
 
 
 def _install_check(tree, holdout):
@@ -296,23 +307,44 @@ def deliver(repo, before_sha, after_sha, argv, test_paths, sandbox=None, holdout
     evidence["guards"] = {"checked": ["nothing lost", "well-formed csv/json"], "problems": problems}
     if problems:
         return "refuted", "universal guard: " + "; ".join(problems), evidence, private
-    with tempfile.TemporaryDirectory() as before_dir, tempfile.TemporaryDirectory() as after_dir:
+    with tempfile.TemporaryDirectory() as before_dir, tempfile.TemporaryDirectory() as after_dir, \
+            tempfile.TemporaryDirectory() as replay_dir:
         _export(repo, before_sha, before_dir)
         _export(repo, after_sha, after_dir)
+        has_process = (Path(after_dir) / PROCESS_FILE).is_file()
+        if has_process:
+            # the process, not the hand-typed output, is what can be locked in: run it ourselves on a clean
+            # copy of the ORIGINAL files, then judge what IT produced
+            _export(repo, before_sha, replay_dir)
+            for name in (PROCESS_FILE, ENTRY_FILE):
+                if (Path(after_dir) / name).is_file():
+                    shutil.copy2(Path(after_dir) / name, Path(replay_dir) / name)
+            ran = sandbox.run(replay_dir, [sandbox.python, "-I", PROCESS_FILE], writable=True)
+            _install_check(replay_dir, holdout)
+            replayed = sandbox.run(replay_dir, argv)
         _install_check(before_dir, holdout)
         _install_check(after_dir, holdout)
         before = sandbox.run(before_dir, argv)
         after = sandbox.run(after_dir, argv)
     evidence["before"] = {"sha": before_sha, "exit": before.returncode, "feedback": _public(before.output)}
     evidence["after"] = {"sha": after_sha, "exit": after.returncode, "feedback": _public(after.output)}
+    evidence["process"] = {"present": has_process}
+    if has_process:
+        evidence["process"].update(ran=ran.returncode == 0, reproduced=ran.returncode == 0 and replayed.returncode == 0,
+                                   run_tail=ran.output[-400:] if ran.returncode != 0 else "",
+                                   feedback=_public(replayed.output))
     private["check_output"] = after.output[-2000:]
     if before.returncode == 0:
         return ("refuted", "the acceptance check already passes on the files before your change, so the change "
                            "proves nothing", evidence, private)
     if after.returncode != 0:
         return "refuted", "the delivered files do not pass the acceptance check", evidence, private
-    return "witnessed", "the acceptance check failed before the work and passes on what was delivered", \
-        evidence, private
+    if has_process and evidence["process"]["reproduced"]:
+        return ("witnessed", "the acceptance check failed before the work and passes on what was delivered, and "
+                             f"{PROCESS_FILE} reproduces it from the original files", evidence, private)
+    return ("witnessed", "the acceptance check failed before the work and passes on what was delivered"
+            + (f" ({PROCESS_FILE} did not reproduce it, so there is no process to lock in)" if has_process else
+               f" (no {PROCESS_FILE}, so there is no process to lock in)"), evidence, private)
 
 
 def _replace_tests(tree, repo, sha, test_paths):

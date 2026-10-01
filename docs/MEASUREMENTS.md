@@ -147,3 +147,21 @@ code for the bug's own reason and passes on the real fix.
 instructions of the time. **0/8 solved.** One claim, refuted ("the test still fails with the fix").
 6 of 8 agents hit the step limit. 3.6M prompt tokens (about $0.22). The smallest model does not fix
 real bugs in this codebase unaided; this is the baseline for larger models.
+
+## Eight everyday job types, three agents each (2026-10-01)
+
+Four more job types joined the first four: reconcile a budget against the bank statement, fill an
+insurance claim form from a letter (leaving blank what it does not say), a calendar from an inbox with
+moved, cancelled, declined and newsletter emails, and overdue invoices with per-client totals. Gold
+solutions read only the visible files; all 8 types validate on six data seeds; 29 wrong-but-plausible
+deliveries are each rejected for their own reason. Lightning, thinking auto, lessons, shell.
+
+| run | done (verified) | first try | wrong caught | wrong accepted | quit without claiming | $/job |
+|---|---|---|---|---|---|---|
+| v1 `2026-10-01_everyday8_lightning_v1.json` | 11/24 | 8 | 13 | 0 | 6 | 0.0078 |
+| v2 `2026-10-01_everyday8_lightning_v2.json` | **17/24** | 11 | 19 | **0** | **0** | 0.0132 |
+
+Between them, one change: the harness, not the model, decides when a run is over. In v1, six agents
+"thought out loud" in a message with no tool call and the runner took that as the final answer. v2
+failures are the model's own limits: the calendar job 0/3, overdue invoices 1/3, contacts and the bank
+reconciliation 2/3 each, all ending at the 40-step limit.

@@ -1088,8 +1088,9 @@ def calendar_item_form_for(files):
             "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
                      "description": "agreed = I said yes to a new appointment or meeting; moved_and_agreed = one of "
                                     "the meetings agreed so far gets a new time and I said yes; cancelled_by_them = the "
-                                    "other person called off one of the meetings agreed so far; not_agreed = I said "
-                                    "no, or I never said yes (e.g. a newsletter)"},
+                                    "other person called off one of the meetings agreed so far (no reply from me is "
+                                    "needed for this); not_agreed = I said no to a NEW invitation, or never said yes "
+                                    "to one (e.g. a newsletter)"},
             "refers_to": {"type": "string", "enum": agreed + [""],
                           "description": "for moved_and_agreed or cancelled_by_them: the file of that EARLIER agreed "
                                          "meeting, from the list above; '' otherwise"},

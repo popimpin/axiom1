@@ -101,6 +101,11 @@ class Registry(unittest.TestCase):
         with self.assertRaisesRegex(EngineError, "csv_text"):
             engines.call("table", "nope")
 
+    def test_wrong_argument_names_say_what_the_function_takes(self):
+        # seen live: a model on Bee called parse_time(time=...) for parse_time(text)
+        with self.assertRaisesRegex(EngineError, r"takes \(columns, rows\); unknown: cols; missing: columns"):
+            engines.call("table", "csv_text", {"cols": ["a"], "rows": []})
+
     def test_summary_lists_every_function(self):
         text = engines.summary()
         for fn in table.SPEC["functions"]:

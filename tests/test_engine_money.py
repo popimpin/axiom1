@@ -22,6 +22,16 @@ class TestParseAmount(unittest.TestCase):
         self.assertEqual(money.parse_amount(Decimal("25.50")), Decimal("25.50"))
         self.assertEqual(money.parse_amount(100), Decimal("100.00"))
 
+    def test_refuses_non_usd_currencies_with_pointer(self):
+        with self.assertRaisesRegex(EngineError, "parse_money"):
+            money.parse_amount("£12.00")
+        with self.assertRaisesRegex(EngineError, "parse_money"):
+            money.parse_amount("12.00 EUR")
+        with self.assertRaisesRegex(EngineError, "parse_money"):
+            money.parse_amount("€15.50")
+        with self.assertRaisesRegex(EngineError, "parse_money"):
+            money.parse_amount("CAD 20")
+
     def test_refuses_ambiguous_and_invalid(self):
         # European format
         with self.assertRaisesRegex(EngineError, "European"):
@@ -54,12 +64,66 @@ class TestParseAmount(unittest.TestCase):
             money.parse_amount(12.50)
 
 
+class TestParseMoney(unittest.TestCase):
+    def test_parse_money_multi_currency(self):
+        self.assertEqual(
+            money.parse_money("$1,234.50"),
+            {"amount": Decimal("1234.50"), "currency": "USD"},
+        )
+        self.assertEqual(
+            money.parse_money("£12.00"),
+            {"amount": Decimal("12.00"), "currency": "GBP"},
+        )
+        self.assertEqual(
+            money.parse_money("12.00 EUR"),
+            {"amount": Decimal("12.00"), "currency": "EUR"},
+        )
+        self.assertEqual(
+            money.parse_money("100"),
+            {"amount": Decimal("100.00"), "currency": None},
+        )
+        self.assertEqual(
+            money.parse_money("-£5.00"),
+            {"amount": Decimal("-5.00"), "currency": "GBP"},
+        )
+        self.assertEqual(
+            money.parse_money("(€5.00)"),
+            {"amount": Decimal("-5.00"), "currency": "EUR"},
+        )
+
+    def test_parse_money_refusals(self):
+        with self.assertRaisesRegex(EngineError, "European"):
+            money.parse_money("1.234,50")
+        with self.assertRaisesRegex(EngineError, "more than 2 decimal places"):
+            money.parse_money("1.005")
+        with self.assertRaisesRegex(EngineError, "float"):
+            money.parse_money(12.50)
+
+
 class TestAdd(unittest.TestCase):
     def test_add_sums_correctly(self):
         self.assertEqual(money.add([Decimal("10.00"), "$5.50"]), Decimal("15.50"))
         self.assertEqual(money.add(["$1,200.00", "50.00", "USD 10"]), Decimal("1260.00"))
         self.assertEqual(money.add([]), Decimal("0.00"))
         self.assertEqual(money.add([10, "5.25"]), Decimal("15.25"))
+
+    def test_add_parse_money_dicts(self):
+        items = [
+            {"amount": Decimal("10.00"), "currency": "GBP"},
+            {"amount": Decimal("5.50"), "currency": "GBP"},
+        ]
+        self.assertEqual(money.add(items), Decimal("15.50"))
+
+    def test_add_refuses_mixing_currencies(self):
+        items_dict = [
+            {"amount": Decimal("10.00"), "currency": "USD"},
+            {"amount": Decimal("5.00"), "currency": "GBP"},
+        ]
+        with self.assertRaisesRegex(EngineError, "cannot mix"):
+            money.add(items_dict)
+
+        with self.assertRaisesRegex(EngineError, "cannot mix"):
+            money.add(["$10.00", "£5.00"])
 
     def test_add_refuses_floats(self):
         with self.assertRaisesRegex(EngineError, "float"):
@@ -77,6 +141,22 @@ class TestTotalBy(unittest.TestCase):
         ]
         got = money.total_by(rows, "dept", "cost")
         self.assertEqual(got, {"eng": Decimal("30.50"), "hr": Decimal("5.00")})
+
+    def test_grouping_with_parse_money_dicts(self):
+        rows = [
+            {"dept": "eng", "cost": {"amount": Decimal("10.00"), "currency": "USD"}},
+            {"dept": "eng", "cost": {"amount": Decimal("20.50"), "currency": "USD"}},
+        ]
+        got = money.total_by(rows, "dept", "cost")
+        self.assertEqual(got, {"eng": Decimal("30.50")})
+
+    def test_refuses_mixing_currencies(self):
+        rows = [
+            {"dept": "eng", "cost": {"amount": Decimal("10.00"), "currency": "USD"}},
+            {"dept": "hr", "cost": {"amount": Decimal("5.00"), "currency": "GBP"}},
+        ]
+        with self.assertRaisesRegex(EngineError, "cannot mix"):
+            money.total_by(rows, "dept", "cost")
 
     def test_missing_fields_refused(self):
         with self.assertRaisesRegex(EngineError, "missing key"):
@@ -96,6 +176,7 @@ class TestFormatAmount(unittest.TestCase):
         self.assertEqual(money.format_amount(Decimal("-5.00")), "-5.00")
         self.assertEqual(money.format_amount("-$5.00"), "-5.00")
         self.assertEqual(money.format_amount(100), "100.00")
+        self.assertEqual(money.format_amount({"amount": Decimal("50.00"), "currency": "GBP"}), "50.00")
 
     def test_refuses_float(self):
         with self.assertRaisesRegex(EngineError, "float"):

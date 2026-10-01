@@ -43,7 +43,15 @@ def call(engine, function, args=None, allow_io=False):
         raise EngineError(f"engine {engine!r} has no function {function!r}; it has: {', '.join(sorted(spec))}")
     if spec[function].get("io") and not allow_io:
         raise EngineError(f"{engine}.{function} reads or writes files; call it from process.py instead")
-    return getattr(mods[engine], function)(**(args or {}))
+    args = args or {}
+    expected = list(spec[function]["args"])
+    wrong = [a for a in args if a not in expected]
+    missing = [a for a in expected if a not in args]
+    if wrong or missing:
+        raise EngineError(f"{engine}.{function} takes ({', '.join(expected)})"
+                          + (f"; unknown: {', '.join(wrong)}" if wrong else "")
+                          + (f"; missing: {', '.join(missing)}" if missing else ""))
+    return getattr(mods[engine], function)(**args)
 
 
 def summary():

@@ -11,6 +11,7 @@ import os
 import secrets
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 
 RUN_TIMEOUT_S = 300
@@ -24,6 +25,7 @@ class Run:
 
 class LocalSandbox:
     kind, isolated = "local", False
+    python = sys.executable          # how to start Python inside this sandbox
 
     def __init__(self, timeout=RUN_TIMEOUT_S):
         self.timeout = timeout
@@ -31,7 +33,8 @@ class LocalSandbox:
     def describe(self):
         return {"kind": self.kind, "isolated": self.isolated}
 
-    def run(self, tree, argv):
+    def run(self, tree, argv, writable=False, protect=()):
+        # (writable/protect only matter for a container; the local sandbox always writes the real tree)
         # stdin=DEVNULL: under MCP the server's stdin is the protocol pipe
         try:
             p = subprocess.run(argv, cwd=tree, capture_output=True, text=True,
@@ -43,6 +46,7 @@ class LocalSandbox:
 
 class DockerSandbox:
     kind, isolated = "docker", True
+    python = "python"
 
     def __init__(self, image, memory="1g", cpus="1", pids=256, timeout=RUN_TIMEOUT_S, docker="docker"):
         self.image, self.memory, self.cpus, self.pids = image, memory, cpus, pids

@@ -42,9 +42,13 @@ How to work:
    the lessons first: they are the server's own record of earlier attempts at this task, what was
    tried, why it was refuted, and what worked. Do not repeat a refuted approach.
 2. Call `list_checks`. Its `claim_kind` says what kind of job this is:
-   - "deliver": produce the files the task asks for, in your workspace. You write no tests; the check
-     runs on your files. Never delete or rename a file the task did not ask you to; a lost file fails
-     the check.
+   - "deliver": produce the files the task asks for, by writing process.py: a Python program (standard
+     library only) that reads the original files and writes the requested ones. Put the values that
+     would change between similar jobs (a date, a file name) in entry.json and read them from there.
+     Run it, and commit process.py, entry.json and its output. The server re-runs process.py on the
+     original files: a process that reproduces the result is locked in, so this kind of job never has to
+     be worked out again. You write no tests. Never delete or rename a file the task did not ask you
+     to; a lost file fails the check.
    - "fix": a code change. Add a test under the check's test path (one ending in / is a directory) that
      FAILS on the old code and PASSES on yours, using the test COMMAND the check names.
 3. Use list_files / read_file to understand what is there, and write_file to do the work.{shell_hint}
@@ -261,9 +265,28 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
             log(f"[{agent_id}] no task to take")
             return [{"role": "assistant", "content": "No task available."}]
         _observe("take_task", json.dumps(taken), state, thinking, log, agent_id)
+        opening = "Your task (leased to you): " + json.dumps({k: v for k, v in task.items() if k != "process"})
+        if task.get("process") and shell is not None:
+            # One witnessed pass locked this job's process in: run it, and let the model fill only the entry.
+            replay = await _replay(agent_id, task, model, ws, session, start_sha, log)
+            if replay["witnessed"]:
+                state["witnessed"] = True
+                return replay["messages"]
+            # The input strayed from the locked process: the model repairs it, with thinking on.
+            state["think"] = thinking != "off"
+            state["refuted"] = True
+            res = await session.call_tool("take_task", {})       # the refutation returned the task to the pool
+            again = json.loads(res.content[0].text) if res.content and not res.isError else {}
+            if isinstance(again, dict) and again.get("task"):
+                task = again["task"]
+                state["task"] = task["id"]
+            opening = ("Your task (leased to you): " + json.dumps({k: v for k, v in task.items() if k != "process"})
+                       + f"\n\nA locked process (version {replay['version']}) exists for this kind of job. It was run on "
+                       f"these files and did not pass: {replay['note']}\nprocess.py and entry.json from that run are in "
+                       "your workspace. Repair process.py (or entry.json), run it, then commit, claim and verify.")
         messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
                         agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "")},
-                    {"role": "user", "content": "Your task (leased to you): " + json.dumps(task)}]
+                    {"role": "user", "content": opening}]
         try:
             return await _loop(agent_id, model, tools, messages, session, mcp_names, ws, max_steps, log,
                                state, thinking)
@@ -275,6 +298,61 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
                     log(f"[{agent_id}] released task {state['task']} without a witnessed claim")
                 except Exception as e:  # releasing is best effort; the lease expiry is the backstop
                     log(f"[{agent_id}] could not release task: {e}")
+
+
+ENTRY_PROMPT = """A known, verified process will do this job. Your only part is its entry: the values that change
+from one run to the next. Return ONLY a JSON object with exactly the same keys as the example, filled in
+for THIS task. No other text."""
+
+
+def _json_object(text):
+    text = (text or "").strip()
+    if text.startswith("```"):
+        text = text.strip("`").split("\n", 1)[-1]
+    start, end = text.find("{"), text.rfind("}")
+    return json.loads(text[start:end + 1]) if start != -1 and end > start else None
+
+
+async def _replay(agent_id, task, model, ws, session, start_sha, log):
+    """Run a locked process on this task's files. The model only fills the entry, and only if the
+    process has one. Returns {"witnessed", "messages", "note", "version"}."""
+    proc = task["process"]
+    messages = [{"role": "user", "content": f"replaying locked process v{proc['version']}"}]
+    ws.write_file("process.py", proc["script"])
+    if proc.get("entry_example"):
+        entry = None
+        if hasattr(model, "thinking"):
+            model.thinking = False                     # filling a form, not working out a process
+        try:
+            reply = model([{"role": "system", "content": ENTRY_PROMPT},
+                           {"role": "user", "content": f"Task: {task['title']}\n\nExample entry from an earlier run:\n"
+                                                       f"{proc['entry_example']}"}], [])
+            entry = _json_object(reply.get("content"))
+            messages.append({"role": "assistant", "content": reply.get("content") or ""})
+        except (ValueError, RuntimeError):
+            entry = None
+        ws.write_file("entry.json", json.dumps(entry) if isinstance(entry, dict) else proc["entry_example"])
+    ran = ws.run("python -I process.py")
+    sha = ws.commit(f"replay locked process v{proc['version']}")["sha"]
+    note = ""
+    try:
+        res = await session.call_tool("claim", {"statement": f"ran the locked process (v{proc['version']})",
+                                                "check_id": task["check_id"], "before_ref": start_sha,
+                                                "after_ref": sha, "task_id": task["id"]})
+        claim = json.loads(res.content[0].text)
+        res = await session.call_tool("verify", {"claim_id": claim["id"]})
+        verdict = json.loads(res.content[0].text)
+    except (ValueError, KeyError, IndexError) as e:
+        verdict = {"label": "error", "reason": str(e)}
+    witnessed = verdict.get("label") == "witnessed"
+    if not witnessed:
+        feedback = (verdict.get("evidence") or {}).get("after", {}).get("feedback") or []
+        note = f"{verdict.get('reason')}. " + " ".join(feedback)
+        if ran.get("exit"):
+            note += f" The process itself exited {ran['exit']}: {ran['output'][-300:]}"
+    log(f"[{agent_id}] replayed locked process v{proc['version']}: {verdict.get('label')}")
+    messages.append({"role": "assistant", "content": f"replayed v{proc['version']}: {verdict.get('label')}"})
+    return {"witnessed": witnessed, "messages": messages, "note": note, "version": proc["version"]}
 
 
 def _attempt_summary(messages):

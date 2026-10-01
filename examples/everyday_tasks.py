@@ -1084,9 +1084,7 @@ def calendar_item_form_for(files):
                 return {"type": "string", "enum": options + [""], "description": f"{what}: pick the one this email "
                         "gives for the meeting (for a moved meeting, the NEW one); '' if it gives none"}
             return {"type": "string", "description": f"{what}, as written in this email; '' if it gives none"}
-        return {"type": "object", "required": ["my_reply", "kind", "refers_to", "date", "time", "duration"], "properties": {
-            "my_reply": {"type": "string", "description": "my own reply in this email, copied exactly (the line where "
-                                                          "I answer); '' if I did not reply"},
+        return {"type": "object", "required": ["kind", "refers_to", "date", "time", "duration"], "properties": {
             "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
                      "description": "agreed = I said yes to a new appointment or meeting; moved_and_agreed = one of "
                                     "the meetings agreed so far gets a new time and I said yes; cancelled_by_them = the "
@@ -1101,13 +1099,28 @@ def calendar_item_form_for(files):
     return form
 
 
+def _my_reply(text):
+    """My own reply in an email: who wrote which line is structure (here the '> Me:' lines, as a real email has a
+    From: header), so the harness reads it; the model is not asked."""
+    return " ".join(m.group(1).strip() for m in re.finditer(r"^>\s*Me:\s*(.*)$", text, re.M)).strip()
+
+
+def _topic(text):
+    return re.sub(r"^(?:re|fwd?|cancell?ed)\s*:\s*", "", _subject(text), flags=re.I).strip().lower()
+
+
 def calendar_context(files):
     def context(name, answers):
+        reply = _my_reply(files[name])
+        lines = [f"My reply in this email: {reply!r}" if reply else "My reply in this email: none (I did not reply)"]
         agreed = [a["file"] for a in answers if CALENDAR_KINDS[a["kind"]] == "add"]
         if not agreed:
-            return "Meetings agreed so far: none yet."
-        return ("Meetings agreed so far (a moved or cancelled meeting points at one of these files):\n"
-                + "\n".join(f"- {f}: {_subject(files[f])}" for f in agreed))
+            return "\n".join(lines + ["Meetings agreed so far: none yet."])
+        topic = _topic(files[name])
+        lines.append("Meetings agreed so far (a moved or cancelled meeting points at one of these files):")
+        lines += [f"- {f}: {_subject(files[f])}" + ("   <- same subject as this email" if _topic(files[f]) == topic else "")
+                  for f in agreed]
+        return "\n".join(lines)
     return context
 
 
@@ -1116,11 +1129,11 @@ def calendar_relevant(a, text=""):
     A field left out is a field not given. A move's duration counts only if that email states one: 'Same length',
     or the old length carried over (seen live: a 1.7B model filled in the original 45 minutes), means unchanged."""
     a = {k: ("" if v is None else v) for k, v in dict(a).items()}
-    for field in ("my_reply", "refers_to", "date", "time", "duration"):
+    for field in ("refers_to", "date", "time", "duration"):
         a.setdefault(field, "")
     # agreeing needs a reply from me: with none, it is not_agreed whatever it looked like (seen live: qwen3:1.7b
-    # filed a newsletter's webinar as agreed on every inbox, and no correction moved it)
-    if CALENDAR_KINDS.get(a.get("kind")) in ("add", "move") and not a["my_reply"].strip():
+    # filed a newsletter's webinar as agreed on every inbox; asked to copy "my reply", it copied another line)
+    if CALENDAR_KINDS.get(a.get("kind")) in ("add", "move") and not _my_reply(text):
         a["kind"] = "not_agreed"
     kind = CALENDAR_KINDS.get(a.get("kind"))
     if kind in ("add", "ignore"):
@@ -1135,11 +1148,19 @@ def calendar_relevant(a, text=""):
     return a
 
 
-def calendar_explain(name, form, problems):
-    if form.get("refers_to") == name or any("refers_to" in p and "must be one of" in p for p in problems):
-        return [f"refers_to must be an EARLIER agreed meeting from the list above, never this email itself. If I said "
-                f"no to this invitation, the kind is not_agreed and refers_to is ''."]
-    return problems
+def calendar_explain_for(files):
+    def explain(name, form, problems, answers):
+        if form.get("refers_to") == name or any("refers_to" in p and "must be one of" in p for p in problems):
+            return [f"refers_to must be an EARLIER agreed meeting from the list above, never this email itself. If I "
+                    f"said no to this invitation, the kind is not_agreed and refers_to is ''."]
+        same = [a["file"] for a in answers if CALENDAR_KINDS[a["kind"]] == "add"
+                and _topic(files[a["file"]]) == _topic(files[name])]
+        if same and CALENDAR_KINDS.get(form.get("kind")) == "add":
+            # seen live: qwen3:1.7b filed "Re: Team retro ... can we move it" as a new meeting
+            return [f"this email has the same subject as the meeting already agreed in {same[0]}. If it moves that "
+                    f"meeting to a new time, the kind is moved_and_agreed and refers_to is {same[0]!r}."]
+        return problems
+    return explain
 
 
 def _same_by(read, pattern):
@@ -1171,7 +1192,7 @@ def calendar_same(today):
                 continue
         raise ValueError(text)
     return {"time": _same_by(t.parse_time, CAL_TIME), "date": _same_by(date_key, CAL_DATE),
-            "duration": _same_by(t.parse_duration, CAL_DURATION), "my_reply": None}
+            "duration": _same_by(t.parse_duration, CAL_DURATION)}
 
 
 def calendar_item_checks(today):
@@ -1260,7 +1281,7 @@ EACH_JOBS = {"calendar-from-inbox": {
     "pipeline": CALENDAR_EACH_PIPELINE, "items": lambda files: [(p, files[p]) for p in sorted(files) if p.startswith("inbox/")],
     "item_form": calendar_item_form_for, "copied": calendar_same,
     "context": calendar_context, "checks": calendar_item_checks, "relevant": calendar_relevant,
-    "explain": calendar_explain}}
+    "explain": calendar_explain_for}}
 
 
 def form_series(n_instances, model_name, first_seed, only, as_of=None, each=False):
@@ -1292,7 +1313,7 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                     res = forms.fill_each(model, task["ask"], job["items"](files), job["item_form"](files),
                                           copied=job["copied"](as_of), item_problems=job["checks"](as_of),
                                           context=job["context"](files), relevant=job.get("relevant"),
-                                          explain=job.get("explain"))
+                                          explain=job["explain"](files) if job.get("explain") else None)
                     res.update(entry=None, produced={})
                     if res["ok"]:
                         entry = {"emails": res["answers"], "today": as_of}

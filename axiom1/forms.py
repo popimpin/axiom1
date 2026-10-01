@@ -208,7 +208,7 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
     is the harness being pedantic, not the model being wrong.
     copied may also be a dict field -> same(value, text) -> bool, for fields where an engine decides what counts as
     the same value ('9:00 am' for a file that says '9am'); a value found nowhere in the item still fails.
-    explain(name, form, problems) -> problems lets a job say WHY in its own words (the generic message for a
+    explain(name, form, problems, answers) -> problems lets a job say WHY in its own words (the generic message for a
     value outside a menu only lists the menu)."""
     if hasattr(model, "thinking"):
         model.thinking = False
@@ -244,7 +244,7 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
                 if not problems and item_problems:
                     problems = item_problems(name, text, form, answers)
             if problems and explain and form is not None:
-                problems = explain(name, form, problems)
+                problems = explain(name, form, problems, answers)
             if not problems:
                 answers.append({"file": name, **form})
                 break

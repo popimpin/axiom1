@@ -1003,11 +1003,14 @@ def series(n_instances, max_steps, model_name, thinking, first_seed, only):
                                                  shell=DockerSandbox(IMAGE), thinking=thinking))
                 used = {k: model.usage[k] - used0[k] for k in model.usage}
                 ax = Axiom(db)
-                claims = [(r["label"], r["reason"] or "") for r in ax.db.execute(
-                    "SELECT label, reason FROM claims WHERE agent=? ORDER BY made_at", (f"agent{i}",))]
+                claim_rows = ax.db.execute("SELECT label, reason, statement FROM claims WHERE agent=? ORDER BY made_at",
+                                           (f"agent{i}",)).fetchall()
+                claims = [(r["label"], r["reason"] or "") for r in claim_rows]
+                # the replay's own claim names the locked process; the model's transcript does not
+                replay_claimed = bool(claim_rows) and claim_rows[0]["statement"].startswith("ran the locked process")
                 after_version = (ax.process_for(task["id"]) or {}).get("version")
                 ax.db.close()
-                replayed = bool(messages) and str(messages[0].get("content", "")).startswith("replaying locked process")
+                replayed = replay_claimed
                 done = any(l == "witnessed" for l, _ in claims)
                 if replayed and done and len(claims) == 1:
                     path = "replayed"

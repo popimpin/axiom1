@@ -1040,7 +1040,7 @@ def series(n_instances, max_steps, model_name, thinking, first_seed, only, learn
                 row = {"task": task["id"], "instance": i, "seed": first_seed + i, "model": worker.model,
                        "done": done, "path": path,
                        "process_before": before_version, "process_after": after_version, "outcome": outcome,
-                       "claims": [l for l, _ in claims], "model_calls": used["calls"],
+                       "claims": [l for l, _ in claims], "model_calls": used["calls"], "cut_off": used["cut_off"],
                        "prompt_tokens": used["prompt_tokens"], "completion_tokens": used["completion_tokens"],
                        "seconds": round(time.time() - t0, 1)}
                 rows.append(row)

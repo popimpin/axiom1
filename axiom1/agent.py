@@ -199,17 +199,25 @@ class ChatModel:
         if not self.api_key:
             raise SystemExit("set NEBIUS_API_KEY")
         self.temperature, self.max_tokens = temperature, max_tokens
-        # None = the model's default. True/False is set per call by the runner's thinking dial; on
-        # Nemotron only chat_template_kwargs.enable_thinking switches reasoning (system-prompt toggles
-        # and reasoning_effort did not, measured 2026-09-30)
+        # None = the model's default. True/False is set per call by the runner's thinking dial. The switch
+        # differs by server: on Nemotron (Nebius) only chat_template_kwargs.enable_thinking works (system-
+        # prompt toggles and reasoning_effort did not, measured 2026-09-30); on Ollama's /v1 only
+        # reasoning_effort "none" does (enable_thinking and think:false were ignored, measured 2026-10-01:
+        # a reply went from 162 completion tokens to 18). AXIOM_THINKING_SWITCH picks one.
         self.thinking = None
-        self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "thinking_calls": 0}
+        self.thinking_switch = os.environ.get("AXIOM_THINKING_SWITCH", "chat_template_kwargs")
+        if self.thinking_switch not in ("chat_template_kwargs", "reasoning_effort"):
+            raise SystemExit(f"AXIOM_THINKING_SWITCH must be chat_template_kwargs or reasoning_effort")
+        self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "thinking_calls": 0,
+                      "cut_off": 0}   # replies that hit max_tokens (finish_reason "length")
 
     def __call__(self, messages, tools):
         body = {"model": self.model, "messages": messages, "tools": tools,
                 "temperature": self.temperature, "max_tokens": self.max_tokens}
-        if self.thinking is not None:
+        if self.thinking is not None and self.thinking_switch == "chat_template_kwargs":
             body["chat_template_kwargs"] = {"enable_thinking": bool(self.thinking)}
+        elif self.thinking is False:                       # reasoning_effort: thinking on = the model's default
+            body["reasoning_effort"] = "none"
         req = urllib.request.Request(f"{self.base_url}/chat/completions", data=json.dumps(body).encode(),
                                      headers={"Authorization": f"Bearer {self.api_key}",
                                               "Content-Type": "application/json"})
@@ -222,6 +230,7 @@ class ChatModel:
                 self.usage["thinking_calls"] += self.thinking is not False
                 self.usage["prompt_tokens"] += u.get("prompt_tokens") or 0
                 self.usage["completion_tokens"] += u.get("completion_tokens") or 0
+                self.usage["cut_off"] += data["choices"][0].get("finish_reason") == "length"
                 return data["choices"][0]["message"]
             except urllib.error.HTTPError as e:
                 if e.code < 500 and e.code != 429 or attempt == 2:

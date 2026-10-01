@@ -7,7 +7,7 @@ from ._base import EngineError
 
 SPEC = {
     "name": "time",
-    "version": 3,
+    "version": 4,
     "summary": "parse and calculate dates, times, and durations deterministically without guessing",
     "functions": {
         "parse_time": {
@@ -108,6 +108,17 @@ SPEC = {
                 {"args": {"text": "2026-03-06", "order": "MDY"}, "returns": "2026-03-06"},
                 {"args": {"text": "03/24/2026", "order": "DMY"}, "refuses": "month 24"},
                 {"args": {"text": "03/06/2026", "order": "YMD"}, "refuses": "order"},
+            ],
+        },
+        "numeric_order": {
+            "args": ["texts"],
+            "returns": "'MDY' or 'DMY': the order the numeric dates in these texts must be written in",
+            "io": False,
+            "examples": [
+                {"args": {"texts": ["03/24/2026", "03/06/2026"]}, "returns": "MDY"},
+                {"args": {"texts": ["24/03/2026 paid", "06/03/2026"]}, "returns": "DMY"},
+                {"args": {"texts": ["03/06/2026", "2026-03-24"]}, "refuses": "no date"},
+                {"args": {"texts": ["03/24/2026", "24/03/2026"]}, "refuses": "both"},
             ],
         },
         "add_days": {
@@ -494,6 +505,29 @@ def add_days(date, days):  # noqa: F811 - the SPEC names the argument "date"
     return (start + _timedelta(days=days)).isoformat()
 
 
+def numeric_order(texts):
+    """The order a set of documents writes numeric dates in, decided by the documents themselves: a first number
+    over 12 can only be a day (DMY), a second number over 12 can only be a day (MDY). Refuses when no date in them
+    settles it, or when they contradict each other."""
+    if not isinstance(texts, list) or not all(isinstance(t, str) for t in texts):
+        raise EngineError("texts must be a list of strings")
+    firsts, seconds = False, False
+    for t in texts:
+        for m in re.finditer(r"\b(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})\b", t):
+            a, b = int(m.group(1)), int(m.group(2))
+            firsts |= a > 12
+            seconds |= b > 12
+    if firsts and seconds:
+        raise EngineError("the dates use both orders (one has a day first, another a day second); they cannot "
+                          "all be read one way")
+    if seconds:
+        return "MDY"
+    if firsts:
+        return "DMY"
+    raise EngineError("no date in these texts settles the order (every numeric date has both numbers 12 or under); "
+                      "it must be given")
+
+
 
 GUIDE = '''Use time for every date, time and duration you read from text. Never parse them yourself.
 - `time.parse_date("Friday May 8", 2026)` -> "2026-05-08". Pass the year (the task's or the files'). If a
@@ -504,6 +538,7 @@ GUIDE = '''Use time for every date, time and duration you read from text. Never 
 - `time.days_between(a, b)` and `time.is_overdue(due, as_of)` work on ISO dates (e.g. due dates vs today's date).
 - Numeric dates like 03/06/2026 are ambiguous: decide the order once for the whole document (a US
   bank or a "March" folder with 03/24 in it is month first), then `time.parse_numeric_date("03/06/2026", "MDY")`.
+- Or let the documents decide: `time.numeric_order([texts...])` -> "MDY" when some date reads 03/24.
 - Payment terms: `time.add_days("2026-01-23", 14)` -> "2026-02-06".
 - No year written? `time.year_from_weekdays(["Friday May 15", ...], 2026)` -> 2026: the weekdays fix it
   (the second argument is the current year). It refuses if no weekday is given or more than one year fits.

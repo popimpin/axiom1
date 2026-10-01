@@ -1084,7 +1084,14 @@ def calendar_item_form_for(files):
                 return {"type": "string", "enum": options + [""], "description": f"{what}: pick the one this email "
                         "gives for the meeting (for a moved meeting, the NEW one); '' if it gives none"}
             return {"type": "string", "description": f"{what}, as written in this email; '' if it gives none"}
-        return {"type": "object", "required": ["kind", "refers_to", "date", "time", "duration"], "properties": {
+        reply = _my_reply(text)
+        # the smallest decision, asked first and alone: is my reply a yes? (seen live: a 1.7B filed "Sorry, I can't
+        # make that" as agreed, and a 9B filed "Sounds good" for a school play as not agreed, inside the 4-way kind)
+        said_yes = ({"said_yes": {"type": "string", "enum": ["yes", "no"],
+                                  "description": f"my reply in this email is {reply!r}. Is it a yes to what was asked?"}}
+                    if reply else {})
+        return {"type": "object", "required": [*said_yes, "kind", "refers_to", "date", "time", "duration"], "properties": {
+            **said_yes,
             "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
                      "description": "agreed = I said yes to a new appointment or meeting; moved_and_agreed = one of "
                                     "the meetings agreed so far gets a new time and I said yes; cancelled_by_them = the "
@@ -1136,6 +1143,12 @@ def calendar_relevant(a, text=""):
     # filed a newsletter's webinar as agreed on every inbox; asked to copy "my reply", it copied another line)
     if CALENDAR_KINDS.get(a.get("kind")) in ("add", "move") and not _my_reply(text):
         a["kind"] = "not_agreed"
+    if not _my_reply(text):
+        a.pop("said_yes", None)                      # no reply from me: there is nothing to say yes or no with
+    elif a.get("said_yes") == "no" and CALENDAR_KINDS.get(a.get("kind")) in ("add", "move"):
+        a["kind"] = "not_agreed"                     # the yes/no answer is the simpler judgement: it decides
+    elif a.get("said_yes") == "yes" and CALENDAR_KINDS.get(a.get("kind")) == "ignore":
+        a["kind"] = "moved_and_agreed" if a["refers_to"] else "agreed"
     kind = CALENDAR_KINDS.get(a.get("kind"))
     if kind in ("add", "ignore"):
         a["refers_to"] = ""

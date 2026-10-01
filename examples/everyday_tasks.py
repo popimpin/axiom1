@@ -1048,27 +1048,55 @@ def _subject(text):
     return first.split(":", 1)[1].strip() if first.lower().startswith("subject:") else first.strip()
 
 
-# The kind is the one judgement per email. Its labels say what they mean: a 1.7B model read "cancel" as "I said
-# no" until the label itself made the difference (measured 2026-10-01).
-CALENDAR_KINDS = {"agreed_new_meeting": "add", "moved_an_agreed_meeting": "move",
-         "cancelled_an_agreed_meeting": "cancel", "declined_or_not_a_meeting": "ignore"}
+# The kind is the one judgement per email, and its labels are about agreeing. Measured 2026-10-01: a 1.7B model
+# read "cancel" as "I said no"; with "declined_or_not_a_meeting", a 9B model put a car service I had said yes to
+# under "not a meeting". What decides is whether I said yes.
+CALENDAR_KINDS = {"agreed": "add", "moved_and_agreed": "move", "cancelled_by_them": "cancel", "not_agreed": "ignore"}
 
 
-def calendar_item_form(name, answers):
-    agreed = [a["file"] for a in answers if CALENDAR_KINDS[a["kind"]] == "add"]
-    return {"type": "object", "required": ["kind", "refers_to", "date", "time", "duration"], "properties": {
-        "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
-                 "description": "agreed_new_meeting = a new meeting I said yes to; moved_an_agreed_meeting = one of "
-                                "the meetings agreed so far gets a new time and I said yes; cancelled_an_agreed_meeting "
-                                "= the other person called off one of the meetings agreed so far; "
-                                "declined_or_not_a_meeting = I said no, or it is a newsletter or anything else"},
-        "refers_to": {"type": "string", "enum": agreed + [""],
-                      "description": "for a moved or cancelled meeting: the file of that EARLIER agreed meeting, from "
-                                     "the list above; '' otherwise"},
-        "date": {"type": "string", "description": "the day ONLY, e.g. 'Friday May 8', as written; '' if not given"},
-        "time": {"type": "string", "description": "the start time, e.g. '1pm', as written; '' if not given"},
-        "duration": {"type": "string", "description": "how long, e.g. 'about 45 minutes', as written; '' if not "
-                                                      "given"}}}
+CAL_TIME = r"\b\d{1,2}(?:[:.]\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)|\b\d{1,2}:\d{2}\b|\bnoon\b|\bmidnight\b"
+CAL_DATE = (r"(?:\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+)?\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
+            r"[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b")
+CAL_DURATION = (r"\b(?:about\s+)?(?:an?\s+hour(?:\s+and\s+a\s+half)?|half\s+an\s+hour|"
+                r"\d+(?:\.\d+)?\s*(?:minutes?|mins?|hours?|hrs?)\b)")
+
+
+def _found(pattern, text):
+    seen = []
+    for m in re.finditer(pattern, text, re.I):
+        v = m.group(0).strip()
+        if v not in seen:
+            seen.append(v)
+    return seen
+
+
+def calendar_item_form_for(files):
+    """The form for one email. Its dates, times and durations are offered as a menu of what the email actually
+    says, so the model picks one (or ''): it cannot drop the ':30' from '1:30pm' or reformat '9am'. If the email
+    says none in a recognisable way, that field is free text, still checked against the email."""
+    def form(name, answers):
+        text = files[name]
+        agreed = [a["file"] for a in answers if CALENDAR_KINDS[a["kind"]] == "add"]
+
+        def field(pattern, what):
+            options = _found(pattern, text)
+            if options:
+                return {"type": "string", "enum": options + [""], "description": f"{what}: pick the one this email "
+                        "gives for the meeting (for a moved meeting, the NEW one); '' if it gives none"}
+            return {"type": "string", "description": f"{what}, as written in this email; '' if it gives none"}
+        return {"type": "object", "required": ["kind", "refers_to", "date", "time", "duration"], "properties": {
+            "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
+                     "description": "agreed = I said yes to a new appointment or meeting; moved_and_agreed = one of "
+                                    "the meetings agreed so far gets a new time and I said yes; cancelled_by_them = the "
+                                    "other person called off one of the meetings agreed so far; not_agreed = I said "
+                                    "no, or I never said yes (e.g. a newsletter)"},
+            "refers_to": {"type": "string", "enum": agreed + [""],
+                          "description": "for moved_and_agreed or cancelled_by_them: the file of that EARLIER agreed "
+                                         "meeting, from the list above; '' otherwise"},
+            "date": field(CAL_DATE, "the day"),
+            "time": field(CAL_TIME, "the start time"),
+            "duration": field(CAL_DURATION, "how long it takes")}}
+    return form
 
 
 def calendar_context(files):
@@ -1104,7 +1132,7 @@ def calendar_relevant(a, text=""):
 def calendar_explain(name, form, problems):
     if form.get("refers_to") == name or any("refers_to" in p and "must be one of" in p for p in problems):
         return [f"refers_to must be an EARLIER agreed meeting from the list above, never this email itself. If I said "
-                f"no to this invitation, the kind is declined_or_not_a_meeting and refers_to is ''."]
+                f"no to this invitation, the kind is not_agreed and refers_to is ''."]
     return problems
 
 
@@ -1136,11 +1164,8 @@ def calendar_same(today):
             except Exception:
                 continue
         raise ValueError(text)
-    return {"time": _same_by(t.parse_time, r"\b\d{1,2}(?:[:.]\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)|\b\d{1,2}:\d{2}\b|\bnoon\b|\bmidnight\b"),
-            "date": _same_by(date_key, r"(?:\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+)?\b(?:jan|feb|mar|apr|may|jun|"
-                                       r"jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b"),
-            "duration": _same_by(t.parse_duration, r"\b(?:about\s+)?(?:an?\s+hour(?:\s+and\s+a\s+half)?|half\s+an\s+hour|"
-                                                   r"\d+(?:\.\d+)?\s*(?:minutes?|mins?|hours?|hrs?)\b)")}
+    return {"time": _same_by(t.parse_time, CAL_TIME), "date": _same_by(date_key, CAL_DATE),
+            "duration": _same_by(t.parse_duration, CAL_DURATION)}
 
 
 def calendar_item_checks(today):
@@ -1153,8 +1178,10 @@ def calendar_item_checks(today):
         kind = CALENDAR_KINDS[a["kind"]]
         if kind in ("move", "cancel") and not a["refers_to"]:
             out.append("a moved or cancelled meeting must say which earlier agreed meeting it is (refers_to)")
-        if kind == "add" and not (a["date"] and a["time"] and a["duration"]):
-            out.append("a new meeting needs its date, time and duration")
+        missing = [f for f in ("date", "time", "duration") if not a[f]]
+        if kind == "add" and missing:
+            out.append(f"an agreed meeting needs its {' and '.join(missing)}: pick it from the options this email "
+                       f"gives. If I did not say yes in this email, the kind is not_agreed")
         if kind == "move" and not (a["date"] or a["time"]):
             out.append("a moved meeting needs the new date or time")
         for field, read in (("time", t.parse_time), ("duration", t.parse_duration)):
@@ -1183,8 +1210,7 @@ from pathlib import Path
 from axiom_engines import ledger, table, time
 
 entry = json.loads(Path("entry.json").read_text(encoding="utf-8"))
-KINDS = {"agreed_new_meeting": "add", "moved_an_agreed_meeting": "move",
-         "cancelled_an_agreed_meeting": "cancel", "declined_or_not_a_meeting": "ignore"}
+KINDS = {"agreed": "add", "moved_and_agreed": "move", "cancelled_by_them": "cancel", "not_agreed": "ignore"}
 emails = [{**e, "kind": KINDS[e["kind"]]} for e in sorted(entry["emails"], key=lambda e: e["file"])]
 inbox = sorted(p.as_posix() for p in Path("inbox").glob("*.txt"))
 if sorted(e["file"] for e in emails) != inbox:
@@ -1226,7 +1252,7 @@ FORM_JOBS.update(FORMS)
 # jobs that can also be presented one item at a time (fill_each): the same deliverable, a smaller decision per call
 EACH_JOBS = {"calendar-from-inbox": {
     "pipeline": CALENDAR_EACH_PIPELINE, "items": lambda files: [(p, files[p]) for p in sorted(files) if p.startswith("inbox/")],
-    "item_form": lambda files: calendar_item_form, "copied": calendar_same,
+    "item_form": calendar_item_form_for, "copied": calendar_same,
     "context": calendar_context, "checks": calendar_item_checks, "relevant": calendar_relevant,
     "explain": calendar_explain}}
 

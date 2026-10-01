@@ -1041,14 +1041,193 @@ rows = [{k: r[k] for k in ("date", "start", "end", "title")} for r in ledger.app
 table.write_csv("calendar.csv", ["date", "start", "end", "title"], rows)
 '''
 
+# ---- calendar, one email at a time: nothing to keep straight across emails, nothing to retype ---------------
+
+def _subject(text):
+    first = text.splitlines()[0] if text else ""
+    return first.split(":", 1)[1].strip() if first.lower().startswith("subject:") else first.strip()
+
+
+# The kind is the one judgement per email. Its labels say what they mean: a 1.7B model read "cancel" as "I said
+# no" until the label itself made the difference (measured 2026-10-01).
+CALENDAR_KINDS = {"agreed_new_meeting": "add", "moved_an_agreed_meeting": "move",
+         "cancelled_an_agreed_meeting": "cancel", "declined_or_not_a_meeting": "ignore"}
+
+
+def calendar_item_form(name, answers):
+    agreed = [a["file"] for a in answers if CALENDAR_KINDS[a["kind"]] == "add"]
+    return {"type": "object", "required": ["kind", "refers_to", "date", "time", "duration"], "properties": {
+        "kind": {"type": "string", "enum": list(CALENDAR_KINDS),
+                 "description": "agreed_new_meeting = a new meeting I said yes to; moved_an_agreed_meeting = one of "
+                                "the meetings agreed so far gets a new time and I said yes; cancelled_an_agreed_meeting "
+                                "= the other person called off one of the meetings agreed so far; "
+                                "declined_or_not_a_meeting = I said no, or it is a newsletter or anything else"},
+        "refers_to": {"type": "string", "enum": agreed + [""],
+                      "description": "for a moved or cancelled meeting: the file of that EARLIER agreed meeting, from "
+                                     "the list above; '' otherwise"},
+        "date": {"type": "string", "description": "the day ONLY, e.g. 'Friday May 8', as written; '' if not given"},
+        "time": {"type": "string", "description": "the start time, e.g. '1pm', as written; '' if not given"},
+        "duration": {"type": "string", "description": "how long, e.g. 'about 45 minutes', as written; '' if not "
+                                                      "given"}}}
+
+
+def calendar_context(files):
+    def context(name, answers):
+        agreed = [a["file"] for a in answers if CALENDAR_KINDS[a["kind"]] == "add"]
+        if not agreed:
+            return "Meetings agreed so far: none yet."
+        return ("Meetings agreed so far (a moved or cancelled meeting points at one of these files):\n"
+                + "\n".join(f"- {f}: {_subject(files[f])}" for f in agreed))
+    return context
+
+
+def calendar_relevant(a):
+    """refers_to only means something for a move or a cancel; date, time and duration only for an add or a move.
+    'Same length' on a move says the length does not change: that is no duration, not a vague one."""
+    a = dict(a)
+    kind = CALENDAR_KINDS.get(a.get("kind"))
+    if kind in ("add", "ignore"):
+        a["refers_to"] = ""
+    if kind in ("cancel", "ignore"):
+        a.update(date="", time="", duration="")
+    if kind == "move" and re.match(r"\s*same\b", a.get("duration") or "", re.I):
+        a["duration"] = ""
+    return a
+
+
+def calendar_explain(name, form, problems):
+    if form.get("refers_to") == name or any("refers_to" in p and "must be one of" in p for p in problems):
+        return [f"refers_to must be an EARLIER agreed meeting from the list above, never this email itself. If I said "
+                f"no to this invitation, the kind is declined_or_not_a_meeting and refers_to is ''."]
+    return problems
+
+
+def _same_by(read, pattern):
+    """A copied value counts as copied if the engine reads it the same as something written in the file."""
+    def same(value, text):
+        try:
+            want = read(value)
+        except Exception:
+            return False
+        for m in re.finditer(pattern, text, re.I):
+            try:
+                if read(m.group(0)) == want:
+                    return True
+            except Exception:
+                continue
+        return False
+    return same
+
+
+def calendar_same(today):
+    from axiom1.engines import time as t
+    years = [int(today[:4]) + d for d in (0, -1, 1)]
+
+    def date_key(text):
+        for y in years:
+            try:
+                return t.parse_date(text, y)[5:]          # month-day; the year is fixed later, from the weekdays
+            except Exception:
+                continue
+        raise ValueError(text)
+    return {"time": _same_by(t.parse_time, r"\b\d{1,2}(?:[:.]\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)|\b\d{1,2}:\d{2}\b|\bnoon\b|\bmidnight\b"),
+            "date": _same_by(date_key, r"(?:\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+)?\b(?:jan|feb|mar|apr|may|jun|"
+                                       r"jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b"),
+            "duration": _same_by(t.parse_duration, r"\b(?:about\s+)?(?:an?\s+hour(?:\s+and\s+a\s+half)?|half\s+an\s+hour|"
+                                                   r"\d+(?:\.\d+)?\s*(?:minutes?|mins?|hours?|hrs?)\b)")}
+
+
+def calendar_item_checks(today):
+    """Each answer checked as it is made, by the engines, so a correction is about this one email."""
+    from axiom1.engines import EngineError, time as t
+    year = int(today[:4])
+
+    def problems(name, text, a, answers):
+        out = []
+        kind = CALENDAR_KINDS[a["kind"]]
+        if kind in ("move", "cancel") and not a["refers_to"]:
+            out.append("a moved or cancelled meeting must say which earlier agreed meeting it is (refers_to)")
+        if kind == "add" and not (a["date"] and a["time"] and a["duration"]):
+            out.append("a new meeting needs its date, time and duration")
+        if kind == "move" and not (a["date"] or a["time"]):
+            out.append("a moved meeting needs the new date or time")
+        for field, read in (("time", t.parse_time), ("duration", t.parse_duration)):
+            if kind in ("add", "move") and a[field]:
+                try:
+                    read(a[field])
+                except EngineError as e:
+                    out.append(f"{field} {a[field]!r}: {e}")
+        if kind in ("add", "move") and a["date"]:
+            errors = []
+            for y in (year - 1, year, year + 1):
+                try:
+                    t.parse_date(a["date"], y)
+                    break
+                except EngineError as e:
+                    errors.append(str(e))
+            else:
+                if not any("names a different day" in e for e in errors):
+                    out.append(f"date {a['date']!r}: {errors[0]}")
+        return out
+    return problems
+
+
+CALENDAR_EACH_PIPELINE = '''import json
+from pathlib import Path
+from axiom_engines import ledger, table, time
+
+entry = json.loads(Path("entry.json").read_text(encoding="utf-8"))
+KINDS = {"agreed_new_meeting": "add", "moved_an_agreed_meeting": "move",
+         "cancelled_an_agreed_meeting": "cancel", "declined_or_not_a_meeting": "ignore"}
+emails = [{**e, "kind": KINDS[e["kind"]]} for e in sorted(entry["emails"], key=lambda e: e["file"])]
+inbox = sorted(p.as_posix() for p in Path("inbox").glob("*.txt"))
+if sorted(e["file"] for e in emails) != inbox:
+    raise SystemExit(f"EngineError: the answers must cover exactly one entry per email: {inbox}")
+
+def subject(path):
+    first = Path(path).read_text(encoding="utf-8").splitlines()[0]
+    return first.split(":", 1)[1].strip() if first.lower().startswith("subject:") else first.strip()
+
+year = time.year_from_weekdays([e["date"] for e in emails if e["kind"] in ("add", "move") and e["date"]],
+                               int(entry["today"][:4]))
+events = []
+for e in emails:
+    if e["kind"] == "add":
+        events.append({"kind": "add", "key": e["file"], "title": subject(e["file"]),
+                       "date": time.parse_date(e["date"], year), "start": time.parse_time(e["time"]),
+                       "minutes": time.parse_duration(e["duration"])})
+    elif e["kind"] == "move":
+        move = {"kind": "move", "key": e["refers_to"]}
+        if e["date"]:
+            move["date"] = time.parse_date(e["date"], year)
+        if e["time"]:
+            move["start"] = time.parse_time(e["time"])
+        if e["duration"]:
+            move["minutes"] = time.parse_duration(e["duration"])
+        events.append(move)
+    elif e["kind"] == "cancel":
+        events.append({"kind": "cancel", "key": e["refers_to"]})
+rows = [{k: r[k] for k in ("date", "start", "end", "title")} for r in ledger.apply_events(events)]
+table.write_csv("calendar.csv", ["date", "start", "end", "title"], rows)
+'''
+
 FORM_JOBS = {"calendar-from-inbox": {"form": calendar_form, "pipeline": CALENDAR_PIPELINE,
                                      "verbatim": ("emails", "file", ["meeting", "date", "time", "duration"])}}
 from everyday_forms import FORMS, TASK_FILE  # noqa: E402  (the other seven jobs)
 FORM_JOBS.update(FORMS)
 
 
-def form_series(n_instances, model_name, first_seed, only, as_of=None):
-    """Form mode over fresh instances, verified by the same server check as the agents' runs."""
+# jobs that can also be presented one item at a time (fill_each): the same deliverable, a smaller decision per call
+EACH_JOBS = {"calendar-from-inbox": {
+    "pipeline": CALENDAR_EACH_PIPELINE, "items": lambda files: [(p, files[p]) for p in sorted(files) if p.startswith("inbox/")],
+    "item_form": lambda files: calendar_item_form, "copied": calendar_same,
+    "context": calendar_context, "checks": calendar_item_checks, "relevant": calendar_relevant,
+    "explain": calendar_explain}}
+
+
+def form_series(n_instances, model_name, first_seed, only, as_of=None, each=False):
+    """Form mode over fresh instances, verified by the same server check as the agents' runs. each=True presents
+    the job one item at a time (only jobs in EACH_JOBS)."""
     import datetime as dt
     from axiom1 import forms
     from axiom1.agent import ChatModel
@@ -1056,9 +1235,9 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None):
     model = ChatModel(model_name)
     rows = []
     for task in TASKS:
-        if task["id"] not in FORM_JOBS or (only and task["id"] not in only):
+        if task["id"] not in (EACH_JOBS if each else FORM_JOBS) or (only and task["id"] not in only):
             continue
-        job = FORM_JOBS[task["id"]]
+        job = EACH_JOBS[task["id"]] if each else FORM_JOBS[task["id"]]
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             db = str(Path(tmp) / "axiom1.db")
             for i in range(n_instances):
@@ -1071,8 +1250,23 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None):
                 base = git(repo, "rev-parse", "HEAD")
                 used0, t0 = dict(model.usage), time.time()
                 shown = {**files, TASK_FILE: task["ask"]} if job.get("task_file") else files
-                res = forms.fill(model, task["ask"], shown, job["form"](files), job["pipeline"],
-                                 verbatim=job["verbatim"], fixed={"today": as_of})
+                if each:
+                    res = forms.fill_each(model, task["ask"], job["items"](files), job["item_form"](files),
+                                          copied=job["copied"](as_of), item_problems=job["checks"](as_of),
+                                          context=job["context"](files), relevant=job.get("relevant"),
+                                          explain=job.get("explain"))
+                    res.update(entry=None, produced={})
+                    if res["ok"]:
+                        entry = {"emails": res["answers"], "today": as_of}
+                        ok, problem, produced = forms.run_pipeline(job["pipeline"], entry, files)
+                        if ok:
+                            res.update(entry=entry, produced=produced)
+                        else:
+                            res["ok"] = False
+                            res["corrections"].append(f"the pipeline refused the answers: {problem}")
+                else:
+                    res = forms.fill(model, task["ask"], shown, job["form"](files), job["pipeline"],
+                                     verbatim=job["verbatim"], fixed={"today": as_of})
                 used = {k: model.usage[k] - used0[k] for k in model.usage}
                 label, reason = "not delivered", "; ".join(res["corrections"][-1:])
                 if res["ok"]:
@@ -1101,7 +1295,7 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None):
                        "completion_tokens": used["completion_tokens"], "seconds": round(time.time() - t0, 1)}
                 rows.append(row)
                 print(json.dumps(row), flush=True)
-    return {"model": model.model, "mode": "form", "as_of": as_of, "rows": rows}
+    return {"model": model.model, "mode": "form, one item at a time" if each else "form", "as_of": as_of, "rows": rows}
 
 
 def series(n_instances, max_steps, model_name, thinking, first_seed, only, learn_model_name=None):
@@ -1189,6 +1383,7 @@ def main():
     fm.add_argument("--seed", type=int, default=100)
     fm.add_argument("--only", nargs="*")
     fm.add_argument("--as-of", default=None, help="today's date for the pipeline (default: the real one)")
+    fm.add_argument("--each", action="store_true", help="one item at a time (jobs that support it)")
     fm.add_argument("--out", default=None)
     r = sub.add_parser("run")
     r.add_argument("--agents", type=int, default=2)
@@ -1202,7 +1397,7 @@ def main():
     if a.cmd == "validate":
         sys.exit(0 if validate(a.seed) else 1)
     if a.cmd == "form":
-        result = form_series(a.instances, a.model, a.seed, a.only, a.as_of)
+        result = form_series(a.instances, a.model, a.seed, a.only, a.as_of, a.each)
         if a.out:
             Path(a.out).write_text(json.dumps(result, indent=1), encoding="utf-8")
         return

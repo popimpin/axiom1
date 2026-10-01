@@ -29,6 +29,12 @@ A pipeline then does every conversion and checks your form. If it refuses, you g
 what it names and call `submit` again."""
 
 
+def _copy_key(text):
+    """What counts as the same copied text: case and whitespace aside. '9:30 am' copies '9:30am'; a value
+    taken from another file or invented still does not match."""
+    return re.sub(r"\s+", "", text).lower()
+
+
 def _collapse(text):
     return re.sub(r"\s+", " ", text).strip()
 
@@ -71,10 +77,10 @@ def verbatim_problems(items, files, file_key, fields):
         source = files.get(item.get(file_key, ""))
         if source is None:
             continue                                   # the shape check reports an unknown file
-        haystack = _collapse(source).lower()
+        haystack = _copy_key(source)
         for field in fields:
             text = item.get(field, "")
-            if isinstance(text, str) and text.strip() and _collapse(text).lower() not in haystack:
+            if isinstance(text, str) and text.strip() and _copy_key(text) not in haystack:
                 out.append(f"item {i} ({item.get(file_key)}): {field} {text!r} is not in that file; copy it exactly")
     return out
 
@@ -166,3 +172,67 @@ def fill(model, task, files, schema, pipeline, verbatim=None, fixed=None, max_ro
         corrections.append(problem)
         messages.append({"role": "user", "content": problem + "\nFix exactly that and call `submit` again."})
     return {"ok": False, "entry": None, "rounds": max_rounds, "corrections": corrections, "produced": {}}
+
+
+ITEM_PROMPT = """You fill in a short form about ONE file, shown below. Call `submit` once with the form.
+Copy text exactly as it is written in this file: do not convert, reformat, complete or invent anything, and
+never use text from any other file. If the form is refused, you get the reason: fix it and submit again."""
+
+
+def fill_each(model, task, items, item_form, copied=(), item_problems=None, context=None, relevant=None,
+              explain=None, max_rounds=3):
+    """One small form per item, the way a function-calling model works best: it sees one item, makes one
+    selection from a closed menu, and copies only from that item. Answers so far shape the next form (e.g. a
+    reply can only point at an earlier email). Returns {"ok", "answers", "rounds", "corrections"}.
+
+    items: [(name, text)] in order. item_form(name, answers) -> JSON schema for this item.
+    copied: fields whose text must appear in this item. item_problems(name, text, answer, answers) -> problems
+    (e.g. an engine that cannot read a copied time). context(name, answers) -> text shown above the item.
+    relevant(answer) -> answer with the fields that do not apply to its choice cleared, before anything is
+    judged: a small model fills every field it is shown, and refusing an "add" over a field only a "move" uses
+    is the harness being pedantic, not the model being wrong.
+    copied may also be a dict field -> same(value, text) -> bool, for fields where an engine decides what counts as
+    the same value ('9:00 am' for a file that says '9am'); a value found nowhere in the item still fails.
+    explain(name, form, problems) -> problems lets a job say WHY in its own words (the generic message for a
+    value outside a menu only lists the menu)."""
+    if hasattr(model, "thinking"):
+        model.thinking = False
+    answers, corrections, rounds = [], [], 0
+    for name, text in items:
+        schema = item_form(name, answers)
+        tool = {"type": "function", "function": {"name": "submit", "description": "Submit the form for this file.",
+                                                 "parameters": schema}}
+        above = (context(name, answers) + "\n\n") if context else ""
+        messages = [{"role": "system", "content": ITEM_PROMPT},
+                    {"role": "user", "content": f"Task: {task}\n\n{above}The file:\n--- {name}\n{text}"}]
+        for _ in range(max_rounds):
+            rounds += 1
+            reply = model(messages, [tool])
+            form = _form_from(reply)
+            messages.append({"role": "assistant", "content": json.dumps(form) if form is not None
+                             else (reply.get("content") or "")})
+            if form is not None and relevant:
+                form = relevant(form)
+            if form is None:
+                problems = ["No form was submitted. Call `submit` with the form."]
+            else:
+                problems = shape_problems(form, schema)
+                if not problems:
+                    same = copied if isinstance(copied, dict) else {f: None for f in copied}
+                    problems = [f"{f} {form.get(f)!r} is not in this file; copy it exactly" for f, judge in same.items()
+                                if isinstance(form.get(f), str) and form.get(f).strip()
+                                and _copy_key(form[f]) not in _copy_key(text)
+                                and not (judge and judge(form[f], text))]
+                if not problems and item_problems:
+                    problems = item_problems(name, text, form, answers)
+            if problems and explain and form is not None:
+                problems = explain(name, form, problems)
+            if not problems:
+                answers.append({"file": name, **form})
+                break
+            corrections.append(f"{name}: " + "; ".join(problems[:4]))
+            messages.append({"role": "user", "content": "; ".join(problems[:4]) + "\nFix exactly that and call "
+                             "`submit` again."})
+        else:
+            return {"ok": False, "answers": answers, "rounds": rounds, "corrections": corrections}
+    return {"ok": True, "answers": answers, "rounds": rounds, "corrections": corrections}

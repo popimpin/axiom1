@@ -57,6 +57,8 @@ class Checks(unittest.TestCase):
         self.assertIn("not in that file", forms.verbatim_problems(converted, FILES, "file", ["when"])[0])
         borrowed = [{"file": "inbox/02_b.txt", "kind": "add", "when": "1:00 pm"}]   # true, but of another email
         self.assertTrue(forms.verbatim_problems(borrowed, FILES, "file", ["when"]))
+        spaced = [{"file": "inbox/01_a.txt", "kind": "add", "when": "1:00pm"}]       # spacing is not a different value
+        self.assertEqual(forms.verbatim_problems(spaced, FILES, "file", ["when"]), [])
 
     def test_the_pipeline_runs_on_the_engines_and_reports_a_refusal(self):
         ok, msg, produced = forms.run_pipeline(PIPELINE, GOOD, FILES)
@@ -100,6 +102,57 @@ class Fill(unittest.TestCase):
     def test_fixed_values_come_from_the_harness_not_the_model(self):
         res = forms.fill(scripted(GOOD), "t", FILES, SCHEMA, PIPELINE, fixed={"as_of": "2026-10-01"})
         self.assertEqual(res["entry"]["as_of"], "2026-10-01")
+
+
+
+class FillEach(unittest.TestCase):
+    """One small form per item: the model sees one file, and earlier answers shape the next menu."""
+    ITEMS = [("a.txt", "Lunch at 1pm?\n> Me: yes"), ("b.txt", "Re: lunch - moved to 2pm\n> Me: ok")]
+
+    @staticmethod
+    def form(name, answers):
+        earlier = [x["file"] for x in answers]
+        return {"type": "object", "required": ["kind", "refers_to", "when"], "properties": {
+            "kind": {"type": "string", "enum": ["add", "move"]},
+            "refers_to": {"type": "string", "enum": earlier + [""]},
+            "when": {"type": "string"}}}
+
+    def test_one_call_per_item_each_seeing_only_its_own_file(self):
+        model = scripted({"kind": "add", "refers_to": "", "when": "1pm"},
+                         {"kind": "move", "refers_to": "a.txt", "when": "2pm"})
+        res = forms.fill_each(model, "t", self.ITEMS, self.form, copied=("when",))
+        self.assertTrue(res["ok"], res)
+        self.assertEqual([a["file"] for a in res["answers"]], ["a.txt", "b.txt"])
+        self.assertEqual(len(model.seen), 2)
+        self.assertNotIn("moved to 2pm", model.seen[0]["messages"][1]["content"])
+        # the second form's menu was built from the first answer
+        menu = model.seen[1]["tools"][0]["function"]["parameters"]["properties"]["refers_to"]["enum"]
+        self.assertEqual(menu, ["a.txt", ""])
+
+    def test_text_copied_from_another_item_is_refused_and_corrected(self):
+        model = scripted({"kind": "add", "refers_to": "", "when": "1pm"},
+                         {"kind": "move", "refers_to": "a.txt", "when": "1pm"},     # a.txt's time, not b.txt's
+                         {"kind": "move", "refers_to": "a.txt", "when": "2pm"})
+        res = forms.fill_each(model, "t", self.ITEMS, self.form, copied=("when",))
+        self.assertTrue(res["ok"])
+        self.assertEqual(res["rounds"], 3)
+        self.assertIn("not in this file", res["corrections"][0])
+
+    def test_a_field_that_does_not_apply_is_cleared_not_judged(self):
+        # seen live: qwen3:1.7b put the file it was reading into refers_to on every "add"
+        model = scripted({"kind": "add", "refers_to": "a.txt", "when": "1pm"})
+        clear = lambda a: {**a, "refers_to": ""} if a["kind"] == "add" else a          # noqa: E731
+        self.assertFalse(forms.fill_each(model, "t", self.ITEMS[:1], self.form, max_rounds=1)["ok"])
+        res = forms.fill_each(scripted({"kind": "add", "refers_to": "a.txt", "when": "1pm"}), "t", self.ITEMS[:1],
+                              self.form, relevant=clear, max_rounds=1)
+        self.assertTrue(res["ok"])
+        self.assertEqual(res["answers"][0]["refers_to"], "")
+
+    def test_a_reference_outside_the_menu_is_refused(self):
+        model = scripted({"kind": "move", "refers_to": "a.txt", "when": "1pm"})          # nothing agreed yet
+        res = forms.fill_each(model, "t", self.ITEMS[:1], self.form, max_rounds=1)
+        self.assertFalse(res["ok"])
+        self.assertIn("must be one of", res["corrections"][0])
 
 
 if __name__ == "__main__":

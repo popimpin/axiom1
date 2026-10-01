@@ -301,3 +301,27 @@ when I replied); the harness derives the kind from it.
   (tier 0 table / tier 1 small / tier 2 large), applied per decision. Not built yet.
 - Seeds 500-504 informed v10 (the 1.7B's decline error was also seen on the tuning seeds); a confirmation on
   untouched seeds is still owed.
+
+## Routing per decision: the yes/no goes to a table, the rest to a 1.7B (2026-10-01)
+
+`axiom1/router.py`. Calendar with my replies worded 40 ways (20 yes, 20 no, incl. "I can't wait!", "Can't say no
+to that", "I wouldn't miss it"; truth unchanged). The form on qwen3:1.7b; "is my reply a yes?" routed to a frozen
+table, else ornith:9b. An answer is frozen only after its inbox is witnessed. 20 inboxes in sequence (seeds
+700-719), one table throughout. `2026-10-01_routing_curve.json`, table `..._routing_curve_table.json`.
+
+| inboxes | 9B calls per inbox | yes/no answered by the table |
+|---|---|---|
+| 1-5 | 7, 4, 3, 4, 3 | 40% |
+| 6-10 | 3, 2, 1, 1, 2 | 74% |
+| 11-15 | 0, 1, 3, 1, 0 | 86% |
+| 16-20 | 0, 0, 1, 0, 1 | **94%** |
+
+- **19/20 witnessed, 0 wrong accepted.** 140 yes/no decisions: 37 needed the 9B, 103 came from the table (32
+  entries). The 1.7B did every other decision: 181 calls, ~9 per inbox, 26.9 s per inbox.
+- The calls fall toward zero and only a wording not seen before reaches a model: the mesh's routing result
+  (frozen table / small model / large model), per decision.
+- **The one miss was not the routed decision**: every yes/no in it was right, including "Can't say no to that".
+  The 1.7B pointed "Cancelled: Coffee with Sam" at the landlord call, with the coffee meeting marked "same
+  subject" above it. A refuted inbox freezes nothing, so the table stayed clean. Now caught without the hidden
+  check: a move or cancel that points away from the agreed meeting with its own subject gets a correction.
+- Caveat: synthetic replies, 41 wordings; real mail has a longer tail, so the curve flattens above zero.

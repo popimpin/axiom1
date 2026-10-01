@@ -1237,7 +1237,7 @@ def calendar_same(today):
             "duration": _same_by(t.parse_duration, CAL_DURATION)}
 
 
-def calendar_item_checks(today):
+def calendar_item_checks(today, files=None):
     """Each answer checked as it is made, by the engines, so a correction is about this one email."""
     from axiom1.engines import EngineError, time as t
     year = int(today[:4])
@@ -1247,6 +1247,14 @@ def calendar_item_checks(today):
         kind = CALENDAR_KINDS[a["kind"]]
         if kind in ("move", "cancel") and not a["refers_to"]:
             out.append("a moved or cancelled meeting must say which earlier agreed meeting it is (refers_to)")
+        if kind in ("move", "cancel") and a["refers_to"] and files is not None:
+            # seen live (routing curve, seed 713): a 1.7B pointed "Cancelled: Coffee with Sam" at the landlord call,
+            # with the coffee meeting marked "same subject" right above it
+            same = [x["file"] for x in answers if CALENDAR_KINDS[x["kind"]] == "add"
+                    and _topic(files[x["file"]]) == _topic(text)]
+            if same and a["refers_to"] not in same:
+                out.append(f"this email's subject matches {same[0]}, not {a['refers_to']}: refers_to should be "
+                           f"{same[0]!r}")
         missing = [f for f in ("date", "time", "duration") if not a[f]]
         if kind == "add" and missing:
             out.append(f"an agreed meeting needs its {' and '.join(missing)}: pick it from the options this email "
@@ -1371,7 +1379,7 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                         return {"said_yes": ans} if ans else {}
                 if each:
                     res = forms.fill_each(model, task["ask"], job["items"](files), item_form,
-                                          copied=job["copied"](as_of), item_problems=job["checks"](as_of),
+                                          copied=job["copied"](as_of), item_problems=job["checks"](as_of, files),
                                           context=job["context"](files), relevant=job.get("relevant"),
                                           explain=job["explain"](files) if job.get("explain") else None,
                                           given=given)

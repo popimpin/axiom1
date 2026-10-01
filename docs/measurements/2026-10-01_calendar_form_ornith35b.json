@@ -1,0 +1,91 @@
+{
+ "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+ "mode": "form",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 1,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (process locked in as v1)",
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 1313,
+   "completion_tokens": 486,
+   "seconds": 54.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 1,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 1322,
+   "completion_tokens": 494,
+   "seconds": 80.2
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "The pipeline refused your form: the form must have exactly one entry per email; missing ['inbox/02_call.txt', 'inbox/03_car.txt', 'inbox/05_budget.txt', 'inbox/09_cancel_car.txt', 'inbox/99_newsletter.txt']",
+    "The pipeline refused your form: cannot move key 'call with the landlord': meeting key does not exist or was cancelled",
+    "The pipeline refused your form: cannot cancel key 'car service': meeting key does not exist or was cancelled"
+   ],
+   "reason": "The pipeline refused your form: cannot cancel key 'car service': meeting key does not exist or was cancelled",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 5039,
+   "completion_tokens": 1422,
+   "seconds": 249.7
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 1,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 1309,
+   "completion_tokens": 488,
+   "seconds": 87.9
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 1,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 1316,
+   "completion_tokens": 490,
+   "seconds": 83.3
+  }
+ ]
+}

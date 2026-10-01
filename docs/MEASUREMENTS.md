@@ -219,3 +219,31 @@ not get further on its own: the job as posed asks the model to write a parser (f
 durations, moves and cancellations linked back to the original) and to get every row exact.
 That is the case for engines (`axiom1/engines/`): the deterministic parts are written once and tested,
 and the model only reads each email and says what it is.
+
+## Calendar on Bee (local, $0): engines, a manual, then form mode (2026-10-01)
+
+Same 5 inboxes (seeds 100-104) throughout. Bee = Radeon 890M iGPU, Ollama. Thinking off
+(`reasoning_effort: none`; with thinking on, Ornith spent whole 4096-token replies deliberating and was
+cut off before any tool call).
+
+| run | model | witnessed | model calls | tokens | wall |
+|---|---|---|---|---|---|
+| agent, engines, function names only | Ornith 1.5 35B-A3B | 0/2 (stopped) | 80 | 0.90M | 16 min |
+| agent, engines + manual | Ornith 1.5 35B-A3B | **5/5** | 58 (34, 21, 1, 1, 1) | 0.86M | 17 min |
+| form mode | Ornith 1.5 35B-A3B | **4/5** | **7** | **14k** | 9 min |
+| form mode | ornith:9b | 1/5 (4 refuted) | 13 | 28k | 12 min |
+| form mode | qwen3:1.7b | 0/5 (none delivered) | 15 | 28k | 2 min |
+For reference: Lightning 0/5 and Super 0/5 on Nebius, without engines.
+
+- **The manual is what made the agent work.** With only the list of function names, the agent never got
+  to a delivery (inbox 1: 40 steps, no claim). With each engine's guide (how to call it, what a refusal
+  means, what it combines with) it solved inbox 1, repaired the process once, then replayed it.
+- **Form mode does the job in one call:** 4 of 5 witnessed at 1 call each with no corrections, 60x fewer
+  tokens than the agent. The one miss: a move and a cancel linked to meetings the form did not have.
+- **Small models did not hold up on this form.** Every miss by the 9B and the 1.7B is one of two kinds:
+  copying one email's date or time onto another email's line (the copied-text check catches it) and
+  linking a move or cancel to the wrong meeting (the ledger refuses, naming the key). The 1.7B also
+  stopped submitting forms after corrections. Nothing wrong was accepted: the 9B's four wrong
+  calendars were all refuted by the hidden check.
+- So on this form, size mattered. But the failures are about the form's shape (nine emails in one list,
+  meetings linked by retyped names), which is the next thing to change, not a verdict on small models.

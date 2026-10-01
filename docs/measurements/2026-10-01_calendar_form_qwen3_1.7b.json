@@ -1,0 +1,107 @@
+{
+ "model": "qwen3:1.7b",
+ "mode": "form",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "item 8 (inbox/09_cancel_call.txt): date 'Thursday May 7' is not in that file; copy it exactly; item 8 (inbox/09_cancel_call.txt): time '12:00' is not in that file; copy it exactly; item 8 (inbox/09_cancel_call.txt): duration '12:00' is not in that file; copy it exactly",
+    "item 0 (inbox/09_cancel_call.txt): date 'Thursday May 7' is not in that file; copy it exactly; item 0 (inbox/09_cancel_call.txt): time '12:00' is not in that file; copy it exactly; item 0 (inbox/09_cancel_call.txt): duration '12:00' is not in that file; copy it exactly",
+    "No form was submitted. Call `submit` with the form."
+   ],
+   "reason": "No form was submitted. Call `submit` with the form.",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 4703,
+   "completion_tokens": 652,
+   "seconds": 36.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "The pipeline refused your form: the form must have exactly one entry per email; missing ['inbox/02_dentist.txt', \"inbox/03_kids'.txt\", 'inbox/04_coffee.txt', 'inbox/05_call.txt', 'inbox/06_budget.txt', 'inbox/08_re_dentist.txt', \"inbox/09_cancel_kids'.txt\", 'inbox/99_newsletter.txt']",
+    "No form was submitted. Call `submit` with the form.",
+    "No form was submitted. Call `submit` with the form."
+   ],
+   "reason": "No form was submitted. Call `submit` with the form.",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 3720,
+   "completion_tokens": 1729,
+   "seconds": 35.1
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "No form was submitted. Call `submit` with the form.",
+    "item 0 (inbox/01_dentist.txt): time '11:30 am' is not in that file; copy it exactly; item 3 (inbox/04_coffee.txt): time '9 am' is not in that file; copy it exactly; item 6 (inbox/08_re_call.txt): time '11 am' is not in that file; copy it exactly; item 7 (inbox/09_cancel_car.txt): date 'Saturday May 16' is not in that file; copy it exactly",
+    "item 0 (inbox/01_dentist.txt): time '11:30 am' is not in that file; copy it exactly; item 3 (inbox/04_coffee.txt): time '9 am' is not in that file; copy it exactly; item 6 (inbox/08_re_call.txt): time '11 am' is not in that file; copy it exactly; item 7 (inbox/09_cancel_car.txt): date 'Saturday May 16' is not in that file; copy it exactly"
+   ],
+   "reason": "item 0 (inbox/01_dentist.txt): time '11:30 am' is not in that file; copy it exactly; item 3 (inbox/04_coffee.txt): time '9 am' is not in that file; copy it exactly; item 6 (inbox/08_re_call.txt): time '11 am' is not in that file; copy it exactly; item 7 (inbox/09_cancel_car.txt): date 'Saturday May ",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 3927,
+   "completion_tokens": 1383,
+   "seconds": 24.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "item 0 (inbox/01_call.txt): time '1:30 pm' is not in that file; copy it exactly; item 1 (inbox/02_team.txt): time '1 pm' is not in that file; copy it exactly; item 6 (inbox/08_re_team.txt): time '3 pm' is not in that file; copy it exactly; item 7 (inbox/99_newsletter.txt): time '12 pm' is not in that file; copy it exactly",
+    "item 0 (inbox/01_call.txt): time '1:30 pm' is not in that file; copy it exactly; item 1 (inbox/02_team.txt): time '1 pm' is not in that file; copy it exactly; item 6 (inbox/08_re_team.txt): time '3 pm' is not in that file; copy it exactly; item 7 (inbox/99_newsletter.txt): time '12 pm' is not in that file; copy it exactly",
+    "item 0 (inbox/01_call.txt): time '1:30 pm' is not in that file; copy it exactly; item 1 (inbox/02_team.txt): time '1 pm' is not in that file; copy it exactly; item 6 (inbox/08_re_team.txt): time '3 pm' is not in that file; copy it exactly; item 7 (inbox/99_newsletter.txt): time '12 pm' is not in that file; copy it exactly"
+   ],
+   "reason": "item 0 (inbox/01_call.txt): time '1:30 pm' is not in that file; copy it exactly; item 1 (inbox/02_team.txt): time '1 pm' is not in that file; copy it exactly; item 6 (inbox/08_re_team.txt): time '3 pm' is not in that file; copy it exactly; item 7 (inbox/99_newsletter.txt): time '12 pm' is not in tha",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 5046,
+   "completion_tokens": 1395,
+   "seconds": 26.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "qwen3:1.7b",
+   "done": false,
+   "label": "not delivered",
+   "rounds": 3,
+   "corrections": [
+    "item 7 (inbox/09_cancel_call.txt): date 'Sunday May 24' is not in that file; copy it exactly; item 7 (inbox/09_cancel_call.txt): time '4:30pm' is not in that file; copy it exactly; item 7 (inbox/09_cancel_call.txt): duration 'about 45 minutes' is not in that file; copy it exactly",
+    "item 0 (inbox/09_cancel_call.txt): date 'Sunday May 24' is not in that file; copy it exactly; item 0 (inbox/09_cancel_call.txt): time '4:30pm' is not in that file; copy it exactly; item 0 (inbox/09_cancel_call.txt): duration 'about 45 minutes' is not in that file; copy it exactly",
+    "No form was submitted. Call `submit` with the form."
+   ],
+   "reason": "No form was submitted. Call `submit` with the form.",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 4612,
+   "completion_tokens": 684,
+   "seconds": 13.9
+  }
+ ]
+}

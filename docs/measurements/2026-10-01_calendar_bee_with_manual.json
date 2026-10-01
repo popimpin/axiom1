@@ -1,0 +1,104 @@
+{
+ "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+ "learn_model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+ "thinking": "off",
+ "instances_per_type": 5,
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "path": "worked out by the model",
+   "process_before": null,
+   "process_after": 1,
+   "outcome": "process locked in as v1",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 34,
+   "cut_off": 0,
+   "prompt_tokens": 560398,
+   "completion_tokens": 14136,
+   "seconds": 651.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "path": "replay failed -> model",
+   "process_before": 1,
+   "process_after": 2,
+   "outcome": "process locked in as v2",
+   "claims": [
+    "refuted",
+    "witnessed"
+   ],
+   "model_calls": 21,
+   "cut_off": 0,
+   "prompt_tokens": 272130,
+   "completion_tokens": 7773,
+   "seconds": 358.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "path": "replayed",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "replayed process v2",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 673,
+   "completion_tokens": 56,
+   "seconds": 17.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "path": "replayed",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "replayed process v2",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 672,
+   "completion_tokens": 56,
+   "seconds": 10.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M",
+   "done": true,
+   "path": "replayed",
+   "process_before": 2,
+   "process_after": 2,
+   "outcome": "replayed process v2",
+   "claims": [
+    "witnessed"
+   ],
+   "model_calls": 1,
+   "cut_off": 0,
+   "prompt_tokens": 680,
+   "completion_tokens": 56,
+   "seconds": 9.4
+  }
+ ]
+}

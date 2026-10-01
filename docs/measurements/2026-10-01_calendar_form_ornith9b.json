@@ -1,0 +1,100 @@
+{
+ "model": "ornith:9b",
+ "mode": "form",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 100,
+   "model": "ornith:9b",
+   "done": false,
+   "label": "refuted",
+   "rounds": 3,
+   "corrections": [
+    "The pipeline refused your form: cannot move key 'team retro': meeting key does not exist or was cancelled",
+    "The pipeline refused your form: cannot cancel key 'team retro': meeting key does not exist or was cancelled"
+   ],
+   "reason": "the delivered files do not pass the acceptance check",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 5359,
+   "completion_tokens": 1296,
+   "seconds": 168.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 101,
+   "model": "ornith:9b",
+   "done": false,
+   "label": "refuted",
+   "rounds": 2,
+   "corrections": [
+    "The pipeline refused your form: cannot move key 'dentist': meeting key does not exist or was cancelled"
+   ],
+   "reason": "the delivered files do not pass the acceptance check",
+   "model_calls": 2,
+   "cut_off": 0,
+   "prompt_tokens": 3129,
+   "completion_tokens": 912,
+   "seconds": 129.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 102,
+   "model": "ornith:9b",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 2,
+   "corrections": [
+    "item 0 (inbox/01_dentist.txt): time '11:30 am' is not in that file; copy it exactly; item 3 (inbox/04_coffee.txt): time '9 am' is not in that file; copy it exactly; item 6 (inbox/08_re_call.txt): time '11 am' is not in that file; copy it exactly"
+   ],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (process locked in as v1)",
+   "model_calls": 2,
+   "cut_off": 0,
+   "prompt_tokens": 3166,
+   "completion_tokens": 931,
+   "seconds": 127.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 103,
+   "model": "ornith:9b",
+   "done": false,
+   "label": "refuted",
+   "rounds": 3,
+   "corrections": [
+    "item 0 (inbox/01_call.txt): time '1:30 pm' is not in that file; copy it exactly; item 2 (inbox/03_dentist.txt): time '2:00 pm' is not in that file; copy it exactly; item 5 (inbox/06_kids'.txt): time '4:30 pm' is not in that file; copy it exactly; item 6 (inbox/08_re_team.txt): time '3:00 pm' is not in that file; copy it exactly",
+    "The pipeline refused your form: cannot move key 'team retro': meeting key does not exist or was cancelled"
+   ],
+   "reason": "the delivered files do not pass the acceptance check",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 5514,
+   "completion_tokens": 1266,
+   "seconds": 166.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 104,
+   "model": "ornith:9b",
+   "done": false,
+   "label": "refuted",
+   "rounds": 3,
+   "corrections": [
+    "item 0 (inbox/01_budget.txt): time '4:00 pm' is not in that file; copy it exactly; item 2 (inbox/03_call.txt): time '4:30 pm' is not in that file; copy it exactly; item 3 (inbox/04_team.txt): time '9:00 am' is not in that file; copy it exactly; item 5 (inbox/06_kids'.txt): time '3:30 pm' is not in that file; copy it exactly",
+    "The pipeline refused your form: cannot move key 'dentist': meeting key does not exist or was cancelled"
+   ],
+   "reason": "the delivered files do not pass the acceptance check",
+   "model_calls": 3,
+   "cut_off": 0,
+   "prompt_tokens": 5574,
+   "completion_tokens": 1310,
+   "seconds": 130.9
+  }
+ ]
+}

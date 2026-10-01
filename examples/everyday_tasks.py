@@ -686,6 +686,34 @@ print("PUBLIC: every agreed meeting is in the calendar at its final time, and no
 '''
 
 
+YES_REPLIES = ["Sounds good, see you then.", "Works for me!", "Yes, that's fine.", "Perfect, I'll be there.",
+               "Sure thing.", "Great, count me in.", "That suits me, see you there.", "Absolutely, thanks.",
+               "I can't wait!", "Lovely - put me down.", "Yep, booked.", "Fine by me.", "Of course, see you then.",
+               "That works, thanks for setting it up.", "Can't say no to that. See you there!",
+               "Okay, I'll make it work.", "Deal.", "Sounds great.", "No problem at all, see you.",
+               "I wouldn't miss it."]
+NO_REPLIES = ["Sorry, I can't make that, I'm away that week.", "I'm afraid that doesn't work for me.",
+              "Wish I could, but I'm busy then.", "I'll have to pass this time.", "Not that day, sorry.",
+              "Unfortunately I'm booked.", "Can't do it, sorry!", "I'd love to, but I'm out of town.",
+              "That's not going to work, I'm afraid.", "No, sorry - I have a conflict.",
+              "Thanks, but I can't.", "I won't be able to make it.", "Count me out for that one.",
+              "Sadly I'm away.", "Afraid not.", "Can we skip this one? I can't make it.",
+              "I'm not available then.", "That clashes with something, so no.", "I have to decline.",
+              "Regrettably, no."]
+
+
+def calendar_varied_data(rng):
+    """The calendar inbox with my replies reworded: same meaning (yes stays yes, no stays no), many wordings,
+    including traps ("I can't wait!" is a yes). The original inbox is built first, so dates and truth match."""
+    files, truth = calendar_data(rng)
+    for path, text in files.items():
+        if "> Me: Sounds good, see you then." in text:
+            files[path] = text.replace("Sounds good, see you then.", rng.choice(YES_REPLIES))
+        elif "> Me: Sorry, I can't make that, I'm away that week." in text:
+            files[path] = text.replace("Sorry, I can't make that, I'm away that week.", rng.choice(NO_REPLIES))
+    return files, truth
+
+
 def calendar_gold(files, truth):
     """A real solution, from the inbox only."""
     def parse_time(t):
@@ -1070,7 +1098,7 @@ def _found(pattern, text):
     return seen
 
 
-def calendar_item_form_for(files):
+def calendar_item_form_for(files, yes_no_routed=False):
     """The form for one email. Its dates, times and durations are offered as a menu of what the email actually
     says, so the model picks one (or ''): it cannot drop the ':30' from '1:30pm' or reformat '9am'. If the email
     says none in a recognisable way, that field is free text, still checked against the email."""
@@ -1087,7 +1115,7 @@ def calendar_item_form_for(files):
         reply = _my_reply(text)
         # the smallest decision, asked first and alone: is my reply a yes? (seen live: a 1.7B filed "Sorry, I can't
         # make that" as agreed, and a 9B filed "Sounds good" for a school play as not agreed, inside the 4-way kind)
-        said_yes = ({"said_yes": {"type": "string", "enum": ["yes", "no"],
+        said_yes = ({} if yes_no_routed else {"said_yes": {"type": "string", "enum": ["yes", "no"],
                                   "description": f"my reply in this email is {reply!r}. Is it a yes to what was asked?"}}
                     if reply else {})
         return {"type": "object", "required": [*said_yes, "kind", "refers_to", "date", "time", "duration"], "properties": {
@@ -1298,7 +1326,7 @@ EACH_JOBS = {"calendar-from-inbox": {
     "explain": calendar_explain_for}}
 
 
-def form_series(n_instances, model_name, first_seed, only, as_of=None, each=False):
+def form_series(n_instances, model_name, first_seed, only, as_of=None, each=False, router=None, data=None):
     """Form mode over fresh instances, verified by the same server check as the agents' runs. each=True presents
     the job one item at a time (only jobs in EACH_JOBS)."""
     import datetime as dt
@@ -1311,6 +1339,8 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
         if task["id"] not in (EACH_JOBS if each else FORM_JOBS) or (only and task["id"] not in only):
             continue
         job = EACH_JOBS[task["id"]] if each else FORM_JOBS[task["id"]]
+        if data:                                   # same job, other data (e.g. replies worded many ways)
+            task = {**task, "data": data}
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             db = str(Path(tmp) / "axiom1.db")
             for i in range(n_instances):
@@ -1323,11 +1353,28 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                 base = git(repo, "rev-parse", "HEAD")
                 used0, t0 = dict(model.usage), time.time()
                 shown = {**files, TASK_FILE: task["ask"]} if job.get("task_file") else files
+                given, item_form = None, job["item_form"](files)
+                routed_calls0 = (sum(m.usage["calls"] for ms in router.routes.values() for m in ms if hasattr(m, "usage"))
+                                 if router is not None else 0)
+                if router is not None:
+                    # "is my reply a yes?" leaves the small model's form: a frozen table, else the models routed to it
+                    router.start()
+                    item_form = calendar_item_form_for(files, yes_no_routed=True)
+
+                    def given(name, text, answers):
+                        reply = _my_reply(text)
+                        if not reply:
+                            return {}
+                        ans, _ = router.decide("reply_is_yes", reply,
+                                               f"Someone asked me to a meeting or appointment, and my reply was: "
+                                               f"{reply!r}. Did I say yes?", ["yes", "no"])
+                        return {"said_yes": ans} if ans else {}
                 if each:
-                    res = forms.fill_each(model, task["ask"], job["items"](files), job["item_form"](files),
+                    res = forms.fill_each(model, task["ask"], job["items"](files), item_form,
                                           copied=job["copied"](as_of), item_problems=job["checks"](as_of),
                                           context=job["context"](files), relevant=job.get("relevant"),
-                                          explain=job["explain"](files) if job.get("explain") else None)
+                                          explain=job["explain"](files) if job.get("explain") else None,
+                                          given=given)
                     res.update(entry=None, produced={})
                     if res["ok"]:
                         entry = {"emails": res["answers"], "today": as_of}
@@ -1360,11 +1407,19 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                                      base, git(repo, "rev-parse", "HEAD"))
                     v = ax.verify(claim["id"])
                     label, reason = v["label"], v["reason"]
+                routed = {}
+                if router is not None:
+                    for _, _, _, tier in router.log:
+                        routed[tier] = routed.get(tier, 0) + 1
+                    (router.freeze if label == "witnessed" else router.forget)()
                 ax.db.close()
                 row = {"task": task["id"], "instance": i, "seed": first_seed + i, "model": model.model,
                        "done": label == "witnessed", "label": label, "rounds": res["rounds"],
                        "corrections": res["corrections"], "reason": reason[:300], "model_calls": used["calls"],
                        "answers": res.get("answers") or (res.get("entry") or {}),     # to trace a refutation
+                       "routed": routed, "table_size": len(router.table) if router is not None else None,
+                       "router_model_calls": (sum(m.usage["calls"] for ms in router.routes.values() for m in ms
+                                                  if hasattr(m, "usage")) - routed_calls0) if router is not None else 0,
                        "truth": truth,
                        "cut_off": used["cut_off"], "prompt_tokens": used["prompt_tokens"],
                        "completion_tokens": used["completion_tokens"], "seconds": round(time.time() - t0, 1)}

@@ -195,7 +195,7 @@ submit again."""
 
 
 def fill_each(model, task, items, item_form, copied=(), item_problems=None, context=None, relevant=None,
-              explain=None, max_rounds=3):
+              explain=None, given=None, max_rounds=3):
     """One small form per item, the way a function-calling model works best: it sees one item, makes one
     selection from a closed menu, and copies only from that item. Answers so far shape the next form (e.g. a
     reply can only point at an earlier email). Returns {"ok", "answers", "rounds", "corrections"}.
@@ -208,6 +208,8 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
     is the harness being pedantic, not the model being wrong.
     copied may also be a dict field -> same(value, text) -> bool, for fields where an engine decides what counts as
     the same value ('9:00 am' for a file that says '9am'); a value found nowhere in the item still fails.
+    given(name, text, answers) -> fields decided elsewhere (a router: a frozen table or another model), merged
+    over the model's form. A decision the small model cannot make is taken off its form entirely.
     explain(name, form, problems, answers) -> problems lets a job say WHY in its own words (the generic message for a
     value outside a menu only lists the menu)."""
     if hasattr(model, "thinking"):
@@ -215,6 +217,7 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
     _small_budget(model)
     answers, corrections, rounds = [], [], 0
     for name, text in items:
+        decided = given(name, text, answers) if given else {}
         schema = item_form(name, answers)
         tool = {"type": "function", "function": {"name": "submit", "description": "Submit the form for this file.",
                                                  "parameters": schema}}
@@ -229,12 +232,14 @@ def fill_each(model, task, items, item_form, copied=(), item_problems=None, cont
             form = _form_from(reply)
             messages.append({"role": "assistant", "content": json.dumps(form) if form is not None
                              else (reply.get("content") or "")})
+            if form is not None:
+                form = {**form, **decided}
             if form is not None and relevant:
                 form = relevant(form, text)
             if form is None:
                 problems = ["No form was submitted. Call `submit` with the form."]
             else:
-                problems = shape_problems(form, schema)
+                problems = shape_problems({k: v for k, v in form.items() if k not in decided}, schema)
                 if not problems:
                     same = copied if isinstance(copied, dict) else {f: None for f in copied}
                     problems = [f"{f} {form.get(f)!r} is not in this file; copy it exactly" for f, judge in same.items()

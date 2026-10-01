@@ -40,7 +40,9 @@ Rules of the collective:
 - Every agent can see your track record.
 
 How to work:
-1. Call `briefing`, then `take_task`. If there is no task, stop.
+1. Call `briefing`, then `take_task`. If there is no task, stop. If the task comes with `lessons`,
+   read them first: they are the server's own record of earlier attempts at this task, what was
+   tried, why it was refuted, and what worked. Do not repeat a refuted approach.
 2. Call `list_checks`. It tells you the exact test COMMAND that will judge you (write tests that
    command actually runs) and the test paths (one ending in / is a directory: create files inside it).
 3. Use list_files / read_file to understand the code. Fix it with write_file, and add or update a
@@ -177,6 +179,13 @@ class ChatModel:
             time.sleep(2 ** attempt)
 
 
+def _looks_like_a_tool_call(content):
+    """Text that is a call the model meant to make: a <tool_call> tag, or a bare JSON object naming a
+    function. Seen live from Nemotron Lightning: the whole "final answer" was `<tool_call>`."""
+    text = content.strip()
+    return "<tool_call" in text or text.startswith('{"name"') or '"arguments"' in text[:200]
+
+
 def _openai_tool(name, description, parameters):
     return {"type": "function", "function": {"name": name, "description": description or "",
                                              "parameters": parameters or {"type": "object", "properties": {}}}}
@@ -222,13 +231,22 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
         messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
                         agent_id=agent_id, start_sha=start_sha, shell_hint=SHELL_HINT if shell else "")},
                     {"role": "user", "content": "Begin."}]
+        nudges = 0
         for step in range(max_steps):
             reply = model(messages, tools)
             calls = reply.get("tool_calls") or []
-            messages.append({"role": "assistant", "content": reply.get("content") or "",
+            content = reply.get("content") or ""
+            messages.append({"role": "assistant", "content": content,
                              **({"tool_calls": calls} if calls else {})})
+            if not calls and _looks_like_a_tool_call(content) and nudges < 3:
+                # the model wrote a call as text instead of making it: that is not a final answer
+                nudges += 1
+                log(f"[{agent_id}] tool call written as text, not made; asking again ({nudges}/3)")
+                messages.append({"role": "user", "content": "Your last message contains a tool call written "
+                                 "as text, so it was not executed. Make the call through the tool interface."})
+                continue
             if not calls:
-                log(f"[{agent_id}] final: {(reply.get('content') or '').strip()[:300]}")
+                log(f"[{agent_id}] final: {content.strip()[:300]}")
                 return messages
             for call in calls:
                 name = call["function"]["name"]

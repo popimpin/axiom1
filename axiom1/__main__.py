@@ -5,6 +5,7 @@
     python -m axiom1 revoke-agent nemotron-1     # its token stops working at once
     python -m axiom1 register-check ID REPO --tests tests/ -- python -m pytest
     python -m axiom1 events [--since N]         # the raw event log, as JSON lines (operator-only)
+    python -m axiom1 export-okf ./bundle         # facts, skills and lessons as an OKF bundle
     python -m axiom1 agent --id nemotron-1 --workspace ./wt --hub http://127.0.0.1:8765/mcp
                                                 # a model-driven agent; token from AXIOM_TOKEN
     python -m axiom1 serve                      # stdio server for one agent (local development)
@@ -50,6 +51,8 @@ def main(argv=None):
     ag.add_argument("--caps", default="", help="comma-separated capabilities (stdio mode only)")
     ag.add_argument("--model", default=None, help="overrides AXIOM_MODEL")
     ag.add_argument("--max-steps", type=int, default=30)
+    ex = sub.add_parser("export-okf", help="write the record (facts, skills, lessons) as an OKF bundle")
+    ex.add_argument("directory")
     ev = sub.add_parser("events")
     ev.add_argument("--since", type=int, default=0)
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -93,6 +96,8 @@ def main(argv=None):
                           sandbox=a.sandbox, image=a.image, holdout=a.holdout)
         print(f"registered {a.check_id}: {command} over {a.tests} in {a.sandbox}"
               + (f" ({a.image})" if a.image else ""))
+    elif a.cmd == "export-okf":
+        print(json.dumps(ax.export_okf(a.directory)))
     elif a.cmd == "events":
         for e in ax.events(a.since):
             print(json.dumps(e))

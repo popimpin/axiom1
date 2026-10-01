@@ -48,6 +48,10 @@ def resolve(repo, ref):
     return _git(repo, "rev-parse", "--verify", f"{ref}^{{commit}}").stdout.strip()
 
 
+def changed_files(repo, before_sha, after_sha):
+    return _git(repo, "diff", "--name-only", before_sha, after_sha).stdout.split()
+
+
 def current_branch(repo):
     return _git(repo, "symbolic-ref", "--short", "HEAD").stdout.strip()
 

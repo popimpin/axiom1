@@ -93,6 +93,29 @@ class Runner(unittest.TestCase):
         ax.db.close()
 
 
+class TextToolCalls(Runner):
+    """Seen live: the model 'answered' with the text `<tool_call>` and the run ended without a claim."""
+
+    def test_a_tool_call_written_as_text_is_not_a_final_answer(self):
+        inner = ScriptedModel(REAL_TEST, FIXED)
+        state = {"slipped": 0}
+
+        def model(messages, tools):
+            if state["slipped"] < 2:      # the first two replies are calls written as text
+                state["slipped"] += 1
+                return {"role": "assistant", "content": '<tool_call>\n{"name": "briefing", "arguments": {}}'}
+            return inner(messages, tools)
+
+        messages = self._run(model)
+        self.assertEqual(messages[-1]["content"], "verdict: witnessed")
+        nudges = [m for m in messages if m["role"] == "user" and "written as text" in m["content"]]
+        self.assertEqual(len(nudges), 2)
+
+    def test_a_real_final_answer_still_ends_the_run(self):
+        messages = self._run(lambda m, t: {"role": "assistant", "content": "No task to do."})
+        self.assertEqual(messages[-1]["content"], "No task to do.")
+
+
 class WorkspaceConfinement(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)

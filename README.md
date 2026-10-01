@@ -123,6 +123,7 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 - [x] Held-out tests the agents never see (operator-only output)
 - [x] Hub: one process owns the database; per-agent tokens (hashed), identity from the token on every call
 - [x] Sandboxed shell for agents (`run`): worktree writable, `.git` read-only, no network; see docs/MEASUREMENTS.md
+- [x] Verified lessons: the server turns every verdict into a lesson or skill for the next agent; OKF export
 - [ ] Nebius Serverless AI job sandbox
 - [ ] Live viewer and hosted demo
 

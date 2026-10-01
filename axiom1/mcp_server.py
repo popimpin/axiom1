@@ -170,7 +170,9 @@ def main():
     if not agent_id:
         raise SystemExit("set AXIOM_AGENT to this agent's id")
     caps = [c.strip() for c in os.environ.get("AXIOM_CAPS", "").split(",") if c.strip()]
-    ax = Axiom(os.environ.get("AXIOM_DB", "axiom1.db"))
+    # AXIOM_SHARE_LESSONS=0 records lessons but does not hand them out (the "off" arm of an A/B run)
+    ax = Axiom(os.environ.get("AXIOM_DB", "axiom1.db"),
+               share_lessons=os.environ.get("AXIOM_SHARE_LESSONS", "1") != "0")
     build(ax, agent_id, caps).run()
 
 

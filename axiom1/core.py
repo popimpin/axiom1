@@ -48,6 +48,10 @@ CREATE TABLE IF NOT EXISTS claims   (id TEXT PRIMARY KEY, agent TEXT NOT NULL, s
                                      anchored INTEGER NOT NULL DEFAULT 1);
 CREATE TABLE IF NOT EXISTS events   (id INTEGER PRIMARY KEY AUTOINCREMENT, at REAL NOT NULL, kind TEXT NOT NULL,
                                      agent TEXT, subject TEXT, detail TEXT);
+CREATE TABLE IF NOT EXISTS lessons  (id TEXT PRIMARY KEY, kind TEXT NOT NULL, claim_id TEXT NOT NULL,
+                                     check_id TEXT NOT NULL, task_title TEXT, agent TEXT NOT NULL,
+                                     label TEXT NOT NULL, reason TEXT NOT NULL, changed TEXT NOT NULL,
+                                     body TEXT NOT NULL, at REAL NOT NULL);
 """
 
 # columns added after a table first shipped; applied to older database files on open
@@ -89,12 +93,22 @@ def _display_command(argv):
     return " ".join(out)
 
 
+def _okf(frontmatter, body):
+    """One OKF document: YAML frontmatter, then the markdown body. Values are JSON-quoted strings,
+    which YAML reads as plain strings, so agent text cannot break out of the frontmatter."""
+    lines = ["---"] + [f"{k}: {json.dumps(v if v is not None else '')}" for k, v in frontmatter.items()]
+    return "\n".join(lines + ["---", "", body, ""])
+
+
 def sha256(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 class Axiom:
-    def __init__(self, db_path=":memory:", clock=time.time):
+    """`share_lessons=False` keeps recording lessons but stops handing them to agents (for A/B runs)."""
+
+    def __init__(self, db_path=":memory:", clock=time.time, share_lessons=True):
+        self.share_lessons = share_lessons
         # several agents' server processes can share one file: WAL + a busy timeout let them
         self.db = sqlite3.connect(db_path, check_same_thread=False, timeout=30)
         self.db.row_factory = sqlite3.Row
@@ -295,8 +309,86 @@ class Axiom:
                     self.db.execute("UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
                                     (agent_id, self.clock() + lease_s, t["id"]))
                     self._event("take_task", agent_id, t["id"])
-                return {"id": t["id"], "title": t["title"], "lease_s": lease_s}
+                return {"id": t["id"], "title": t["title"], "lease_s": lease_s,
+                        "lessons": self._lessons_for(t["title"])}
         return None
+
+    # ---- lessons: what the collective learned, written by the server from its own verdicts ----
+    def _lessons_for(self, task_title, limit=5):
+        """Earlier attempts at a task with this title, newest first: what failed and why, what worked.
+        Empty when sharing is off. Agents cannot write these; they come only from verdicts."""
+        if not self.share_lessons:
+            return []
+        rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
+                               "WHERE task_title=? ORDER BY at DESC LIMIT ?", (task_title, limit)).fetchall()
+        return [{"kind": r["kind"], "label": r["label"], "by": r["agent"], "reason": r["reason"],
+                 "changed": json.loads(r["changed"]), "lesson": r["body"]} for r in rows]
+
+    def _write_lesson(self, c, check, label, reason, evidence, anchored):
+        """A refutation becomes a lesson, an anchored witness becomes a skill. Unanchored wins teach
+        nothing (they fixed code nobody had), so they are not written."""
+        if label == WITNESSED and not anchored:
+            return
+        try:
+            changed = verifier.changed_files(check["repo"], c["before_sha"], c["after_sha"])
+        except Exception:
+            changed = []
+        tests = [f for f in changed if any(f == p.rstrip("/") or f.startswith(p.rstrip("/") + "/")
+                                           for p in json.loads(check["test_paths"]))]
+        task = self.db.execute("SELECT title FROM tasks WHERE id=?", (c["task_id"],)).fetchone() \
+            if c["task_id"] else None
+        if label == WITNESSED:
+            kind = "skill"
+            body = (f"Worked ({CLAIM_KINDS[c['kind']][0]}): {c['statement']}. Changed {', '.join(changed) or 'nothing'}"
+                    f"; tests {', '.join(tests) or 'none'}. Verified: {reason}.")
+        else:
+            kind = "lesson"
+            body = f"Tried: {c['statement']}. Changed {', '.join(changed) or 'nothing'}. Refuted: {reason}."
+            if not tests:
+                body += " The commit contained no test under the check's test path."
+            tail = (evidence.get("after") or {}).get("tail", "")
+            if "still fails" in reason and tail:   # the agent's OWN test output; never held-out output
+                body += " Last output of the agent's own tests: " + " ".join(tail.split())[-300:]
+        self.db.execute("INSERT INTO lessons VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                        (uuid.uuid4().hex[:12], kind, c["id"], c["check_id"], task["title"] if task else None,
+                         c["agent"], label, reason, json.dumps(changed), body, self.clock()))
+
+    @_locked
+    def lessons(self, limit=50):
+        return [dict(r) for r in self.db.execute("SELECT * FROM lessons ORDER BY at DESC LIMIT ?", (limit,))]
+
+    @_locked
+    def export_okf(self, directory):
+        """Write the collective's record as an OKF bundle: markdown + YAML frontmatter + [[links]],
+        one file per lesson or skill and per witnessed fact, plus an index. Git-native and portable."""
+        root = Path(directory)
+        for sub in ("lessons", "skills", "facts"):
+            (root / sub).mkdir(parents=True, exist_ok=True)
+        index = {"lessons": [], "skills": [], "facts": []}
+        for r in self.db.execute("SELECT * FROM lessons ORDER BY at"):
+            sub = "skills" if r["kind"] == "skill" else "lessons"
+            name = f"{r['kind']}-{r['id']}"
+            fm = {"name": name, "type": r["kind"], "label": r["label"], "check": r["check_id"],
+                  "task": r["task_title"], "agent": r["agent"], "claim": r["claim_id"],
+                  "written_by": "axiom1-server", "description": r["reason"]}
+            (root / sub / f"{name}.md").write_text(_okf(fm, r["body"] + f"\n\nFrom claim [[claim-{r['claim_id']}]]."),
+                                                   encoding="utf-8")
+            index[sub].append((name, r["task_title"] or "(no task)", r["reason"]))
+        for r in self.db.execute("SELECT key, agent, content, claim_id FROM memories WHERE label=? ORDER BY id",
+                                 (WITNESSED,)):
+            name = f"claim-{r['claim_id']}"
+            fm = {"name": name, "type": "fact", "label": WITNESSED, "agent": r["agent"],
+                  "written_by": "axiom1-server", "description": r["content"]}
+            (root / "facts" / f"{name}.md").write_text(_okf(fm, r["content"]), encoding="utf-8")
+            index["facts"].append((name, "", r["content"]))
+        lines = ["# Axiom-1 knowledge bundle", "",
+                 "Everything here was written by the server from its own verdicts. Nothing an agent merely "
+                 "said appears in it.", ""]
+        for sub in ("facts", "skills", "lessons"):
+            lines += [f"## {sub.title()} ({len(index[sub])})", ""]
+            lines += [f"- [[{n}]] {t + ': ' if t else ''}{d}" for n, t, d in index[sub]] + [""]
+        (root / "index.md").write_text("\n".join(lines), encoding="utf-8")
+        return {"directory": str(root), **{k: len(v) for k, v in index.items()}}
 
     # ---- claims: declared until the server checks them --------------------
     @_locked
@@ -350,9 +442,9 @@ class Axiom:
             json.loads(check["argv"]), json.loads(check["test_paths"]),
             sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
         with self.lock:
-            return self._record_verdict(c, claim_id, label, reason, evidence, private)
+            return self._record_verdict(c, claim_id, label, reason, evidence, private, check)
 
-    def _record_verdict(self, c, claim_id, label, reason, evidence, private):
+    def _record_verdict(self, c, claim_id, label, reason, evidence, private, check):
         with self.db:
             # another process may have verified this claim while ours ran; the first verdict stands
             won = self.db.execute("UPDATE claims SET label=?, reason=?, evidence=?, verified_at=? "
@@ -379,6 +471,7 @@ class Axiom:
                 self.db.execute("UPDATE tasks SET status=?, holder=CASE WHEN ?='done' THEN holder END, "
                                 "lease_until=NULL WHERE id=?", (status, status, c["task_id"]))
             self._event(label, c["agent"], claim_id, reason=reason)
+            self._write_lesson(c, check, label, reason, evidence, anchored)
             if "holdout_tail" in private:  # operator-only: the event log is not on the agent surface
                 self._event("holdout_failed", c["agent"], claim_id, tail=private["holdout_tail"])
         return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence, "counts": anchored}
@@ -414,8 +507,12 @@ class Axiom:
                  for t in q("SELECT * FROM tasks WHERE status='open' ORDER BY at")
                  if set(json.loads(t["caps"])) <= caps][:limit]
         agents = {r["id"]: self.track_record(r["id"]) for r in q("SELECT id FROM agents")}
+        recent = ([{"kind": r["kind"], "task": r["task_title"], "lesson": r["body"]}
+                   for r in q("SELECT kind, task_title, body FROM lessons ORDER BY at DESC LIMIT 5")]
+                  if self.share_lessons else [])
         return {"you": agent_id, "facts": facts, "open_claims": open_claims, "refuted": refuted,
-                "tasks_you_can_take": tasks, "agents": agents, "unread": len(self.inbox(agent_id))}
+                "tasks_you_can_take": tasks, "agents": agents, "recent_lessons": recent,
+                "unread": len(self.inbox(agent_id))}
 
     @_locked
     def events(self, since_id=0):

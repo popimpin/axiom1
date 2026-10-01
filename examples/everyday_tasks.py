@@ -100,11 +100,29 @@ print("PUBLIC: every receipt is in the spreadsheet with the right date, amount a
 
 
 def receipts_gold(files, truth):
+    """A real solution, from the receipt files only (and common knowledge of what kind of shop each is)."""
+    months = {m: i for i, m in enumerate(["January", "February", "March", "April", "May", "June", "July",
+                                          "August", "September", "October", "November", "December"], 1)}
+    rows = []
+    for rel, text in sorted(files.items()):
+        if not rel.startswith("receipts/receipt_"):
+            continue
+        low = text.lower()
+        vendor = next(v for v in VENDORS if v.lower() in low)
+        if m := re.search(r"(\d{4})-(\d{2})-(\d{2})", text):
+            date = m.group(0)
+        elif m := re.search(r"(\d{2})/(\d{2})/(\d{4})", text):
+            date = f"{m.group(3)}-{m.group(1)}-{m.group(2)}"
+        else:
+            m = re.search(r"([A-Z][a-z]+) (\d{1,2}), (\d{4})", text)
+            date = f"{m.group(3)}-{months[m.group(1)]:02d}-{int(m.group(2)):02d}"
+        amounts = re.findall(r"(?i)(?:total|amount due)[^\d\n]*([\d,]+\.\d{2})", text) or \
+            re.findall(r"^\$?([\d,]+\.\d{2})\s*$", text, re.M)
+        rows.append([date, vendor, amounts[-1].replace(",", ""), VENDORS[vendor]])
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["date", "shop", "amount", "category"])
-    for t in truth:
-        w.writerow([t["date"], t["vendor"], f"{t['amount']:.2f}", t["category"]])
+    w.writerows(rows)
     return {"march_expenses.csv": buf.getvalue()}
 
 
@@ -160,7 +178,13 @@ print("PUBLIC: every file is in the right subfolder and nothing is loose")
 
 
 def downloads_gold(files, truth):
-    return {"__move__": [(f"downloads/{n}", f"downloads/{k}/{n}") for n, k in truth.items()]}
+    """A real solution, from the file names only: sort by extension."""
+    kind_of = {ext: kind for kind, exts in KINDS.items() for ext in exts}
+    moves = []
+    for rel in sorted(files):
+        name = rel.split("/", 1)[1]
+        moves.append((rel, f"downloads/{kind_of[Path(name).suffix.lower()]}/{name}"))
+    return {"__move__": moves}
 
 
 def downloads_controls(files, truth):
@@ -185,7 +209,10 @@ def contacts_data(rng):
         first, last = name.split()
         email = f"{first.lower()}.{last.lower()}@example.com"
         digits = f"555{rng.randint(1000000, 9999999)}"
-        truth.append({"name": name, "email": email, "phone": digits})
+        # the truth holds a phone only where a source file has one: people who are only in the email
+        # export have none anywhere, and inventing one is fabrication (an earlier version demanded it,
+        # which made the task unsolvable and failed two agents that were right)
+        truth.append({"name": name, "email": email, "phone": digits if i % 3 != 2 else ""})
         if i % 3 != 2:      # some people only in the phone export
             phone_rows.append([name.upper() if i % 4 == 0 else name, f"({digits[:3]}) {digits[3:6]}-{digits[6:]}",
                                email.upper() if i % 2 else email])
@@ -220,9 +247,14 @@ missing = [e for e in want if e not in set(emails)]
 if missing:
     problems.append(f"PUBLIC: {len(missing)} person(s) from the two lists are missing")
 digits = lambda s: re.sub(r"\D", "", s)
-no_phone = sum(1 for r in rows if r["email"].lower() in want and digits(r["phone"])[-10:] != want[r["email"].lower()]["phone"])
+known = [r for r in rows if r["email"].lower() in want]
+no_phone = sum(1 for r in known if want[r["email"].lower()]["phone"]
+               and digits(r["phone"])[-10:] != want[r["email"].lower()]["phone"])
 if no_phone:
     problems.append(f"PUBLIC: {no_phone} person(s) are missing their phone number or have the wrong one")
+invented = sum(1 for r in known if not want[r["email"].lower()]["phone"] and digits(r["phone"]))
+if invented:
+    problems.append(f"PUBLIC: {invented} person(s) have a phone number that appears in neither list")
 if problems:
     print("\n".join(problems)); sys.exit(1)
 print("PUBLIC: one row per person, nobody missing, every known phone number kept")
@@ -230,21 +262,34 @@ print("PUBLIC: one row per person, nobody missing, every known phone number kept
 
 
 def contacts_gold(files, truth):
+    """A real solution, from the two exports only: it never reads the truth."""
+    people = {}
+    for r in csv.DictReader(io.StringIO(files["contacts/phone_export.csv"])):
+        e = r["E-mail"].strip().lower()
+        people.setdefault(e, {"name": r["Name"].title(), "phone": ""})["phone"] = re.sub(r"\D", "", r["Mobile"])
+    for r in csv.DictReader(io.StringIO(files["contacts/email_export.csv"])):
+        e = r["Email Address"].strip().lower()
+        last, first = [x.strip() for x in r["Contact"].split(",", 1)]
+        p = people.setdefault(e, {"name": f"{first} {last}", "phone": ""})
+        p["phone"] = p["phone"] or re.sub(r"\D", "", r["Phone"])
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["name", "email", "phone"])
-    for t in truth:
-        w.writerow([t["name"], t["email"], t["phone"]])
+    for e, p in sorted(people.items()):
+        w.writerow([p["name"], e, p["phone"]])
     return {"contacts.csv": buf.getvalue()}
 
 
 def contacts_controls(files, truth):
     gold = contacts_gold(files, truth)["contacts.csv"].splitlines()
-    dup = gold + [gold[1].replace(truth[0]["email"], truth[0]["email"].upper())]
+    first_email = gold[1].split(",")[1]
+    dup = gold + [gold[1].replace(first_email, first_email.upper())]
     no_phones = [gold[0]] + [l.rsplit(",", 1)[0] + "," for l in gold[1:]]
+    invented = [gold[0]] + [(l + "5550000000") if l.endswith(",") else l for l in gold[1:]]
     return {"same person twice (email case differs)": {"contacts.csv": "\n".join(dup) + "\n"},
             "a person dropped": {"contacts.csv": "\n".join(gold[:-1]) + "\n"},
-            "phone numbers lost": {"contacts.csv": "\n".join(no_phones) + "\n"}}
+            "phone numbers lost": {"contacts.csv": "\n".join(no_phones) + "\n"},
+            "phone numbers invented": {"contacts.csv": "\n".join(invented) + "\n"}}
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -297,8 +342,14 @@ print("PUBLIC: correct number of days, quoted word for word from the named file"
 
 
 def policy_gold(files, truth):
-    return {"answer.md": f"Opened items can be returned within {truth['days']} days.\n\nSource: {truth['file']}\n\n"
-                         f"\"{truth['sentence']}, minus a 10% restocking fee.\"\n"}
+    """A real solution, from the policy files only: find the sentence about opened items."""
+    for rel, text in sorted(files.items()):
+        for line in text.splitlines():
+            if line.startswith("Opened items"):
+                days = re.search(r"within (\d+) days", line).group(1)
+                return {"answer.md": f"Opened items can be returned within {days} days.\n\nSource: {rel}\n\n"
+                                     f"\"{line}\"\n"}
+    raise ValueError("no sentence about opened items in the policies")
 
 
 def policy_controls(files, truth):

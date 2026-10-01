@@ -347,6 +347,24 @@ def deliver(repo, before_sha, after_sha, argv, test_paths, sandbox=None, holdout
                f" (no {PROCESS_FILE}, so there is no process to lock in)"), evidence, private)
 
 
+def replay_on(repo, base_sha, script, entry, argv, holdout, sandbox=None):
+    """Run a process (script + entry) on the ORIGINAL files of an earlier instance and judge it with that
+    instance's own check. Used to keep improvements from breaking what already worked.
+    Returns (passed, public feedback)."""
+    sandbox = sandbox or LocalSandbox()
+    with tempfile.TemporaryDirectory() as tree:
+        _export(repo, base_sha, tree)
+        (Path(tree) / PROCESS_FILE).write_text(script, encoding="utf-8")
+        if entry:
+            (Path(tree) / ENTRY_FILE).write_text(entry, encoding="utf-8")
+        ran = sandbox.run(tree, [sandbox.python, "-I", PROCESS_FILE], writable=True)
+        if ran.returncode != 0:
+            return False, [f"the process exited {ran.returncode}"]
+        _install_check(tree, holdout)
+        judged = sandbox.run(tree, argv)
+    return judged.returncode == 0, _public(judged.output)
+
+
 def _replace_tests(tree, repo, sha, test_paths):
     """Swap `tree`'s tests for the ones at `sha`: the paths are emptied first, so tests deleted
     since then come back and tests added since then are gone."""

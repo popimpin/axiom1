@@ -54,7 +54,12 @@ CREATE TABLE IF NOT EXISTS lessons  (id TEXT PRIMARY KEY, kind TEXT NOT NULL, cl
                                      body TEXT NOT NULL, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS processes(check_id TEXT NOT NULL, version INTEGER NOT NULL, script TEXT NOT NULL,
                                      entry TEXT, claim_id TEXT NOT NULL, agent TEXT NOT NULL, at REAL NOT NULL,
+                                     fits TEXT, proven TEXT NOT NULL DEFAULT '[]',
                                      PRIMARY KEY (check_id, version));
+CREATE TABLE IF NOT EXISTS process_instances (id INTEGER PRIMARY KEY AUTOINCREMENT, check_id TEXT NOT NULL,
+                                     version INTEGER NOT NULL, repo TEXT NOT NULL, base_sha TEXT NOT NULL,
+                                     entry TEXT, holdout TEXT NOT NULL, argv TEXT NOT NULL, sandbox TEXT NOT NULL,
+                                     image TEXT, title TEXT, claim_id TEXT NOT NULL, at REAL NOT NULL);
 """
 
 # columns added after a table first shipped; applied to older database files on open
@@ -68,6 +73,8 @@ MIGRATIONS = [
     ("claims", "anchored", "INTEGER NOT NULL DEFAULT 1"),
     ("checks", "claim_kind", "TEXT NOT NULL DEFAULT 'fix'"),
     ("tasks", "check_id", "TEXT"),
+    ("processes", "fits", "TEXT"),
+    ("processes", "proven", "TEXT NOT NULL DEFAULT '[]'"),
 ]
 
 # What a claim can assert, how the server checks it, and how a witnessed one is written down. The
@@ -367,16 +374,75 @@ class Axiom:
         return None
 
     # ---- processes: one witnessed pass locks in the deterministic part of a job ----
-    def _lock_process(self, c, check):
-        """Store the process that a witnessed delivery used, as the next version for its check. Only the
-        server writes these, and only when it re-ran the process itself and the check passed on its output."""
+    def _task_title(self, c):
+        row = self.db.execute("SELECT title FROM tasks WHERE id=?", (c["task_id"],)).fetchone() \
+            if c["task_id"] else None
+        return row["title"] if row else None
+
+    def _record_instance(self, c, check, version, entry):
+        """An instance this version passed: its original files, the entry it used, and its own check. The
+        set of these is the process's regression set. Its task title becomes a proven fit."""
+        title = self._task_title(c)
+        self.db.execute("INSERT INTO process_instances (check_id, version, repo, base_sha, entry, holdout, argv, "
+                        "sandbox, image, title, claim_id, at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                        (check["id"], version, check["repo"], c["before_sha"], entry, check["holdout"],
+                         check["argv"], check["sandbox"], check["image"], title, c["id"], self.clock()))
+        if title:
+            row = self.db.execute("SELECT proven FROM processes WHERE check_id=? AND version=?",
+                                  (check["id"], version)).fetchone()
+            proven = json.loads(row["proven"]) if row else []
+            if title not in proven:
+                proven.append(title)
+                self.db.execute("UPDATE processes SET proven=? WHERE check_id=? AND version=?",
+                                (json.dumps(proven), check["id"], version))
+
+    def _lock_process(self, c, check, evidence):
+        """A witnessed delivery whose process reproduced it. The same script as the current version adds an
+        instance (and a proven fit) to it; a changed script becomes the next version only if it also passed
+        every earlier instance (evidence['process']['regression'], computed before this call, outside the
+        lock). Only the server writes these."""
+        proc = evidence["process"]
         script = verifier.git_show(check["repo"], c["after_sha"], verifier.PROCESS_FILE)
         entry = verifier.git_show(check["repo"], c["after_sha"], verifier.ENTRY_FILE)
+        if proc.get("same_as_version"):
+            self._record_instance(c, check, proc["same_as_version"], entry)
+            return f"replayed process v{proc['same_as_version']}"
+        regression = proc.get("regression") or {}
+        if regression.get("failed"):
+            self._event("process_rejected", c["agent"], check["id"], claim=c["id"], failed=regression["failed"])
+            return (f"process not locked in: it breaks {regression['failed']} of {regression['instances']} "
+                    "earlier instance(s) the current version handles")
         row = self.db.execute("SELECT MAX(version) AS v FROM processes WHERE check_id=?", (check["id"],)).fetchone()
         version = (row["v"] or 0) + 1
-        self.db.execute("INSERT INTO processes VALUES (?,?,?,?,?,?,?)",
-                        (check["id"], version, script, entry, c["id"], c["agent"], self.clock()))
+        self.db.execute("INSERT INTO processes (check_id, version, script, entry, claim_id, agent, at, fits, proven) "
+                        "VALUES (?,?,?,?,?,?,?,?,?)",
+                        (check["id"], version, script, entry, c["id"], c["agent"], self.clock(),
+                         self._task_title(c), "[]"))
+        self._record_instance(c, check, version, entry)
         self._event("process_locked", c["agent"], check["id"], version=version, claim=c["id"])
+        return f"process locked in as v{version}"
+
+    def _regression(self, check, after_sha):
+        """Compare the delivered process with the current version; if it changed, run it on every earlier
+        instance with that instance's own entry and check. Executes processes, so it runs outside the lock."""
+        script = verifier.git_show(check["repo"], after_sha, verifier.PROCESS_FILE)
+        with self.lock:
+            latest = self._process_for(check["id"])
+            instances = [dict(r) for r in self.db.execute(
+                "SELECT * FROM process_instances WHERE check_id=? ORDER BY id", (check["id"],))]
+        if latest is None:
+            return {}
+        if latest["script"] == script:
+            return {"same_as_version": latest["version"]}
+        failed, first = 0, []
+        for inst in instances:
+            sandbox = sandboxes.from_check(inst["sandbox"], inst["image"])
+            ok, feedback = verifier.replay_on(inst["repo"], inst["base_sha"], script, inst["entry"],
+                                              json.loads(inst["argv"]), inst["holdout"], sandbox)
+            if not ok:
+                failed += 1
+                first = first or feedback
+        return {"regression": {"instances": len(instances), "failed": failed, "first_failure": first}}
 
     def _process_for(self, check_id):
         r = self.db.execute("SELECT * FROM processes WHERE check_id=? ORDER BY version DESC LIMIT 1",
@@ -384,7 +450,8 @@ class Axiom:
         if not r:
             return None
         return {"version": r["version"], "script": r["script"], "entry_example": r["entry"],
-                "locked_by": r["agent"], "from_claim": r["claim_id"]}
+                "locked_by": r["agent"], "from_claim": r["claim_id"], "fits": r["fits"],
+                "proven": json.loads(r["proven"] or "[]")}
 
     @_locked
     def process_for(self, check_id):
@@ -522,6 +589,8 @@ class Axiom:
             check["repo"], c["before_sha"], c["after_sha"],
             json.loads(check["argv"]), json.loads(check["test_paths"]),
             sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
+        if label == WITNESSED and (evidence.get("process") or {}).get("reproduced"):
+            evidence["process"].update(self._regression(check, c["after_sha"]))
         with self.lock:
             return self._record_verdict(c, claim_id, label, reason, evidence, private, check)
 
@@ -554,7 +623,11 @@ class Axiom:
             self._event(label, c["agent"], claim_id, reason=reason)
             self._write_lesson(c, check, label, reason, evidence, anchored)
             if label == WITNESSED and anchored and (evidence.get("process") or {}).get("reproduced"):
-                self._lock_process(c, check)
+                note = self._lock_process(c, check, evidence)
+                evidence["process"]["outcome"] = note
+                reason += f" ({note})"
+                self.db.execute("UPDATE claims SET reason=?, evidence=? WHERE id=?",
+                                (reason, json.dumps(evidence), claim_id))
             if "holdout_tail" in private:  # operator-only: the event log is not on the agent surface
                 self._event("holdout_failed", c["agent"], claim_id, tail=private["holdout_tail"])
             if "check_output" in private:  # a deliver check's full output may hold the hidden truth

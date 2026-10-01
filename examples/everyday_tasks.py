@@ -971,11 +971,74 @@ def run(n_agents, max_steps, model_name, thinking, seed, only):
     return {"model": model.model, "thinking": thinking, "rows": rows}
 
 
+def series(n_instances, max_steps, model_name, thinking, first_seed, only):
+    """Getting good at a job: one job type, fresh data every instance (a new month of receipts, a new inbox).
+
+    Instance 1 is worked out by the model; a process that reproduces a witnessed result is locked in.
+    Later instances replay it (the model fills only the entry, if any). When new data strays from what the
+    process handles, the model repairs it, and the repair is locked only if it still passes every earlier
+    instance. Every instance's files are kept, because they ARE the regression set."""
+    from axiom1.agent import ChatModel, run_agent
+    model = ChatModel(model_name)
+    rows = []
+    for task in TASKS:
+        if only and task["id"] not in only:
+            continue
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            db = str(Path(tmp) / "axiom1.db")
+            for i in range(n_instances):
+                inst = Path(tmp) / f"instance{i}"
+                repo, check, files, truth = build(task, inst, first_seed + i)
+                ax = Axiom(db)
+                ax.register_check(task["id"], repo, CHECK, [], sandbox="docker", image=IMAGE, holdout=str(check),
+                                  claim_kind="deliver")
+                ax.join("person", ["human"])
+                ax.post_task("person", task["ask"], check_id=task["id"])
+                before_version = (ax.process_for(task["id"]) or {}).get("version")
+                ax.db.close()
+                wt = inst / "wt"
+                git(repo, "worktree", "add", "-q", "--detach", str(wt), "main")
+                used0, t0 = dict(model.usage), time.time()
+                messages = asyncio.run(run_agent(f"agent{i}", wt, db, model, max_steps=max_steps, log=lambda *_: None,
+                                                 shell=DockerSandbox(IMAGE), thinking=thinking))
+                used = {k: model.usage[k] - used0[k] for k in model.usage}
+                ax = Axiom(db)
+                claims = [(r["label"], r["reason"] or "") for r in ax.db.execute(
+                    "SELECT label, reason FROM claims WHERE agent=? ORDER BY made_at", (f"agent{i}",))]
+                after_version = (ax.process_for(task["id"]) or {}).get("version")
+                ax.db.close()
+                replayed = bool(messages) and str(messages[0].get("content", "")).startswith("replaying locked process")
+                done = any(l == "witnessed" for l, _ in claims)
+                if replayed and done and len(claims) == 1:
+                    path = "replayed"
+                elif replayed:
+                    path = "replay failed -> model"
+                else:
+                    path = "worked out by the model"
+                outcome = next((r[r.rfind("(") + 1:-1] for l, r in reversed(claims) if l == "witnessed" and "(" in r), "")
+                row = {"task": task["id"], "instance": i, "seed": first_seed + i, "done": done, "path": path,
+                       "process_before": before_version, "process_after": after_version, "outcome": outcome,
+                       "claims": [l for l, _ in claims], "model_calls": used["calls"],
+                       "prompt_tokens": used["prompt_tokens"], "completion_tokens": used["completion_tokens"],
+                       "seconds": round(time.time() - t0, 1)}
+                rows.append(row)
+                print(json.dumps(row), flush=True)
+    return {"model": model.model, "thinking": thinking, "instances_per_type": n_instances, "rows": rows}
+
+
 def main():
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
     v = sub.add_parser("validate")
     v.add_argument("--seed", type=int, default=7)
+    se = sub.add_parser("series", help="fresh instances per job type: learn once, replay, repair")
+    se.add_argument("--instances", type=int, default=5)
+    se.add_argument("--max-steps", type=int, default=40)
+    se.add_argument("--model", default=None)
+    se.add_argument("--thinking", default="auto", choices=["auto", "on", "off"])
+    se.add_argument("--seed", type=int, default=100)
+    se.add_argument("--only", nargs="*")
+    se.add_argument("--out", default=None)
     r = sub.add_parser("run")
     r.add_argument("--agents", type=int, default=2)
     r.add_argument("--max-steps", type=int, default=40)
@@ -987,6 +1050,11 @@ def main():
     a = p.parse_args()
     if a.cmd == "validate":
         sys.exit(0 if validate(a.seed) else 1)
+    if a.cmd == "series":
+        result = series(a.instances, a.max_steps, a.model, a.thinking, a.seed, a.only)
+        if a.out:
+            Path(a.out).write_text(json.dumps(result, indent=1), encoding="utf-8")
+        return
     result = run(a.agents, a.max_steps, a.model, a.thinking, a.seed, a.only)
     if a.out:
         Path(a.out).write_text(json.dumps(result, indent=1), encoding="utf-8")

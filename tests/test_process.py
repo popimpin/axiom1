@@ -101,6 +101,67 @@ class Locking(unittest.TestCase):
         self.assertNotIn("process", self.ax.take_task("a"))
 
 
+class RegressionProtected(Locking):
+    """Improving a process at scale must not break what it already does: a changed version is locked in only
+    if it passes the new instance AND every earlier one, each with its own original files, entry and check."""
+
+    # handles only "Total: $7.25" lines: right for the new month, wrong for every month before it
+    ONLY_DOLLARS = PROCESS.replace('f"{float(amount):.2f}"', 'f"{float(amount.split(\'$\')[1]):.2f}"')
+
+    def _new_month(self):
+        """A second instance of the same job: its own repo, its own check, the same check id."""
+        repo = DataRepo(Path(self.tmp.name) / "april")
+        # April's receipts all come in the new format (same shops and amounts, so the same check passes)
+        repo.write("receipts/a.txt", "Corner Cafe\nTotal: $12.50\n")
+        repo.write("receipts/b.txt", "Hardware World\nTotal: $40.00\n")
+        repo.write("receipts/c.txt", "Corner Cafe\nTotal: $7.25\n")
+        repo.base = repo.commit("april")
+        self.ax.register_check("receipts", repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                               holdout=str(self.check), claim_kind="deliver")
+        self.repo = repo
+
+    def test_a_fix_that_breaks_an_earlier_instance_is_not_locked_in(self):
+        self._verify({"process.py": PROCESS, "summary.csv": GOOD})                        # v1, March
+        self._new_month()
+        v = self._verify({"process.py": self.ONLY_DOLLARS, "summary.csv": GOOD})
+        self.assertEqual(v["label"], "witnessed")                  # April's spreadsheet IS right...
+        self.assertEqual(v["evidence"]["process"]["regression"]["failed"], 1)
+        self.assertIn("breaks 1 of 1 earlier", v["reason"])
+        self.assertEqual(self.ax.process_for("receipts")["version"], 1)   # ...but March's method stays
+
+    def test_a_fix_that_handles_old_and_new_is_locked_in(self):
+        self._verify({"process.py": PROCESS, "summary.csv": GOOD})
+        self._new_month()
+        v = self._verify({"process.py": PROCESS_V2, "summary.csv": GOOD})
+        self.assertEqual(v["evidence"]["process"]["regression"], {"instances": 1, "failed": 0, "first_failure": []})
+        self.assertEqual(self.ax.process_for("receipts")["version"], 2)
+
+    def test_running_the_same_process_again_adds_an_instance_and_a_proven_fit_not_a_version(self):
+        self.ax.post_task("a", "March receipts", check_id="receipts")
+        t1 = self.ax.take_task("a")
+        after = self.repo.branch("m", {"process.py": PROCESS, "summary.csv": GOOD})
+        self.ax.verify(self.ax.claim("a", "march", "receipts", self.repo.base, after, task_id=t1["id"])["id"])
+        self._new_month()
+        self.ax.post_task("a", "April receipts", check_id="receipts")
+        t2 = self.ax.take_task("a")
+        after = self.repo.branch("a2", {"process.py": PROCESS_V2, "summary.csv": GOOD})
+        self.ax.verify(self.ax.claim("a", "april", "receipts", self.repo.base, after, task_id=t2["id"])["id"])
+        self.assertEqual(self.ax.process_for("receipts")["version"], 2)
+        # and May, with the April version unchanged
+        repo = DataRepo(Path(self.tmp.name) / "may")
+        self.ax.register_check("receipts", repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                               holdout=str(self.check), claim_kind="deliver")
+        self.repo = repo
+        self.ax.post_task("a", "May receipts", check_id="receipts")
+        t3 = self.ax.take_task("a")
+        after = repo.branch("may", {"process.py": PROCESS_V2, "summary.csv": GOOD})
+        v = self.ax.verify(self.ax.claim("a", "may", "receipts", repo.base, after, task_id=t3["id"])["id"])
+        self.assertIn("replayed process v2", v["reason"])
+        p = self.ax.process_for("receipts")
+        self.assertEqual(p["version"], 2)
+        self.assertEqual(p["proven"], ["April receipts", "May receipts"])
+
+
 @unittest.skipUnless(DOCKER, f"docker daemon or {IMAGE} not available")
 class Replay(unittest.TestCase):
     """The runner end to end: replay with no model, replay with an entry, and repair when input strays."""

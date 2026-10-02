@@ -1,0 +1,2595 @@
+{
+ "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+ "mode": "form, one item at a time",
+ "as_of": "2026-10-01",
+ "rows": [
+  {
+   "task": "calendar-from-inbox",
+   "instance": 0,
+   "seed": 700,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (process locked in as v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "date": "Monday May 4",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "2:00 pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_kids'.txt",
+     "duration": "about 45 minutes",
+     "date": "Saturday May 9",
+     "refers_to": "",
+     "time": "4pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_team.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 24",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "4:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "duration": "about 45 minutes",
+     "date": "Saturday May 23",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "2:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_coffee.txt",
+     "duration": "",
+     "date": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_car.txt",
+     "date": "Wednesday May 6",
+     "kind": "agreed",
+     "duration": "about 30 minutes",
+     "refers_to": "",
+     "time": "14:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_kids'.txt",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_kids'.txt",
+     "date": "Sunday May 10",
+     "time": "2:00 pm",
+     "duration": "",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_team.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_team.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "nvidia/nemotron-3-super-120b-a12b": 7
+   },
+   "table_size": 7,
+   "router_model_calls": 7,
+   "truth": [
+    {
+     "date": "2026-05-04",
+     "start": "14:00",
+     "end": "15:00",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-10",
+     "start": "14:00",
+     "end": "14:45",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "14:30",
+     "end": "15:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-06",
+     "start": "14:00",
+     "end": "14:30",
+     "title": "Car service"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9146,
+   "completion_tokens": 706,
+   "seconds": 18.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 1,
+   "seed": 701,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_call.txt",
+     "duration": "about 60 minutes",
+     "date": "Thursday May 21",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_coffee.txt",
+     "duration": "about 30 minutes",
+     "date": "Wednesday May 13",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "10am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_team.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 21",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_budget.txt",
+     "duration": "about 45 minutes",
+     "date": "Sunday May 17",
+     "refers_to": "",
+     "time": "11:30",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 24",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "13:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_coffee.txt",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_coffee.txt",
+     "date": "Thursday May 14",
+     "time": "12:00",
+     "duration": "",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_team.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_team.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "nvidia/nemotron-3-super-120b-a12b": 4,
+    "table": 3
+   },
+   "table_size": 11,
+   "router_model_calls": 4,
+   "truth": [
+    {
+     "date": "2026-05-21",
+     "start": "10:30",
+     "end": "11:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-14",
+     "start": "12:00",
+     "end": "12:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-24",
+     "start": "13:30",
+     "end": "14:00",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9128,
+   "completion_tokens": 701,
+   "seconds": 15.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 2,
+   "seed": 702,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_kids'.txt",
+     "date": "Wednesday May 13",
+     "kind": "agreed",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "16:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_budget.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 17",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "9:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "date": "Friday May 22",
+     "kind": "agreed",
+     "duration": "about 30 minutes",
+     "refers_to": "",
+     "time": "10:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "duration": "about 45 minutes",
+     "date": "Wednesday May 6",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "13:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "date": "Friday May 22",
+     "kind": "agreed",
+     "duration": "about 30 minutes",
+     "refers_to": "",
+     "time": "15:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_budget.txt",
+     "kind": "moved_and_agreed",
+     "date": "Monday May 18",
+     "duration": "",
+     "refers_to": "inbox/02_budget.txt",
+     "time": "11:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_dentist.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_dentist.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "nvidia/nemotron-3-super-120b-a12b": 2,
+    "table": 5
+   },
+   "table_size": 13,
+   "router_model_calls": 2,
+   "truth": [
+    {
+     "date": "2026-05-13",
+     "start": "16:30",
+     "end": "17:30",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "11:30",
+     "end": "12:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-06",
+     "start": "13:30",
+     "end": "14:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-22",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9159,
+   "completion_tokens": 693,
+   "seconds": 13.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 3,
+   "seed": 703,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_budget.txt",
+     "date": "Sunday May 17",
+     "duration": "about 30 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "9:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_coffee.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 4",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "2:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "duration": "about 30 minutes",
+     "date": "Thursday May 21",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "11:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_team.txt",
+     "duration": "about 30 minutes",
+     "date": "Tuesday May 12",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "16:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_call.txt",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "date": "",
+     "time": "",
+     "duration": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 10",
+     "refers_to": "",
+     "time": "13:00",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_coffee.txt",
+     "date": "Tuesday May 5",
+     "kind": "moved_and_agreed",
+     "duration": "",
+     "refers_to": "inbox/02_coffee.txt",
+     "time": "4:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_dentist.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_dentist.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 3,
+    "nvidia/nemotron-3-super-120b-a12b": 4
+   },
+   "table_size": 16,
+   "router_model_calls": 4,
+   "truth": [
+    {
+     "date": "2026-05-17",
+     "start": "09:30",
+     "end": "10:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-05",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-12",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-10",
+     "start": "13:00",
+     "end": "13:30",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9143,
+   "completion_tokens": 648,
+   "seconds": 14.2
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 4,
+   "seed": 704,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_kids'.txt",
+     "duration": "about 45 minutes",
+     "date": "Saturday May 9",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_car.txt",
+     "date": "Friday May 15",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "9:00 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "duration": "about 45 minutes",
+     "date": "Sunday May 10",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "9:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 11",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "10:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_dentist.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "duration": "about 45 minutes",
+     "date": "Wednesday May 20",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "9:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_car.txt",
+     "duration": "",
+     "date": "Saturday May 16",
+     "refers_to": "inbox/02_car.txt",
+     "kind": "moved_and_agreed",
+     "time": "11:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_coffee.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 4,
+    "nvidia/nemotron-3-super-120b-a12b": 3
+   },
+   "table_size": 19,
+   "router_model_calls": 3,
+   "truth": [
+    {
+     "date": "2026-05-09",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-16",
+     "start": "11:00",
+     "end": "12:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "10:30",
+     "end": "11:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-20",
+     "start": "09:30",
+     "end": "10:15",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9155,
+   "completion_tokens": 703,
+   "seconds": 13.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 5,
+   "seed": 705,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_kids'.txt",
+     "date": "Tuesday May 19",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "11:00 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_coffee.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 4",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "1:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_budget.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 18",
+     "refers_to": "",
+     "time": "4:30 pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "duration": "about 60 minutes",
+     "date": "Saturday May 9",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "14:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_dentist.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "duration": "about 30 minutes",
+     "date": "Saturday May 16",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "2:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_coffee.txt",
+     "duration": "",
+     "date": "Tuesday May 5",
+     "refers_to": "inbox/02_coffee.txt",
+     "kind": "moved_and_agreed",
+     "time": "15:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_budget.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_budget.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "kind": "not_agreed",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 4,
+    "nvidia/nemotron-3-super-120b-a12b": 3
+   },
+   "table_size": 22,
+   "router_model_calls": 3,
+   "truth": [
+    {
+     "date": "2026-05-19",
+     "start": "11:00",
+     "end": "12:00",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-05",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-09",
+     "start": "14:30",
+     "end": "15:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-16",
+     "start": "14:30",
+     "end": "15:00",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9173,
+   "completion_tokens": 712,
+   "seconds": 13.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 6,
+   "seed": 706,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "duration": "about 45 minutes",
+     "date": "Tuesday May 5",
+     "refers_to": "",
+     "time": "11:30am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_coffee.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 11",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10:00 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_kids'.txt",
+     "duration": "about 30 minutes",
+     "date": "Thursday May 7",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_team.txt",
+     "duration": "about 60 minutes",
+     "date": "Sunday May 17",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "11am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_budget.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_dentist.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 18",
+     "refers_to": "",
+     "time": "10:00",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_coffee.txt",
+     "kind": "moved_and_agreed",
+     "date": "Tuesday May 12",
+     "duration": "",
+     "refers_to": "inbox/02_coffee.txt",
+     "time": "12pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_kids'.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_kids'.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 5,
+    "nvidia/nemotron-3-super-120b-a12b": 2
+   },
+   "table_size": 24,
+   "router_model_calls": 2,
+   "truth": [
+    {
+     "date": "2026-05-05",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-12",
+     "start": "12:00",
+     "end": "12:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "11:00",
+     "end": "12:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "10:00",
+     "end": "10:30",
+     "title": "Dentist"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9130,
+   "completion_tokens": 656,
+   "seconds": 12.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 7,
+   "seed": 707,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_budget.txt",
+     "duration": "about 30 minutes",
+     "date": "Wednesday May 20",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "2:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_car.txt",
+     "duration": "about 60 minutes",
+     "date": "Tuesday May 19",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "duration": "about 30 minutes",
+     "date": "Wednesday May 6",
+     "refers_to": "",
+     "time": "11:30 am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_team.txt",
+     "duration": "about 60 minutes",
+     "date": "Saturday May 23",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_call.txt",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "kind": "not_agreed",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 11",
+     "refers_to": "",
+     "time": "2:30pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_car.txt",
+     "duration": "",
+     "date": "Wednesday May 20",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_car.txt",
+     "time": "3:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_coffee.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 6,
+    "nvidia/nemotron-3-super-120b-a12b": 1
+   },
+   "table_size": 25,
+   "router_model_calls": 1,
+   "truth": [
+    {
+     "date": "2026-05-20",
+     "start": "14:30",
+     "end": "15:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-20",
+     "start": "15:00",
+     "end": "16:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "15:30",
+     "end": "16:30",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "14:30",
+     "end": "15:15",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9123,
+   "completion_tokens": 691,
+   "seconds": 11.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 8,
+   "seed": 708,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_budget.txt",
+     "duration": "about 30 minutes",
+     "date": "Saturday May 23",
+     "refers_to": "",
+     "time": "1:30 pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "duration": "about 30 minutes",
+     "date": "Saturday May 23",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "3:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "duration": "about 45 minutes",
+     "date": "Saturday May 16",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "09:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_car.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 10",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_kids'.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_dentist.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 7",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "kind": "moved_and_agreed",
+     "date": "Sunday May 24",
+     "duration": "",
+     "refers_to": "inbox/02_call.txt",
+     "time": "17:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_coffee.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 6,
+    "nvidia/nemotron-3-super-120b-a12b": 1
+   },
+   "table_size": 26,
+   "router_model_calls": 1,
+   "truth": [
+    {
+     "date": "2026-05-23",
+     "start": "13:30",
+     "end": "14:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-24",
+     "start": "17:30",
+     "end": "18:00",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-10",
+     "start": "13:30",
+     "end": "14:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-07",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Dentist"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9146,
+   "completion_tokens": 684,
+   "seconds": 11.3
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 9,
+   "seed": 709,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "duration": "about 45 minutes",
+     "date": "Saturday May 9",
+     "refers_to": "",
+     "time": "9:30am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "date": "Tuesday May 5",
+     "kind": "agreed",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "09:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 21",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "14:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_budget.txt",
+     "duration": "about 60 minutes",
+     "date": "Wednesday May 6",
+     "refers_to": "",
+     "time": "3:30 pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_team.txt",
+     "duration": "",
+     "date": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 45 minutes",
+     "date": "Saturday May 16",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "13:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "duration": "",
+     "date": "Wednesday May 6",
+     "refers_to": "inbox/02_call.txt",
+     "kind": "moved_and_agreed",
+     "time": "11:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_coffee.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 5,
+    "nvidia/nemotron-3-super-120b-a12b": 2
+   },
+   "table_size": 28,
+   "router_model_calls": 2,
+   "truth": [
+    {
+     "date": "2026-05-09",
+     "start": "09:30",
+     "end": "10:15",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-06",
+     "start": "11:30",
+     "end": "12:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-06",
+     "start": "15:30",
+     "end": "16:30",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-16",
+     "start": "13:00",
+     "end": "13:45",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9135,
+   "completion_tokens": 688,
+   "seconds": 12.8
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 10,
+   "seed": 710,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_team.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 18",
+     "refers_to": "",
+     "time": "11am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "duration": "about 45 minutes",
+     "date": "Wednesday May 13",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "3:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_car.txt",
+     "duration": "about 60 minutes",
+     "date": "Monday May 4",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "4:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_kids'.txt",
+     "duration": "about 60 minutes",
+     "date": "Thursday May 21",
+     "refers_to": "",
+     "time": "10:30",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_coffee.txt",
+     "duration": "",
+     "date": "",
+     "refers_to": "",
+     "time": "",
+     "kind": "not_agreed",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 7",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "2pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "kind": "moved_and_agreed",
+     "date": "Thursday May 14",
+     "duration": "",
+     "refers_to": "inbox/02_call.txt",
+     "time": "5:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_car.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_car.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 7
+   },
+   "table_size": 28,
+   "router_model_calls": 0,
+   "truth": [
+    {
+     "date": "2026-05-18",
+     "start": "11:00",
+     "end": "11:45",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-14",
+     "start": "17:30",
+     "end": "18:15",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-21",
+     "start": "10:30",
+     "end": "11:30",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-07",
+     "start": "14:00",
+     "end": "14:45",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9098,
+   "completion_tokens": 688,
+   "seconds": 11.5
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 11,
+   "seed": 711,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "date": "Sunday May 17",
+     "duration": "about 30 minutes",
+     "kind": "agreed",
+     "time": "4pm",
+     "refers_to": "",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "duration": "about 30 minutes",
+     "date": "Tuesday May 12",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_call.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 7",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "3:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_kids'.txt",
+     "duration": "about 60 minutes",
+     "date": "Monday May 4",
+     "refers_to": "",
+     "time": "1:30 pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_dentist.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "duration": "about 30 minutes",
+     "date": "Tuesday May 12",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10:30 am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_team.txt",
+     "kind": "moved_and_agreed",
+     "date": "Wednesday May 13",
+     "duration": "",
+     "refers_to": "inbox/02_team.txt",
+     "time": "3:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_call.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_call.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "duration": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 6,
+    "nvidia/nemotron-3-super-120b-a12b": 1
+   },
+   "table_size": 29,
+   "router_model_calls": 1,
+   "truth": [
+    {
+     "date": "2026-05-17",
+     "start": "16:00",
+     "end": "16:30",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-13",
+     "start": "15:30",
+     "end": "16:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-04",
+     "start": "13:30",
+     "end": "14:30",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-12",
+     "start": "10:30",
+     "end": "11:00",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9137,
+   "completion_tokens": 679,
+   "seconds": 12.6
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 12,
+   "seed": 712,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_coffee.txt",
+     "duration": "about 45 minutes",
+     "date": "Sunday May 10",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "09:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_car.txt",
+     "duration": "about 60 minutes",
+     "date": "Tuesday May 12",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "14:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_team.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 4",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "10:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_call.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 4",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_budget.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_dentist.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 4",
+     "refers_to": "",
+     "time": "4:00 pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_car.txt",
+     "duration": "",
+     "date": "Wednesday May 13",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_car.txt",
+     "time": "4:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_team.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_team.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "duration": "",
+     "date": "",
+     "refers_to": "",
+     "kind": "not_agreed",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "nvidia/nemotron-3-super-120b-a12b": 3,
+    "table": 4
+   },
+   "table_size": 31,
+   "router_model_calls": 3,
+   "truth": [
+    {
+     "date": "2026-05-10",
+     "start": "09:30",
+     "end": "10:15",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-13",
+     "start": "16:00",
+     "end": "17:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-04",
+     "start": "13:00",
+     "end": "13:45",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-04",
+     "start": "16:00",
+     "end": "16:30",
+     "title": "Dentist"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9105,
+   "completion_tokens": 687,
+   "seconds": 14.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 13,
+   "seed": 713,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_team.txt",
+     "date": "Wednesday May 6",
+     "duration": "about 45 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "11:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "duration": "about 30 minutes",
+     "date": "Wednesday May 6",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_coffee.txt",
+     "duration": "about 60 minutes",
+     "date": "Monday May 11",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "4pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_car.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 4",
+     "refers_to": "",
+     "time": "15:00",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_dentist.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_kids'.txt",
+     "duration": "about 60 minutes",
+     "date": "Thursday May 14",
+     "refers_to": "",
+     "time": "15:30",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "duration": "",
+     "date": "Thursday May 7",
+     "refers_to": "inbox/02_call.txt",
+     "kind": "moved_and_agreed",
+     "time": "5pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_coffee.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_coffee.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 6,
+    "nvidia/nemotron-3-super-120b-a12b": 1
+   },
+   "table_size": 32,
+   "router_model_calls": 1,
+   "truth": [
+    {
+     "date": "2026-05-06",
+     "start": "11:30",
+     "end": "12:15",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-07",
+     "start": "17:00",
+     "end": "17:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-04",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-14",
+     "start": "15:30",
+     "end": "16:30",
+     "title": "Kids' school play"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9112,
+   "completion_tokens": 667,
+   "seconds": 11.4
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 14,
+   "seed": 714,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_kids'.txt",
+     "date": "Sunday May 17",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "4pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_budget.txt",
+     "date": "Tuesday May 5",
+     "kind": "agreed",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "10:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_call.txt",
+     "duration": "about 30 minutes",
+     "date": "Friday May 8",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "16:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_coffee.txt",
+     "duration": "about 60 minutes",
+     "date": "Saturday May 23",
+     "refers_to": "",
+     "time": "10am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "duration": "",
+     "date": "",
+     "refers_to": "",
+     "time": "",
+     "kind": "not_agreed",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_dentist.txt",
+     "duration": "about 30 minutes",
+     "date": "Saturday May 16",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:00",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_budget.txt",
+     "duration": "",
+     "date": "Wednesday May 6",
+     "refers_to": "inbox/02_budget.txt",
+     "kind": "moved_and_agreed",
+     "time": "12pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_call.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_call.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 7
+   },
+   "table_size": 32,
+   "router_model_calls": 0,
+   "truth": [
+    {
+     "date": "2026-05-17",
+     "start": "16:00",
+     "end": "17:00",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-06",
+     "start": "12:00",
+     "end": "13:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "10:00",
+     "end": "11:00",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-16",
+     "start": "15:00",
+     "end": "15:30",
+     "title": "Dentist"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9149,
+   "completion_tokens": 690,
+   "seconds": 10.3
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 15,
+   "seed": 715,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_car.txt",
+     "duration": "about 60 minutes",
+     "date": "Saturday May 23",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_budget.txt",
+     "duration": "about 60 minutes",
+     "date": "Saturday May 16",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "duration": "about 60 minutes",
+     "date": "Tuesday May 19",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "2:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_kids'.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 7",
+     "refers_to": "",
+     "time": "9:30 am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_call.txt",
+     "duration": "",
+     "date": "",
+     "kind": "not_agreed",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_coffee.txt",
+     "duration": "about 30 minutes",
+     "date": "Thursday May 21",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_budget.txt",
+     "duration": "",
+     "date": "Sunday May 17",
+     "kind": "moved_and_agreed",
+     "refers_to": "inbox/02_budget.txt",
+     "time": "3:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_dentist.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_dentist.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 7
+   },
+   "table_size": 32,
+   "router_model_calls": 0,
+   "truth": [
+    {
+     "date": "2026-05-23",
+     "start": "10:30",
+     "end": "11:30",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-17",
+     "start": "15:00",
+     "end": "16:00",
+     "title": "Budget review"
+    },
+    {
+     "date": "2026-05-07",
+     "start": "09:30",
+     "end": "10:15",
+     "title": "Kids' school play"
+    },
+    {
+     "date": "2026-05-21",
+     "start": "13:30",
+     "end": "14:00",
+     "title": "Coffee with Sam"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9131,
+   "completion_tokens": 678,
+   "seconds": 9.9
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 16,
+   "seed": 716,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "date": "Saturday May 9",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "2:30pm",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_team.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 24",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "14:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_kids'.txt",
+     "date": "Friday May 22",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "09:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_car.txt",
+     "duration": "about 30 minutes",
+     "date": "Saturday May 16",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "4:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_budget.txt",
+     "duration": "",
+     "date": "",
+     "refers_to": "",
+     "kind": "not_agreed",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_call.txt",
+     "duration": "about 60 minutes",
+     "date": "Monday May 11",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "1:00 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_team.txt",
+     "duration": "",
+     "date": "Monday May 25",
+     "refers_to": "inbox/02_team.txt",
+     "kind": "moved_and_agreed",
+     "time": "4:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_kids'.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_kids'.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 7
+   },
+   "table_size": 32,
+   "router_model_calls": 0,
+   "truth": [
+    {
+     "date": "2026-05-09",
+     "start": "14:30",
+     "end": "15:30",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-25",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-16",
+     "start": "16:30",
+     "end": "17:00",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-11",
+     "start": "13:00",
+     "end": "14:00",
+     "title": "Call with the landlord"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9153,
+   "completion_tokens": 710,
+   "seconds": 10.1
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 17,
+   "seed": 717,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_dentist.txt",
+     "date": "Wednesday May 6",
+     "duration": "about 30 minutes",
+     "refers_to": "",
+     "time": "09:30",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "date": "Friday May 22",
+     "kind": "agreed",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "11:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_kids'.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 4",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:30am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_car.txt",
+     "duration": "about 60 minutes",
+     "date": "Wednesday May 13",
+     "refers_to": "",
+     "time": "14:30",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_team.txt",
+     "duration": "",
+     "date": "",
+     "refers_to": "",
+     "time": "",
+     "kind": "not_agreed",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "duration": "about 60 minutes",
+     "date": "Tuesday May 19",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "10am",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "duration": "",
+     "date": "Saturday May 23",
+     "refers_to": "inbox/02_call.txt",
+     "kind": "moved_and_agreed",
+     "time": "1:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_kids'.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_kids'.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "date": "",
+     "kind": "not_agreed",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 6,
+    "nvidia/nemotron-3-super-120b-a12b": 1
+   },
+   "table_size": 33,
+   "router_model_calls": 1,
+   "truth": [
+    {
+     "date": "2026-05-06",
+     "start": "09:30",
+     "end": "10:00",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-23",
+     "start": "13:30",
+     "end": "14:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-13",
+     "start": "14:30",
+     "end": "15:30",
+     "title": "Car service"
+    },
+    {
+     "date": "2026-05-19",
+     "start": "10:00",
+     "end": "11:00",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9166,
+   "completion_tokens": 701,
+   "seconds": 12.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 18,
+   "seed": 718,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_coffee.txt",
+     "duration": "about 60 minutes",
+     "date": "Saturday May 16",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "15:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "duration": "about 60 minutes",
+     "date": "Thursday May 21",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "11:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_dentist.txt",
+     "date": "Sunday May 24",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "14:30",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_team.txt",
+     "duration": "about 30 minutes",
+     "date": "Monday May 18",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "3:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_car.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_budget.txt",
+     "duration": "about 60 minutes",
+     "date": "Thursday May 7",
+     "refers_to": "",
+     "time": "11:00 am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "kind": "moved_and_agreed",
+     "date": "Friday May 22",
+     "duration": "",
+     "refers_to": "inbox/02_call.txt",
+     "time": "1:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_dentist.txt",
+     "kind": "cancelled_by_them",
+     "refers_to": "inbox/03_dentist.txt",
+     "date": "",
+     "time": "",
+     "duration": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 7
+   },
+   "table_size": 33,
+   "router_model_calls": 0,
+   "truth": [
+    {
+     "date": "2026-05-16",
+     "start": "15:30",
+     "end": "16:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-22",
+     "start": "13:30",
+     "end": "14:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "15:30",
+     "end": "16:00",
+     "title": "Team retro"
+    },
+    {
+     "date": "2026-05-07",
+     "start": "11:00",
+     "end": "12:00",
+     "title": "Budget review"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9170,
+   "completion_tokens": 674,
+   "seconds": 10.0
+  },
+  {
+   "task": "calendar-from-inbox",
+   "instance": 19,
+   "seed": 719,
+   "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+   "done": true,
+   "label": "witnessed",
+   "rounds": 9,
+   "corrections": [],
+   "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (replayed process v1)",
+   "model_calls": 9,
+   "answers": [
+    {
+     "file": "inbox/01_coffee.txt",
+     "date": "Saturday May 23",
+     "kind": "agreed",
+     "duration": "about 60 minutes",
+     "refers_to": "",
+     "time": "1:30pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/02_call.txt",
+     "duration": "about 60 minutes",
+     "date": "Sunday May 17",
+     "refers_to": "",
+     "kind": "agreed",
+     "time": "3:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/03_budget.txt",
+     "duration": "about 30 minutes",
+     "date": "Sunday May 17",
+     "refers_to": "",
+     "time": "11:00",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/04_dentist.txt",
+     "duration": "about 45 minutes",
+     "date": "Thursday May 21",
+     "refers_to": "",
+     "time": "9:30am",
+     "kind": "agreed",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/05_kids'.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": "",
+     "said_yes": "no"
+    },
+    {
+     "file": "inbox/06_team.txt",
+     "duration": "about 45 minutes",
+     "date": "Monday May 18",
+     "kind": "agreed",
+     "refers_to": "",
+     "time": "2pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/08_re_call.txt",
+     "kind": "moved_and_agreed",
+     "date": "Monday May 18",
+     "duration": "",
+     "refers_to": "inbox/02_call.txt",
+     "time": "5:30 pm",
+     "said_yes": "yes"
+    },
+    {
+     "file": "inbox/09_cancel_budget.txt",
+     "kind": "cancelled_by_them",
+     "date": "",
+     "duration": "",
+     "refers_to": "inbox/03_budget.txt",
+     "time": ""
+    },
+    {
+     "file": "inbox/99_newsletter.txt",
+     "kind": "not_agreed",
+     "date": "",
+     "duration": "",
+     "refers_to": "",
+     "time": ""
+    }
+   ],
+   "routed": {
+    "table": 6,
+    "nvidia/nemotron-3-super-120b-a12b": 1
+   },
+   "table_size": 34,
+   "router_model_calls": 1,
+   "truth": [
+    {
+     "date": "2026-05-23",
+     "start": "13:30",
+     "end": "14:30",
+     "title": "Coffee with Sam"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "17:30",
+     "end": "18:30",
+     "title": "Call with the landlord"
+    },
+    {
+     "date": "2026-05-21",
+     "start": "09:30",
+     "end": "10:15",
+     "title": "Dentist"
+    },
+    {
+     "date": "2026-05-18",
+     "start": "14:00",
+     "end": "14:45",
+     "title": "Team retro"
+    }
+   ],
+   "cut_off": 0,
+   "prompt_tokens": 9137,
+   "completion_tokens": 678,
+   "seconds": 11.5
+  }
+ ],
+ "routes": {
+  "form": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+  "reply_is_yes": [
+   "table",
+   "nvidia/nemotron-3-super-120b-a12b"
+  ]
+ },
+ "super_usage": {
+  "calls": 36,
+  "prompt_tokens": 15906,
+  "completion_tokens": 1928,
+  "thinking_calls": 0,
+  "cut_off": 0
+ }
+}

@@ -325,3 +325,29 @@ table, else ornith:9b. An answer is frozen only after its inbox is witnessed. 20
   subject" above it. A refuted inbox freezes nothing, so the table stayed clean. Now caught without the hidden
   check: a move or cancel that points away from the agreed meeting with its own subject gets a correction.
 - Caveat: synthetic replies, 41 wordings; real mail has a longer tail, so the curve flattens above zero.
+
+## On Nemotron, on Nebius: 20/20 (2026-10-02)
+
+The routed calendar from the Bee section, moved to Nebius Token Factory with nothing else changed: the same 20
+varied inboxes (seeds 700-719). The form on **Nemotron 3 Nano** (30B, 3B active); "is my reply a yes?" from the
+frozen table, else **Nemotron 3 Super**. `2026-10-02_nebius_routing_curve.json`.
+
+Choosing the tiers was measured, not guessed (`2026-10-02_yes_no_*_by_model.json`): with the email in the question,
+Super 42/42, Nano 41/42 ("No problem at all, see you." -> no), Lightning 39/42. A wrong answer that is still a
+valid option does not fall through to the next tier, so the yes/no goes to the one model with no errors.
+
+| | Nemotron (Nebius) | Bee (qwen3:1.7b + ornith:9b) |
+|---|---|---|
+| witnessed | **20/20** | 19/20 |
+| corrections needed | **0** | 0 |
+| form calls (one per email) | 180 | 181 |
+| yes/no from the table, by fives | 43% · 74% · 86% · **94%** | 40% · 74% · 86% · 94% |
+| large-model calls for yes/no | 36 of 140 | 37 of 140 |
+| seconds per inbox | **12.5** | 26.9 |
+
+Nano used 196.5k tokens for all 20 inboxes (~9.8k per inbox); Super 17.8k tokens for its 36 calls.
+
+**What it took to get there.** The first Nebius run refuted two inboxes: the routed question asked about my reply
+without the email, and Super read "No problem, moved." as a "no" to an invitation (8/8); told it answered a move,
+"yes" (4/4). A reply means something only next to what it answers, so the question now carries the email. The
+Bee curve ran on the old question; ornith:9b happened not to fail on it.

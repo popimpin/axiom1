@@ -351,3 +351,30 @@ Nano used 196.5k tokens for all 20 inboxes (~9.8k per inbox); Super 17.8k tokens
 without the email, and Super read "No problem, moved." as a "no" to an invitation (8/8); told it answered a move,
 "yes" (4/4). A reply means something only next to what it answers, so the question now carries the email. The
 Bee curve ran on the old question; ornith:9b happened not to fail on it.
+
+## Who writes the check? Planting every mistake, with no answer key (2026-10-02)
+
+`examples/who_checks.py`, no model. A real user has no hidden check, so every plausible single mistake (the
+kinds models made today) was planted into otherwise-right per-email answers, 30 inboxes (seeds 900-929), and run
+through the production layers in order. `2026-10-02_who_checks.json`.
+
+| mistake | menu | rule | fixed | reaches the user |
+|---|---|---|---|---|
+| move / cancel linked to the wrong meeting | | 240 | | 0 |
+| cancellation filed as not agreed | | 30 | | 0 |
+| move filed as a new meeting | 30 | | | 0 |
+| a move's yes read as no | | 30 | | 0 |
+| agreed filed as not agreed; length left out | | 300 | | 0 |
+| decline / newsletter filed as agreed | | | 60 | 0 |
+| **yes/no on an invitation read wrong (the router)** | 60 | | | **120** |
+| **all 870** | 90 | 630 | 60 | **120** |
+
+- **Everything except one decision is checked by the harness itself.** What reaches the user is a wrong
+  yes/no on an invitation: the rules trust that answer, so nothing downstream can contradict it. That decision
+  is measured on its own: Super 42/42, Nano 41/42 (with the email in the question).
+- One rule was added because of this run: a cancellation filed as unrelated mail used to reach the user; now an
+  email whose subject matches an agreed meeting must be a move or a cancel.
+- Correct answers pass every layer on all 30 inboxes (asserted).
+- **Production consequence:** the router's freeze-on-witnessed has no witness in production. There, a reply's
+  answer should be frozen when two independent resolvers agree (Nano and Super) or the user confirms it once,
+  and a disagreement goes to the user instead of being guessed. Not built yet.

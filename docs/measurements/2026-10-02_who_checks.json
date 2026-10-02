@@ -1,0 +1,5262 @@
+{
+ "inboxes": 30,
+ "first_seed": 900,
+ "table": {
+  "yes read as no (router)": {
+   "HIDDEN": 90,
+   "menu": 60
+  },
+  "agreed filed as not_agreed": {
+   "rule": 150
+  },
+  "agreed: length left out": {
+   "rule": 150
+  },
+  "no read as yes (router)": {
+   "HIDDEN": 30
+  },
+  "decline filed as agreed": {
+   "harmless": 30
+  },
+  "move linked to the wrong meeting": {
+   "rule": 120
+  },
+  "move filed as a new meeting": {
+   "menu": 30
+  },
+  "move's yes read as no (router)": {
+   "rule": 30
+  },
+  "cancel linked to the wrong meeting": {
+   "rule": 120
+  },
+  "cancel filed as not_agreed": {
+   "rule": 30
+  },
+  "newsletter filed as agreed": {
+   "harmless": 30
+  }
+ },
+ "rows": [
+  {
+   "seed": 900,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 900,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 900,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 900,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 901,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 901,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_car.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 901,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 901,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 902,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 902,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 902,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 902,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 903,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 903,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_dentist.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 903,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 903,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 904,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 904,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 904,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 904,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 905,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 905,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_car.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 905,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 905,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 906,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 906,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 906,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 906,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 907,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 907,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 907,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 907,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 908,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 908,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 908,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 908,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 909,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 909,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 909,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 909,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 910,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 910,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_coffee.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 910,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 910,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 911,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 911,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 911,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 911,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 912,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 912,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 912,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 912,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 913,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 913,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_dentist.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 913,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 913,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 914,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 914,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_team.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 914,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 914,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 915,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 915,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 915,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 915,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 916,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 916,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_coffee.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 916,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 916,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 917,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 917,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_team.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 917,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 917,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 918,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 918,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_car.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 918,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 918,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 919,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 919,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 919,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 919,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 920,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 920,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 920,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 920,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 921,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 921,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 921,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 921,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 922,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 922,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_kids'.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 922,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 922,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 923,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 923,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 923,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 923,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 924,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 924,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 924,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 924,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 925,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 925,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 925,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 925,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 926,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 926,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 926,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 926,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 927,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_team.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 927,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_team.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 927,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 927,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 928,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 928,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_budget.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 928,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 928,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 929,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed: length left out",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed: length left out",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed: length left out",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "no read as yes (router)",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 929,
+   "mistake": "decline filed as agreed",
+   "email": "inbox/05_call.txt",
+   "stopped_by": "harmless"
+  },
+  {
+   "seed": 929,
+   "mistake": "yes read as no (router)",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "HIDDEN"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed filed as not_agreed",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "move linked to the wrong meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "move filed as a new meeting",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 929,
+   "mistake": "move's yes read as no (router)",
+   "email": "inbox/08_re_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "cancel linked to the wrong meeting",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "cancel filed as not_agreed",
+   "email": "inbox/09_cancel_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "newsletter filed as agreed",
+   "email": "inbox/99_newsletter.txt",
+   "stopped_by": "harmless"
+  }
+ ]
+}

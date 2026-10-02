@@ -1247,6 +1247,15 @@ def calendar_item_checks(today, files=None):
         kind = CALENDAR_KINDS[a["kind"]]
         if kind in ("move", "cancel") and not a["refers_to"]:
             out.append("a moved or cancelled meeting must say which earlier agreed meeting it is (refers_to)")
+        if kind in ("add", "ignore") and files is not None and re.match(r"(?:re|fwd?|cancell?ed)\s*:", _subject(text), re.I):
+            # a reply or a cancellation about a meeting already agreed is a move or a cancel, not a new meeting and
+            # not unrelated mail (found by planting mistakes: a cancellation filed as not_agreed reached the user
+            # with nothing but the hidden check to see it)
+            same = [x["file"] for x in answers if CALENDAR_KINDS[x["kind"]] == "add"
+                    and _topic(files[x["file"]]) == _topic(text)]
+            if same:
+                out.append(f"this email is about the meeting already agreed in {same[0]}: if it moves it, the kind is "
+                           f"moved_and_agreed; if they called it off, cancelled_by_them; refers_to is {same[0]!r}")
         if kind in ("move", "cancel") and a["refers_to"] and files is not None:
             # seen live (routing curve, seed 713): a 1.7B pointed "Cancelled: Coffee with Sam" at the landlord call,
             # with the coffee meeting marked "same subject" right above it

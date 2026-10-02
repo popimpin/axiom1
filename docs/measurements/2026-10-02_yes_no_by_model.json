@@ -1,0 +1,292 @@
+{
+ "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+  "right": 38,
+  "of": 41,
+  "invalid": 0,
+  "wrong": [
+   [
+    "Lovely - put me down.",
+    "no"
+   ],
+   [
+    "No problem at all, see you.",
+    "no"
+   ],
+   [
+    "No problem, moved.",
+    "no"
+   ]
+  ],
+  "seconds": 27.7,
+  "usage": {
+   "calls": 41,
+   "prompt_tokens": 13108,
+   "completion_tokens": 984,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ },
+ "nvidia/nemotron-3-super-120b-a12b": {
+  "right": 41,
+  "of": 41,
+  "invalid": 0,
+  "wrong": [],
+  "seconds": 42.6,
+  "usage": {
+   "calls": 41,
+   "prompt_tokens": 16470,
+   "completion_tokens": 1888,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ },
+ "nvidia/Nemotron-3_5-Lightning": {
+  "right": 35,
+  "of": 41,
+  "invalid": 0,
+  "wrong": [
+   [
+    "Absolutely, thanks.",
+    "no"
+   ],
+   [
+    "Lovely - put me down.",
+    "no"
+   ],
+   [
+    "Fine by me.",
+    "no"
+   ],
+   [
+    "Okay, I'll make it work.",
+    "no"
+   ],
+   [
+    "No problem at all, see you.",
+    "no"
+   ],
+   [
+    "No problem, moved.",
+    "no"
+   ]
+  ],
+  "seconds": 25.0,
+  "usage": {
+   "calls": 41,
+   "prompt_tokens": 18397,
+   "completion_tokens": 920,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ },
+ "qwen3:1.7b": {
+  "right": 1,
+  "of": 41,
+  "invalid": 40,
+  "wrong": [
+   [
+    "Sounds good, see you then.",
+    null
+   ],
+   [
+    "Works for me!",
+    null
+   ],
+   [
+    "Yes, that's fine.",
+    null
+   ],
+   [
+    "Perfect, I'll be there.",
+    null
+   ],
+   [
+    "Sure thing.",
+    null
+   ],
+   [
+    "That suits me, see you there.",
+    null
+   ],
+   [
+    "Absolutely, thanks.",
+    null
+   ],
+   [
+    "I can't wait!",
+    null
+   ],
+   [
+    "Lovely - put me down.",
+    null
+   ],
+   [
+    "Yep, booked.",
+    null
+   ],
+   [
+    "Fine by me.",
+    null
+   ],
+   [
+    "Of course, see you then.",
+    null
+   ],
+   [
+    "That works, thanks for setting it up.",
+    null
+   ],
+   [
+    "Can't say no to that. See you there!",
+    null
+   ],
+   [
+    "Okay, I'll make it work.",
+    null
+   ],
+   [
+    "Deal.",
+    null
+   ],
+   [
+    "Sounds great.",
+    null
+   ],
+   [
+    "No problem at all, see you.",
+    null
+   ],
+   [
+    "I wouldn't miss it.",
+    null
+   ],
+   [
+    "Sorry, I can't make that, I'm away that week.",
+    null
+   ],
+   [
+    "I'm afraid that doesn't work for me.",
+    null
+   ],
+   [
+    "Wish I could, but I'm busy then.",
+    null
+   ],
+   [
+    "I'll have to pass this time.",
+    null
+   ],
+   [
+    "Not that day, sorry.",
+    null
+   ],
+   [
+    "Unfortunately I'm booked.",
+    null
+   ],
+   [
+    "Can't do it, sorry!",
+    null
+   ],
+   [
+    "I'd love to, but I'm out of town.",
+    null
+   ],
+   [
+    "That's not going to work, I'm afraid.",
+    null
+   ],
+   [
+    "No, sorry - I have a conflict.",
+    null
+   ],
+   [
+    "Thanks, but I can't.",
+    null
+   ],
+   [
+    "I won't be able to make it.",
+    null
+   ],
+   [
+    "Count me out for that one.",
+    null
+   ],
+   [
+    "Sadly I'm away.",
+    null
+   ],
+   [
+    "Afraid not.",
+    null
+   ],
+   [
+    "Can we skip this one? I can't make it.",
+    null
+   ],
+   [
+    "I'm not available then.",
+    null
+   ],
+   [
+    "That clashes with something, so no.",
+    null
+   ],
+   [
+    "I have to decline.",
+    null
+   ],
+   [
+    "Regrettably, no.",
+    null
+   ],
+   [
+    "No problem, moved.",
+    null
+   ]
+  ],
+  "seconds": 22.5,
+  "usage": {
+   "calls": 41,
+   "prompt_tokens": 7544,
+   "completion_tokens": 802,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ },
+ "ornith:9b": {
+  "right": 36,
+  "of": 41,
+  "invalid": 5,
+  "wrong": [
+   [
+    "I'm afraid that doesn't work for me.",
+    null
+   ],
+   [
+    "Wish I could, but I'm busy then.",
+    null
+   ],
+   [
+    "Afraid not.",
+    null
+   ],
+   [
+    "That clashes with something, so no.",
+    null
+   ],
+   [
+    "I have to decline.",
+    null
+   ]
+  ],
+  "seconds": 132.0,
+  "usage": {
+   "calls": 41,
+   "prompt_tokens": 13120,
+   "completion_tokens": 1051,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ }
+}

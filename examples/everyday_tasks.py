@@ -1373,9 +1373,13 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                         reply = _my_reply(text)
                         if not reply:
                             return {}
+                        # a reply means something only next to what it answers: "No problem, moved." is a yes to a
+                        # move and a "no" to an invitation (measured: Nemotron Super said "no" 8/8 without the email,
+                        # "yes" 4/4 with it). So the question carries the email, without my reply.
+                        asked = re.sub(r"^>\s*Me:.*$", "", text, flags=re.M).strip()[:600]
                         ans, _ = router.decide("reply_is_yes", reply,
-                                               f"Someone asked me to a meeting or appointment, and my reply was: "
-                                               f"{reply!r}. Did I say yes?", ["yes", "no"])
+                                               f"This email was sent to me:\n---\n{asked}\n---\nMy reply was: {reply!r}. "
+                                               f"Did I say yes to what the email asked?", ["yes", "no"])
                         return {"said_yes": ans} if ans else {}
                 if each:
                     res = forms.fill_each(model, task["ask"], job["items"](files), item_form,

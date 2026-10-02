@@ -1,0 +1,56 @@
+{
+ "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+  "right": 41,
+  "of": 42,
+  "wrong": [
+   [
+    "No problem at all, see you.",
+    "no"
+   ]
+  ],
+  "usage": {
+   "calls": 42,
+   "prompt_tokens": 14941,
+   "completion_tokens": 920,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ },
+ "nvidia/nemotron-3-super-120b-a12b": {
+  "right": 42,
+  "of": 42,
+  "wrong": [],
+  "usage": {
+   "calls": 42,
+   "prompt_tokens": 18385,
+   "completion_tokens": 2239,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ },
+ "nvidia/Nemotron-3_5-Lightning": {
+  "right": 39,
+  "of": 42,
+  "wrong": [
+   [
+    "I can't wait!",
+    "no"
+   ],
+   [
+    "No problem at all, see you.",
+    "no"
+   ],
+   [
+    "No problem, moved.",
+    "no"
+   ]
+  ],
+  "usage": {
+   "calls": 42,
+   "prompt_tokens": 20359,
+   "completion_tokens": 1008,
+   "thinking_calls": 0,
+   "cut_off": 0
+  }
+ }
+}

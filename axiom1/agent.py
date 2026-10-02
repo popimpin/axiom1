@@ -232,7 +232,7 @@ class ChatModel:
         req = urllib.request.Request(f"{self.base_url}/chat/completions", data=json.dumps(body).encode(),
                                      headers={"Authorization": f"Bearer {self.api_key}",
                                               "Content-Type": "application/json"})
-        for attempt in range(3):
+        for attempt in range(5):
             try:
                 with urllib.request.urlopen(req, timeout=180) as r:
                     data = json.load(r)
@@ -244,14 +244,14 @@ class ChatModel:
                 self.usage["cut_off"] += data["choices"][0].get("finish_reason") == "length"
                 return data["choices"][0]["message"]
             except urllib.error.HTTPError as e:
-                if e.code < 500 and e.code != 429 or attempt == 2:
+                if e.code < 500 and e.code != 429 or attempt == 4:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
                                        f"{e.read()[:300].decode(errors='replace')}") from None
             except (TimeoutError, urllib.error.URLError) as e:
                 # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes)
-                if attempt == 2:
+                if attempt == 4:
                     raise RuntimeError(f"model endpoint did not answer: {e}") from None
-            time.sleep(2 ** attempt)
+            time.sleep(2 ** attempt * 2)     # 2, 4, 8, 16 s: rides out a brief network drop (seen on Bee)
 
 
 def _looks_like_a_tool_call(content):

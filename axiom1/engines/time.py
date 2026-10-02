@@ -7,7 +7,7 @@ from ._base import EngineError
 
 SPEC = {
     "name": "time",
-    "version": 4,
+    "version": 5,
     "summary": "parse and calculate dates, times, and durations deterministically without guessing",
     "functions": {
         "parse_time": {
@@ -108,6 +108,23 @@ SPEC = {
                 {"args": {"text": "2026-03-06", "order": "MDY"}, "returns": "2026-03-06"},
                 {"args": {"text": "03/24/2026", "order": "DMY"}, "refuses": "month 24"},
                 {"args": {"text": "03/06/2026", "order": "YMD"}, "refuses": "order"},
+            ],
+        },
+        "resolve_date": {
+            "args": ["text", "sent_on"],
+            "returns": "YYYY-MM-DD for a date as written in a message, relative words read from the day it was sent",
+            "io": False,
+            "examples": [
+                {"args": {"text": "tomorrow", "sent_on": "2026-05-04"}, "returns": "2026-05-05"},
+                {"args": {"text": "Thursday", "sent_on": "2026-05-04"}, "returns": "2026-05-07"},
+                {"args": {"text": "this Friday", "sent_on": "2026-05-04"}, "returns": "2026-05-08"},
+                {"args": {"text": "next Thursday", "sent_on": "2026-05-04"}, "returns": "2026-05-14"},
+                {"args": {"text": "the 12th", "sent_on": "2026-05-04"}, "returns": "2026-05-12"},
+                {"args": {"text": "Tuesday the 12th", "sent_on": "2026-05-04"}, "returns": "2026-05-12"},
+                {"args": {"text": "May 12", "sent_on": "2026-05-04"}, "returns": "2026-05-12"},
+                {"args": {"text": "sometime next week", "sent_on": "2026-05-04"}, "refuses": "not a day"},
+                {"args": {"text": "Wednesday the 12th", "sent_on": "2026-05-04"}, "refuses": "is a Tuesday"},
+                {"args": {"text": "the 2nd", "sent_on": "2026-05-04"}, "returns": "2026-06-02"},
             ],
         },
         "numeric_order": {
@@ -528,6 +545,63 @@ def numeric_order(texts):
                       "it must be given")
 
 
+_VAGUE = re.compile(r"\b(sometime|some time|soon|week(end)?|later|early|late|morning|afternoon|evening|month|asap|whenever)\b",
+                    re.IGNORECASE)
+
+
+def resolve_date(text, sent_on):
+    """A date as written in a message, read from the day the message was sent (sent_on, ISO). The conventions, in
+    one place so every caller reads dates the same way:
+      "today" / "tomorrow"              the sent day / the day after
+      "Thursday", "on Thursday"         the first Thursday after the sent day
+      "this Thursday"                   the Thursday of the sent day's week (Mon-Sun), if it is still ahead
+      "next Thursday"                   the Thursday of the FOLLOWING week
+      "the 12th", "Tuesday the 12th"    the next 12th on or after the sent day (the weekday, if given, must match)
+      "May 12", "Friday May 8"          that date in the sent day's year (must not be before the sent day)
+    Refuses anything that is not one day ("sometime next week", "Thursday morning or Friday"): ask, don't guess."""
+    if not isinstance(text, str) or not text.strip():
+        raise EngineError("date text must be a non-empty string")
+    if not isinstance(sent_on, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", sent_on.strip()):
+        raise EngineError(f"sent_on must be an ISO date, got {sent_on!r}")
+    sent = _date.fromisoformat(sent_on.strip())
+    t = re.sub(r"\s+", " ", text.strip().lower().rstrip("?.!,"))
+    t = re.sub(r"^on ", "", t)
+    if _VAGUE.search(t) or " or " in t:
+        raise EngineError(f"{text!r} is not a day: ask which day")
+    if t == "today":
+        return sent.isoformat()
+    if t == "tomorrow":
+        return (sent + _timedelta(days=1)).isoformat()
+    m = re.fullmatch(r"(?:(this|next) )?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)", t)
+    if m:
+        want = _WEEKDAYS[m.group(2)]
+        if m.group(1) == "next":
+            monday_next = sent + _timedelta(days=7 - sent.weekday())
+            return (monday_next + _timedelta(days=want)).isoformat()
+        ahead = (want - sent.weekday()) % 7 or 7
+        day = sent + _timedelta(days=ahead)
+        if m.group(1) == "this" and day.isocalendar()[1] != sent.isocalendar()[1]:
+            raise EngineError(f"{text!r}: that day of this week has already passed (sent {sent_on}); ask which day")
+        return day.isoformat()
+    m = re.fullmatch(r"(?:(monday|tuesday|wednesday|thursday|friday|saturday|sunday) )?the (\d{1,2})(?:st|nd|rd|th)?", t)
+    if m:
+        n = int(m.group(2))
+        y, mo = sent.year, sent.month
+        if n < sent.day:
+            y, mo = (y + 1, 1) if mo == 12 else (y, mo + 1)
+        try:
+            day = _date(y, mo, n)
+        except ValueError:
+            raise EngineError(f"{text!r}: there is no {n} in that month") from None
+        if m.group(1) and day.weekday() != _WEEKDAYS[m.group(1)]:
+            raise EngineError(f"{text!r}: the {n} is a {day.strftime('%A')}, not a {m.group(1).title()}; ask which")
+        return day.isoformat()
+    iso = parse_date(text, sent.year)
+    if _date.fromisoformat(iso) < sent:
+        raise EngineError(f"{text!r} is before the message was sent ({sent_on}); ask which day")
+    return iso
+
+
 
 GUIDE = '''Use time for every date, time and duration you read from text. Never parse them yourself.
 - `time.parse_date("Friday May 8", 2026)` -> "2026-05-08". Pass the year (the task's or the files'). If a
@@ -538,6 +612,8 @@ GUIDE = '''Use time for every date, time and duration you read from text. Never 
 - `time.days_between(a, b)` and `time.is_overdue(due, as_of)` work on ISO dates (e.g. due dates vs today's date).
 - Numeric dates like 03/06/2026 are ambiguous: decide the order once for the whole document (a US
   bank or a "March" folder with 03/24 in it is month first), then `time.parse_numeric_date("03/06/2026", "MDY")`.
+- In a message, read dates from the day it was sent: `time.resolve_date("next Thursday", "2026-05-04")`
+  -> "2026-05-14" (this Thursday = this week, next Thursday = the following week). Vague days are refused.
 - Or let the documents decide: `time.numeric_order([texts...])` -> "MDY" when some date reads 03/24.
 - Payment terms: `time.add_days("2026-01-23", 14)` -> "2026-02-06".
 - No year written? `time.year_from_weekdays(["Friday May 15", ...], 2026)` -> 2026: the weekdays fix it

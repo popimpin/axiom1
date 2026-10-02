@@ -1,0 +1,428 @@
+"""A realistic inbox: threads, relative dates, forwards, several people, and cases a careful assistant should ask
+about. The unit is a thread (as a mail client exports a conversation); the job is its FINAL state.
+
+Per thread:
+  agreed?   routed (frozen table / two models must agree / the person), asked about the whole thread
+  slot      the small model picks the final agreed day, time and length from menus of what the thread says, each
+            option tagged with the message it came from, so "next Thursday" is read from that message's sent day
+  pipeline  engines resolve the slot; an agreed thread with no day or time the engines can pin down goes to
+            asks.json for the person, never onto the calendar by guess
+
+    python examples/real_inbox.py show --seed 1        # print one inbox and its truth
+    python examples/real_inbox.py run --inboxes 5 --model qwen3:1.7b --agree ornith:9b hf.co/... [--bee]
+"""
+import argparse
+import json
+import random
+import re
+import subprocess
+import sys
+import tempfile
+import time as _time
+from datetime import date, timedelta
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "examples"))
+
+from axiom1 import forms  # noqa: E402
+from axiom1.engines import mail as M, time as T  # noqa: E402
+
+ME = "me@example.com"
+PEOPLE = [("Sam Lee", "sam@example.com"), ("Priya Nair", "priya@example.com"), ("Jo Park", "jo@example.com"),
+          ("Ana Lopez", "ana@example.com"), ("Dev Patel", "dev@example.com"), ("Grace Kim", "grace@example.com")]
+TOPICS = ["Coffee", "Budget review", "Project kickoff", "1:1", "Dentist check-up", "Quarterly planning",
+          "Lunch", "Design review", "Car service", "Book club"]
+YES = ["Works for me!", "Sounds good, see you then.", "Perfect, I'll be there.", "Yes, that's fine.", "Count me in.",
+       "Great - booked.", "Sure thing.", "I can't wait!"]
+NO = ["Sorry, I can't make that.", "That doesn't work for me, I'm away.", "I'll have to pass this time.",
+      "Unfortunately I'm busy then.", "Wish I could, but no."]
+TIMES = ["10am", "2pm", "11:30", "3:30pm", "9:00 am", "4pm", "1pm", "noon"]
+LENGTHS = ["about an hour", "30 minutes", "45 minutes", "about 90 minutes"]
+MINUTES = {"about an hour": 60, "30 minutes": 30, "45 minutes": 45, "about 90 minutes": 90}
+
+
+def _hm(t):
+    return T.parse_time(t)
+
+
+def _end(start, minutes):
+    return T.add_minutes(start, minutes)
+
+
+class Thread:
+    def __init__(self, subject, start_day):
+        self.subject, self.msgs, self.day = subject, [], start_day
+
+    def add(self, who, body, hours_later=2, subject=None):
+        name, addr = who
+        self.day_time = getattr(self, "day_time", 9 * 60) + hours_later * 60
+        if self.day_time >= 18 * 60:
+            self.day += timedelta(days=1)
+            self.day_time = 9 * 60
+        d = self.day
+        self.msgs.append(f"From: {name} <{addr}>\nDate: {d.strftime('%a')}, {d.day} {d.strftime('%b %Y')} "
+                         f"{self.day_time // 60:02d}:{self.day_time % 60:02d}\nSubject: {subject or self.subject}\n\n{body}\n")
+        return d
+
+    def text(self):
+        return "\n".join(self.msgs)
+
+
+def _relative(rng, sent):
+    """A relative or absolute way to name a day after `sent`, and the ISO day it means."""
+    kind = rng.choice(["weekday", "next", "the", "tomorrow", "month"])
+    if kind == "tomorrow":
+        return "tomorrow", (sent + timedelta(days=1)).isoformat()
+    if kind == "weekday":
+        wd = rng.randint(0, 4)
+        phrase = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"][wd]
+        return phrase, T.resolve_date(phrase, sent.isoformat())
+    if kind == "next":
+        phrase = "next " + rng.choice(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        return phrase, T.resolve_date(phrase, sent.isoformat())
+    if kind == "the":
+        n = min(28, sent.day + rng.randint(2, 12))
+        phrase = f"the {n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+        return phrase, T.resolve_date(phrase, sent.isoformat())
+    d = sent + timedelta(days=rng.randint(3, 14))
+    return f"{d.strftime('%A')}, {d.strftime('%B')} {d.day}", d.isoformat()
+
+
+def inbox(rng):
+    """~10 threads of mixed scenarios. Returns files, truth {calendar: [...], asks: [...]}."""
+    start = date(2026, 5, 4)
+    files, calendar, asks, expect = {}, [], [], {}
+    scenarios = ["yes", "yes", "no", "no_reply", "moved", "cancelled", "forward", "vague", "no_time", "group",
+                 "group_not_me", "newsletter", "they_confirm", "keep_original"]
+    rng.shuffle(scenarios)
+    for i, sc in enumerate(scenarios[:10], 1):
+        topic = rng.choice(TOPICS)
+        them = rng.choice(PEOPLE)
+        th = Thread(topic, start + timedelta(days=rng.randint(0, 2)))
+        sent = th.day
+        phrase, day = _relative(rng, sent)
+        t, length = rng.choice(TIMES), rng.choice(LENGTHS)
+        row = lambda d, tt, ln: {"date": d, "start": _hm(tt), "end": _end(_hm(tt), MINUTES[ln]), "title": topic}  # noqa: E731
+        me = ("Me", ME)
+        if sc == "yes":
+            th.add(them, f"Hi! Could we do {topic.lower()} {phrase} at {t}? It should take {length}.")
+            th.add(me, rng.choice(YES))
+            calendar.append(row(day, t, length))
+        elif sc == "no":
+            th.add(them, f"Hi! Are you free for {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
+            th.add(me, rng.choice(NO))
+        elif sc == "no_reply":
+            th.add(them, f"Would {phrase} at {t} work for {topic.lower()}? {length.capitalize()}.")
+        elif sc == "moved":
+            th.add(them, f"Can we do {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
+            th.add(me, rng.choice(YES))
+            sent2 = th.add(them, "", hours_later=26)
+            phrase2, day2 = _relative(rng, sent2)
+            t2 = rng.choice([x for x in TIMES if x != t])
+            th.msgs[-1] = th.msgs[-1].rstrip("\n") + "\n\n" + f"Something came up - could we move it to {phrase2} at {t2} instead? Same length.\n"
+            th.add(me, rng.choice(["No problem, moved.", "Sure, that works.", "Fine by me."]))
+            calendar.append(row(day2, t2, length))
+        elif sc == "keep_original":
+            th.add(them, f"Shall we do {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
+            th.add(me, rng.choice(YES))
+            sent2 = th.add(them, "", hours_later=26)
+            phrase2, _ = _relative(rng, sent2)
+            th.msgs[-1] = th.msgs[-1].rstrip("\n") + "\n\n" + f"Any chance we could move to {phrase2} at {rng.choice(TIMES)}?\n"
+            th.add(me, "That doesn't work for me, sorry - let's keep the original time.")
+            calendar.append(row(day, t, length))
+        elif sc == "cancelled":
+            th.add(them, f"Hi! {topic} {phrase} at {t}? {length.capitalize()}.")
+            th.add(me, rng.choice(YES))
+            th.add(them, f"So sorry - I have to cancel our {topic.lower()}. I'll reach out to rebook.", hours_later=20)
+        elif sc == "forward":
+            boss = rng.choice(PEOPLE)
+            th.subject = f"Fwd: {topic}"
+            th.add(boss, f"FYI - can you make this?\n\n---------- Forwarded message ----------\nFrom: Events Team "
+                         f"<events@example.com>\nSubject: {topic}\n\nYou're invited: {topic.lower()} on {phrase} at "
+                         f"{t}, {length}.")
+            th.add(me, rng.choice(["I'll be there.", "Yes, I can make it.", "Count me in."]))
+            calendar.append(row(day, t, length))
+        elif sc == "vague":
+            th.add(them, f"We should do {topic.lower()} sometime next week - when suits you?")
+            th.add(me, rng.choice(["Sure, sounds good!", "Yes, let's!"]))
+            asks.append(f"threads/{i:02d}.txt")
+        elif sc == "no_time":
+            th.add(them, f"{topic} on {phrase}? {length.capitalize()}.")
+            th.add(me, rng.choice(["Yes!", "Sounds good."]))
+            asks.append(f"threads/{i:02d}.txt")
+        elif sc == "group":
+            other = rng.choice([p for p in PEOPLE if p != them])
+            th.add(them, f"Hi all - {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
+            th.add(other, "Works for me!")
+            th.add(me, rng.choice(["Me too - see you there.", "Same, I'm in."]))
+            calendar.append(row(day, t, length))
+        elif sc == "group_not_me":
+            other = rng.choice([p for p in PEOPLE if p != them])
+            th.add(them, f"Hi all - {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
+            th.add(other, "Works for me!")
+        elif sc == "newsletter":
+            th.subject = "Webinar: Spring savings"
+            th.add(("Deals Weekly", "news@deals.example"), f"Join our free webinar {phrase} at {t}! Spaces are "
+                                                            "limited.\n\nUnsubscribe | View in browser")
+        elif sc == "they_confirm":
+            th.add(me, f"Could we do {topic.lower()} {phrase} at {t}? {length.capitalize()} should do.")
+            th.add(them, rng.choice(["Perfect, see you then!", "Yes, that works.", "Done - it's in my diary."]))
+            calendar.append(row(day, t, length))
+        name = f"threads/{i:02d}.txt"
+        files[name] = th.text()
+        on = calendar[-1] if sc in ("yes", "moved", "keep_original", "forward", "group", "they_confirm") else None
+        expect[name] = {"scenario": sc, "expect": "on" if on else ("ask" if name in asks else "off"),
+                        "slot": {k: on[k] for k in ("date", "start", "end")} if on else None}
+    return files, {"calendar": calendar, "asks": sorted(asks), "threads": expect}
+
+
+CHECK = r'''
+import csv, json, re, sys
+from pathlib import Path
+truth = json.loads(Path(".axiom_check/truth.json").read_text())
+problems = []
+cal = Path("calendar.csv")
+rows = [{k.strip().lower(): (v or "").strip() for k, v in r.items()} for r in csv.DictReader(cal.open(encoding="utf-8"))] if cal.exists() else None
+if rows is None:
+    print("PUBLIC: calendar.csv was not found"); sys.exit(1)
+got = {(r["date"], r["start"], r["end"]) for r in rows}
+want = {(t["date"], t["start"], t["end"]) for t in truth["calendar"]}
+if want - got: problems.append(f"PUBLIC: {len(want - got)} agreed meeting(s) missing or at the wrong time")
+if got - want: problems.append(f"PUBLIC: {len(got - want)} event(s) that should not be on the calendar")
+asks = json.loads(Path("asks.json").read_text()) if Path("asks.json").exists() else []
+asked = sorted({a["thread"] for a in asks})
+if asked != truth["asks"]:
+    problems.append(f"PUBLIC: asked about {asked}, should have asked about {truth['asks']}")
+if problems:
+    print("\n".join(problems)); print("expected", truth); sys.exit(1)
+print("PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know")
+'''
+
+
+def render(messages):
+    """The thread as the models see it: who said what, with each message's day."""
+    out = []
+    for k, m in enumerate(messages, 1):
+        who = "Me" if M.mine([m], ME) else m["from"].split("<")[0].strip()
+        out.append(f"[message {k}] {who}, {m['date']}:\n{m['body']}")
+    return "\n\n".join(out)
+
+
+TIME_RE = r"\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b|\b\d{1,2}:\d{2}\b|\bnoon\b"
+DATE_RE = (r"\b(?:next |this )?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:,? (?:january|february|"
+           r"march|april|may|june|july|august|september|october|november|december) \d{1,2})?\b|\bthe \d{1,2}(?:st|nd|rd|th)\b"
+           r"|\btomorrow\b|\bsometime next week\b")
+LEN_RE = r"\babout an hour\b|\babout \d+ minutes\b|\b\d+ minutes\b|\ban hour\b|\bsame length\b"
+
+
+def options(messages, pattern, within=None):
+    """The phrases the thread uses, plain (a small model drops a '[message 1]' suffix); a phrase written in two
+    different messages is tagged with each, because the day it means can depend on when it was sent."""
+    found = []
+    for k, m in enumerate(messages, 1):
+        for x in re.finditer(pattern, m["body"], re.IGNORECASE):
+            found.append((x.group(0), k))
+    counts = {}
+    for phrase, k in found:
+        counts.setdefault(phrase.lower(), set()).add(k)
+    out = []
+    for phrase, k in found:
+        if within is not None and k not in within:
+            continue
+        v = f"{phrase} [message {k}]" if len(counts[phrase.lower()]) > 1 else phrase
+        if v not in out:
+            out.append(v)
+    return out
+
+
+def proposals(messages):
+    """The messages that name a day or a time: where a meeting is proposed, or a move to another time."""
+    return [k for k, m in enumerate(messages, 1) if re.search(DATE_RE, m["body"], re.I) or re.search(TIME_RE, m["body"], re.I)]
+
+
+def slot_form(messages, within=None):
+    """Menus of what the thread says, from the messages `within` (the proposal that stands). A field with nothing to
+    choose from is left off: seen live, a 1.7B filled an empty time field with the time from a Date header."""
+    props = {}
+    for key, pattern, what, scope in (("day", DATE_RE, "the day", within), ("time", TIME_RE, "the start time", within),
+                                      ("length", LEN_RE, "how long", None)):
+        opts = options(messages, pattern, scope)
+        if opts:
+            props[key] = {"type": "string", "enum": opts + [""], "description": f"{what} of the meeting; '' if not given"}
+    return {"type": "object", "required": list(props), "properties": props}
+
+
+PIPELINE = r'''import json, re
+from pathlib import Path
+from axiom_engines import mail, table, time
+entry = json.loads(Path("entry.json").read_text(encoding="utf-8"))
+rows, asks = [], []
+present = sorted(p.as_posix() for p in Path("threads").glob("*.txt"))
+if sorted(t["file"] for t in entry["threads"]) != present:
+    raise SystemExit("EngineError: the answers must cover every thread")
+for t in entry["threads"]:
+    if not t["agreed"]:
+        continue
+    msgs = mail.split_thread(Path(t["file"]).read_text(encoding="utf-8"))
+    def pick(v):
+        if not v:
+            return None, None
+        m = re.fullmatch(r"(.*) \[message (\d+)\]", v)
+        if m:
+            return m.group(1), msgs[int(m.group(2)) - 1]
+        holders = [x for x in msgs if v.lower() in x["body"].lower()]
+        return (v, holders[-1]) if holders else (None, None)
+    day, dm = pick(t["day"]); tm, _ = pick(t["time"]); ln, _ = pick(t["length"])
+    stated = [x.group(0) for m in msgs for x in re.finditer(r"\babout an hour\b|\babout \d+ minutes\b|\b\d+ minutes\b|\ban hour\b", m["body"], re.I)]
+    if (not ln or ln.lower() == "same length") and len(set(x.lower() for x in stated)) == 1:
+        ln = stated[0]          # "same length", or a length left blank, is the one length the thread states
+    subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
+    try:
+        if not day or not tm or not ln:
+            raise ValueError("the thread does not say " + ", ".join(x for x, v in (("which day", day), ("what time", tm), ("how long", ln)) if not v))
+        if ln.lower() == "same length":
+            raise ValueError("only 'same length' is given")
+        start = time.parse_time(tm)
+        d = time.resolve_date(day, mail.sent_on(dm["date"]))
+        rows.append({"date": d, "start": start, "end": time.add_minutes(start, time.parse_duration(ln)), "title": subject,
+                     "thread": t["file"]})
+    except Exception as e:
+        asks.append({"thread": t["file"], "subject": subject, "why": str(e)})
+table.write_csv("calendar.csv", ["date", "start", "end", "title", "thread"], sorted(rows, key=lambda r: (r["date"], r["start"])))
+table.write_json("asks.json", asks)
+'''
+
+
+def run(n, model_name, agree_names, first_seed, out=None):
+    from axiom1 import Axiom
+    from axiom1.agent import ChatModel
+    from axiom1.router import Router, Table
+    from everyday_tasks import IMAGE, git
+    model = ChatModel(model_name)
+    agree = [ChatModel(x) for x in agree_names]
+    taps = []
+
+    def person(decision, text, question, opts, votes):
+        taps.append({"text": text, "votes": votes})
+        return person.truth.get(text, "no")
+    table = Table()
+    router = Router(table, {"agreed": agree, "which_time": agree}, consensus=True, ask_user=person)
+    rows = []
+    for seed in range(first_seed, first_seed + n):
+        files, truth = inbox(random.Random(seed))
+        cal_files = {r["title"] for r in truth["calendar"]}
+        t0, used0 = _time.time(), dict(model.usage)
+        answers, corrections = [], []
+        for name in sorted(files):
+            msgs = M.split_thread(files[name])
+            shown = render(msgs)
+            last = msgs[-1]
+            key = ("me: " if M.mine([last], ME) else "them: ") + last["body"]
+            subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
+            person.truth = {key: "yes" if subject in cal_files or name in truth["asks"] else "no"}
+            if not M.mine(msgs, ME):
+                # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
+                agreed, tier = "no", "structure: I never wrote"
+            else:
+                agreed, tier = router.decide(
+                    "agreed", key, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nAs of the last message, have I "
+                    f"and the others agreed to meet - even if the day or time is not settled yet? (Yes if I said yes, or "
+                    f"they said yes to my proposal, and nobody cancelled since. No if I turned it down, I never replied, "
+                    f"it was cancelled, or it is a newsletter.)", ["yes", "no"])
+            a = {"file": name, "agreed": agreed == "yes", "day": "", "time": "", "length": "", "tier": tier}
+            if a["agreed"]:
+                within = proposals(msgs)
+                if len(within) > 1:
+                    # which proposal stands is its own decision (seen live: a 1.7B put "let's keep the original time"
+                    # on the proposed new day); the menus then come from that message only
+                    which, a["which_tier"] = router.decide(
+                        "which_time", ("me: " if M.mine([last], ME) else "them: ") + last["body"],
+                        f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nA time was proposed, and later a different "
+                        f"one. Which did we end up agreeing on?", ["the first proposal", "the latest proposal"])
+                    person.truth[("me: " if M.mine([last], ME) else "them: ") + last["body"]] = (
+                        "the first proposal" if truth["threads"][name]["scenario"] == "keep_original" else "the latest proposal")
+                    within = [within[0]] if which == "the first proposal" else [within[-1]]
+                schema = slot_form(msgs, within)
+                # a menu with one real option is not a decision: the harness fills it (seen live: a 1.7B wrote "Tuesday"
+                # three times when the only day on its menu was "tomorrow")
+                for key in list(schema["properties"]):
+                    real = [o for o in schema["properties"][key]["enum"] if o]
+                    if len(real) == 1:
+                        a[key] = real[0]
+                        del schema["properties"][key]
+                        schema["required"].remove(key)
+                if schema["properties"]:
+                    res = forms.fill_each(model, "Put the meeting agreed in this thread on my calendar.",
+                                          [(name, shown)], lambda n_, ans: schema)
+                    corrections += res["corrections"]
+                    if res["ok"]:
+                        a.update({k: res["answers"][0].get(k, "") for k in schema["properties"]})
+            answers.append(a)
+        ok, msg, produced = forms.run_pipeline(PIPELINE, {"threads": answers}, files)
+        label = "refused"
+        if ok:
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                for rel, text in {**files, **produced}.items():
+                    (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                    (root / rel).write_text(text, encoding="utf-8")
+                (root / ".axiom_check").mkdir()
+                (root / ".axiom_check/truth.json").write_text(json.dumps(truth), encoding="utf-8")
+                (root / ".axiom_check/check.py").write_text(CHECK, encoding="utf-8")
+                p = subprocess.run([sys.executable, "-I", ".axiom_check/check.py"], cwd=root, capture_output=True, text=True)
+                label = "witnessed" if p.returncode == 0 else "refuted"
+                detail = p.stdout.strip()[-400:]
+        else:
+            detail = msg
+        used = {k: model.usage[k] - used0[k] for k in model.usage}
+        verdicts = {}
+        if ok:
+            import csv, io
+            placed = {r["thread"]: (r["date"], r["start"], r["end"]) for r in csv.DictReader(io.StringIO(produced["calendar.csv"]))}
+            asked = {x["thread"] for x in json.loads(produced.get("asks.json", "[]"))}
+            for a in answers:
+                exp = truth["threads"][a["file"]]
+                got = "on" if a["file"] in placed else ("ask" if a["file"] in asked else "off")
+                slot_ok = exp["expect"] != "on" or got != "on" or placed[a["file"]] == tuple(exp["slot"].values())
+                if got != exp["expect"] or not slot_ok:
+                    verdicts[a["file"]] = {"scenario": exp["scenario"], "expected": exp["expect"], "got": got,
+                                           "agreed_by": a["tier"], "slot": [a["day"], a["time"], a["length"]],
+                                           "placed": placed.get(a["file"]), "want": exp["slot"]}
+        row = {"seed": seed, "label": label, "detail": detail, "wrong_threads": verdicts, "answers": answers, "truth": truth,
+               "asks": json.loads(produced.get("asks.json", "[]")) if ok else [], "corrections": corrections,
+               "form_calls": used["calls"], "table": len(table), "taps": len(taps), "seconds": round(_time.time() - t0, 1),
+               "agree_calls": sum(m.usage["calls"] for m in agree)}
+        rows.append(row)
+        print(json.dumps(row), flush=True)
+    result = {"form_model": model.model, "agree": [m.model for m in agree], "rows": rows, "taps": taps}
+    if out:
+        Path(out).write_text(json.dumps(result, indent=1) + "\n", encoding="utf-8")
+    return result
+
+
+def main():
+    p = argparse.ArgumentParser()
+    sub = p.add_subparsers(dest="cmd", required=True)
+    s = sub.add_parser("show")
+    s.add_argument("--seed", type=int, default=1)
+    r = sub.add_parser("run")
+    r.add_argument("--inboxes", type=int, default=5)
+    r.add_argument("--seed", type=int, default=1)
+    r.add_argument("--model", required=True)
+    r.add_argument("--agree", nargs="+", required=True)
+    r.add_argument("--out")
+    a = p.parse_args()
+    if a.cmd == "show":
+        files, truth = inbox(random.Random(a.seed))
+        for name in sorted(files):
+            print("=" * 20, name)
+            print(files[name])
+        print(json.dumps(truth, indent=1))
+        return
+    run(a.inboxes, a.model, a.agree, a.seed, a.out)
+
+
+if __name__ == "__main__":
+    main()

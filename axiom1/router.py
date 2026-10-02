@@ -85,9 +85,14 @@ class Router:
         answers = set(votes.values())
         if len(answers) == 1 and None not in answers:
             answer = answers.pop()
-            self.table.freeze([(decision, text, answer)])          # agreement is the proof in production
-            self.log.append((decision, text, answer, "agreed"))
-            return answer, "agreed"
+            if len(votes) >= 2:
+                self.table.freeze([(decision, text, answer)])      # agreement is the proof in production
+                self.log.append((decision, text, answer, "agreed"))
+                return answer, "agreed"
+            # one model agreeing with itself proves nothing: use the answer, never freeze it (seen live on Bee: a 9B's
+            # one wrong "no" was frozen and, under a key general enough to teach many threads, spread to all of them)
+            self.log.append((decision, text, answer, "one model"))
+            return answer, "one model"
         self.asked.append({"decision": decision, "text": text, "question": question, "votes": votes})
         if self.ask_user is None:
             self.log.append((decision, text, None, "needs you"))

@@ -308,7 +308,8 @@ def run(n, model_name, agree_names, first_seed, out=None):
         taps.append({"text": text, "votes": votes})
         return person.truth.get(text, "no")
     table = Table()
-    router = Router(table, {"agreed": agree, "which_time": agree}, consensus=True, ask_user=person)
+    router = Router(table, {"said_yes": agree, "called_off": agree, "which_time": agree}, consensus=True,
+                    ask_user=person)
     rows = []
     for seed in range(first_seed, first_seed + n):
         files, truth = inbox(random.Random(seed))
@@ -321,17 +322,47 @@ def run(n, model_name, agree_names, first_seed, out=None):
             last = msgs[-1]
             key = ("me: " if M.mine([last], ME) else "them: ") + last["body"]
             subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
-            # the person knows their own threads: keyed by THIS thread, not by its title (two threads can share one)
-            person.truth = {key: "yes" if truth["threads"][name]["expect"] in ("on", "ask") else "no"}
+            # the person knows their own threads: answers are keyed per decision of THIS thread, not by its title
+            person.truth = {}
+            def keyed(msg):
+                """A message as a table key: who wrote it, and its text with the meeting's name taken out, so one
+                answer about "cancel our lunch" also answers "cancel our coffee" (seen live: 9 taps, one per name)."""
+                body = re.sub(re.escape(subject), "<meeting>", msg["body"], flags=re.I) if subject else msg["body"]
+                return ("me: " if M.mine([msg], ME) else "them: ") + body
+            exp = truth["threads"][name]
             if not M.mine(msgs, ME):
                 # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
                 agreed, tier = "no", "structure: I never wrote"
             else:
-                agreed, tier = router.decide(
-                    "agreed", key, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nAs of the last message, have I "
-                    f"and the others agreed to meet - even if the day or time is not settled yet? (Yes if I said yes, or "
-                    f"they said yes to my proposal, and nobody cancelled since. No if I turned it down, I never replied, "
-                    f"it was cancelled, or it is a newsletter.)", ["yes", "no"])
+                # the agreement, split into its two smallest decisions (seen live: Nano answered the one big question
+                # "yes" for 9 cancellations and 3 declines; Super answered "no")
+                i_started = M.mine([msgs[0]], ME)
+                reply_at = next((k for k, m in enumerate(msgs) if k > 0 and bool(M.mine([m], ME)) != bool(i_started)), None)
+                if reply_at is None:
+                    agreed, tier = "no", "structure: nobody answered"
+                else:
+                    said = ("yes" if exp["scenario"] not in ("no",) else "no")
+                    person.truth[keyed(msgs[reply_at])] = said
+                    yes, tier = router.decide(
+                        "said_yes", keyed(msgs[reply_at]),
+                        # only the thread up to the answer: later messages (a move, "that doesn't work for me")
+                        # leaked into the answer when the whole thread was shown (seen live on Bee)
+                        f"Here is the start of an email thread. 'Me' is me.\n\n{render(msgs[:reply_at + 1])}\n\n"
+                        f"Does message {reply_at + 1} say yes to meeting?",
+                        ["yes", "no"])
+                    agreed = yes
+                    later = msgs[reply_at + 1:]
+                    if yes == "yes" and later:
+                        off_key = " / ".join(keyed(m) for m in later)
+                        person.truth[off_key] = "yes" if exp["scenario"] == "cancelled" else "no"
+                        off, tier2 = router.decide(
+                            "called_off", off_key,
+                            # the plain question: a 9B said "no" 4/4 to "did anyone call it off entirely? (asking to
+                            # move it is not...)" and "yes" 4/4 to this, on the same cancellation
+                            f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs the meeting cancelled?", ["yes", "no"])
+                        tier = f"{tier} + {tier2}"
+                        if off != "no":
+                            agreed = "no" if off == "yes" else None
             a = {"file": name, "agreed": agreed == "yes", "day": "", "time": "", "length": "", "tier": tier}
             if a["agreed"]:
                 within = proposals(msgs)

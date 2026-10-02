@@ -91,6 +91,11 @@ class Routing(unittest.TestCase):
         self.assertEqual(r.decide("reply_is_yes", "Hmm.", "reply: Hmm", ["yes", "no"]), (None, "needs you"))
         self.assertEqual(len(r.table), 0)
 
+    def test_one_model_is_not_a_consensus_and_freezes_nothing(self):
+        r = Router(Table(), {"reply_is_yes": [Model({"Deal": "yes"}, "a")]}, consensus=True)
+        self.assertEqual(r.decide("reply_is_yes", "Deal.", "reply: Deal.", ["yes", "no"]), ("yes", "one model"))
+        self.assertEqual(len(r.table), 0)
+
     def test_norm(self):
         self.assertEqual(norm("  Works  for me!! "), "works for me")
 

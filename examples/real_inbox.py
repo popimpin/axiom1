@@ -321,7 +321,8 @@ def run(n, model_name, agree_names, first_seed, out=None):
             last = msgs[-1]
             key = ("me: " if M.mine([last], ME) else "them: ") + last["body"]
             subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
-            person.truth = {key: "yes" if subject in cal_files or name in truth["asks"] else "no"}
+            # the person knows their own threads: keyed by THIS thread, not by its title (two threads can share one)
+            person.truth = {key: "yes" if truth["threads"][name]["expect"] in ("on", "ask") else "no"}
             if not M.mine(msgs, ME):
                 # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
                 agreed, tier = "no", "structure: I never wrote"

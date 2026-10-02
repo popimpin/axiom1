@@ -397,3 +397,31 @@ who knows their own replies). The form on Nano. 20 inboxes never used before (se
   subject. Planted 150 times since: 150 stopped.
 - What a real user carries now: two different Nemotrons agreeing on a wrong yes/no (not seen in 140), and form
   mistakes no rule yet covers (each one found so far has become a rule).
+
+## A realistic inbox: threads, relative dates, and what to ask about (2026-10-02)
+
+`examples/real_inbox.py`. ~10 threads per inbox, each a conversation with From/Date headers: an invitation I
+accept or decline, no reply, a move (accepted, or turned down: "let's keep the original time"), a cancellation, a
+forward, a group thread (with and without my reply), a newsletter, a time I proposed that they confirm, and two
+kinds to ASK about rather than guess ("sometime next week", no time given). Days are relative ("next Thursday",
+"the 12th", "tomorrow") and read from the day each message was sent (`time.resolve_date`, `mail` engine).
+The truth lists the calendar AND the threads to ask about. A correct solver passes 40/40 inboxes.
+
+Iterated on Bee (qwen3:1.7b slots, ornith:9b agreement), each change from a model's own output: v1 0/5 ->
+v5 9/10 (see the commit). Then **on Nemotron via Nebius, 20 inboxes never used in tuning (seeds 101-120):**
+
+| | |
+|---|---|
+| witnessed | **20/20** (200 threads, 0 wrong accepted) |
+| asked, not guessed | **29/29** expected asks, no others |
+| "agreed?" answered by | table 132, structure ("I never wrote") 32, Nano+Super agreed 24, **the person 12** |
+| slot form | Nano: 15 calls for 200 threads (single-option menus are filled by the harness), 0 corrections |
+| time | 4.8 s per inbox |
+
+- **All 12 taps were the same disagreement: Nano "yes", Super "no", Super right** - 9 cancellations ("So sorry
+  - I have to cancel our lunch") and 3 declines. Consensus sent Nano's misreadings to the person instead of the
+  calendar. They did not taper because each cancellation names its meeting, so each was a new wording.
+- Next: key the table by the message with the thread's subject taken out (one tap would teach every
+  cancellation), and split Nano's question ("did I say yes?" / "cancelled or turned down since?").
+- The first Nebius attempt was spoiled by the simulation, not the system: the stand-in person answered by the
+  meeting's title, and two threads shared one. It now answers per thread.

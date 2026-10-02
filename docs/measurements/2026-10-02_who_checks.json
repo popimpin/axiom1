@@ -12,6 +12,10 @@
   "agreed: length left out": {
    "rule": 150
   },
+  "invitation filed as a move": {
+   "menu": 30,
+   "rule": 120
+  },
   "no read as yes (router)": {
    "HIDDEN": 30
   },
@@ -58,6 +62,12 @@
   },
   {
    "seed": 900,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 900,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_dentist.txt",
    "stopped_by": "menu"
@@ -76,6 +86,12 @@
   },
   {
    "seed": 900,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "menu"
@@ -89,6 +105,12 @@
   {
    "seed": 900,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "rule"
   },
@@ -107,6 +129,12 @@
   {
    "seed": 900,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -137,6 +165,12 @@
   {
    "seed": 900,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 900,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_team.txt",
    "stopped_by": "rule"
   },
@@ -232,6 +266,12 @@
   },
   {
    "seed": 901,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 901,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_call.txt",
    "stopped_by": "menu"
@@ -250,6 +290,12 @@
   },
   {
    "seed": 901,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "menu"
@@ -263,6 +309,12 @@
   {
    "seed": 901,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "rule"
   },
@@ -281,6 +333,12 @@
   {
    "seed": 901,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -311,6 +369,12 @@
   {
    "seed": 901,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 901,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_kids'.txt",
    "stopped_by": "rule"
   },
@@ -406,6 +470,12 @@
   },
   {
    "seed": 902,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 902,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_call.txt",
    "stopped_by": "menu"
@@ -424,6 +494,12 @@
   },
   {
    "seed": 902,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -437,6 +513,12 @@
   {
    "seed": 902,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -455,6 +537,12 @@
   {
    "seed": 902,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_car.txt",
    "stopped_by": "rule"
   },
@@ -490,6 +578,12 @@
   },
   {
    "seed": 902,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 902,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_call.txt",
    "stopped_by": "rule"
@@ -580,6 +674,12 @@
   },
   {
    "seed": 903,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 903,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_call.txt",
    "stopped_by": "menu"
@@ -598,6 +698,12 @@
   },
   {
    "seed": 903,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_kids'.txt",
    "stopped_by": "menu"
@@ -611,6 +717,12 @@
   {
    "seed": 903,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_kids'.txt",
    "stopped_by": "rule"
   },
@@ -629,6 +741,12 @@
   {
    "seed": 903,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_coffee.txt",
    "stopped_by": "rule"
   },
@@ -664,6 +782,12 @@
   },
   {
    "seed": 903,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 903,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_call.txt",
    "stopped_by": "rule"
@@ -754,6 +878,12 @@
   },
   {
    "seed": 904,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 904,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_car.txt",
    "stopped_by": "menu"
@@ -772,6 +902,12 @@
   },
   {
    "seed": 904,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "menu"
@@ -785,6 +921,12 @@
   {
    "seed": 904,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "rule"
   },
@@ -803,6 +945,12 @@
   {
    "seed": 904,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_team.txt",
    "stopped_by": "rule"
   },
@@ -838,6 +986,12 @@
   },
   {
    "seed": 904,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 904,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_car.txt",
    "stopped_by": "rule"
@@ -928,6 +1082,12 @@
   },
   {
    "seed": 905,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 905,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_coffee.txt",
    "stopped_by": "menu"
@@ -946,6 +1106,12 @@
   },
   {
    "seed": 905,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_kids'.txt",
    "stopped_by": "menu"
@@ -959,6 +1125,12 @@
   {
    "seed": 905,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_kids'.txt",
    "stopped_by": "rule"
   },
@@ -977,6 +1149,12 @@
   {
    "seed": 905,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_team.txt",
    "stopped_by": "rule"
   },
@@ -1012,6 +1190,12 @@
   },
   {
    "seed": 905,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 905,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_coffee.txt",
    "stopped_by": "rule"
@@ -1102,6 +1286,12 @@
   },
   {
    "seed": 906,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 906,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_coffee.txt",
    "stopped_by": "menu"
@@ -1120,6 +1310,12 @@
   },
   {
    "seed": 906,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_car.txt",
    "stopped_by": "menu"
@@ -1133,6 +1329,12 @@
   {
    "seed": 906,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_car.txt",
    "stopped_by": "rule"
   },
@@ -1156,6 +1358,12 @@
   },
   {
    "seed": 906,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/04_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
    "mistake": "no read as yes (router)",
    "email": "inbox/05_kids'.txt",
    "stopped_by": "HIDDEN"
@@ -1181,6 +1389,12 @@
   {
    "seed": 906,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 906,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_dentist.txt",
    "stopped_by": "rule"
   },
@@ -1276,6 +1490,12 @@
   },
   {
    "seed": 907,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 907,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_team.txt",
    "stopped_by": "menu"
@@ -1294,6 +1514,12 @@
   },
   {
    "seed": 907,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_budget.txt",
    "stopped_by": "menu"
@@ -1307,6 +1533,12 @@
   {
    "seed": 907,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_budget.txt",
    "stopped_by": "rule"
   },
@@ -1325,6 +1557,12 @@
   {
    "seed": 907,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -1355,6 +1593,12 @@
   {
    "seed": 907,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 907,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_coffee.txt",
    "stopped_by": "rule"
   },
@@ -1450,6 +1694,12 @@
   },
   {
    "seed": 908,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 908,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_budget.txt",
    "stopped_by": "menu"
@@ -1468,6 +1718,12 @@
   },
   {
    "seed": 908,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -1481,6 +1737,12 @@
   {
    "seed": 908,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -1499,6 +1761,12 @@
   {
    "seed": 908,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -1529,6 +1797,12 @@
   {
    "seed": 908,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 908,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_car.txt",
    "stopped_by": "rule"
   },
@@ -1624,6 +1898,12 @@
   },
   {
    "seed": 909,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 909,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_call.txt",
    "stopped_by": "menu"
@@ -1642,6 +1922,12 @@
   },
   {
    "seed": 909,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -1655,6 +1941,12 @@
   {
    "seed": 909,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -1673,6 +1965,12 @@
   {
    "seed": 909,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_kids'.txt",
    "stopped_by": "rule"
   },
@@ -1708,6 +2006,12 @@
   },
   {
    "seed": 909,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 909,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_call.txt",
    "stopped_by": "rule"
@@ -1798,6 +2102,12 @@
   },
   {
    "seed": 910,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 910,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_kids'.txt",
    "stopped_by": "menu"
@@ -1816,6 +2126,12 @@
   },
   {
    "seed": 910,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -1829,6 +2145,12 @@
   {
    "seed": 910,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -1847,6 +2169,12 @@
   {
    "seed": 910,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -1882,6 +2210,12 @@
   },
   {
    "seed": 910,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 910,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_kids'.txt",
    "stopped_by": "rule"
@@ -1972,6 +2306,12 @@
   },
   {
    "seed": 911,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_team.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 911,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_kids'.txt",
    "stopped_by": "menu"
@@ -1990,6 +2330,12 @@
   },
   {
    "seed": 911,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_call.txt",
    "stopped_by": "menu"
@@ -2003,6 +2349,12 @@
   {
    "seed": 911,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_call.txt",
    "stopped_by": "rule"
   },
@@ -2021,6 +2373,12 @@
   {
    "seed": 911,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -2056,6 +2414,12 @@
   },
   {
    "seed": 911,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 911,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_kids'.txt",
    "stopped_by": "rule"
@@ -2146,6 +2510,12 @@
   },
   {
    "seed": 912,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 912,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_call.txt",
    "stopped_by": "menu"
@@ -2164,6 +2534,12 @@
   },
   {
    "seed": 912,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "menu"
@@ -2177,6 +2553,12 @@
   {
    "seed": 912,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "rule"
   },
@@ -2195,6 +2577,12 @@
   {
    "seed": 912,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -2230,6 +2618,12 @@
   },
   {
    "seed": 912,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 912,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_call.txt",
    "stopped_by": "rule"
@@ -2320,6 +2714,12 @@
   },
   {
    "seed": 913,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 913,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_kids'.txt",
    "stopped_by": "menu"
@@ -2338,6 +2738,12 @@
   },
   {
    "seed": 913,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -2351,6 +2757,12 @@
   {
    "seed": 913,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -2369,6 +2781,12 @@
   {
    "seed": 913,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_coffee.txt",
    "stopped_by": "rule"
   },
@@ -2404,6 +2822,12 @@
   },
   {
    "seed": 913,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 913,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_kids'.txt",
    "stopped_by": "rule"
@@ -2494,6 +2918,12 @@
   },
   {
    "seed": 914,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 914,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_coffee.txt",
    "stopped_by": "menu"
@@ -2512,6 +2942,12 @@
   },
   {
    "seed": 914,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_kids'.txt",
    "stopped_by": "menu"
@@ -2525,6 +2961,12 @@
   {
    "seed": 914,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_kids'.txt",
    "stopped_by": "rule"
   },
@@ -2543,6 +2985,12 @@
   {
    "seed": 914,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -2578,6 +3026,12 @@
   },
   {
    "seed": 914,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 914,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_coffee.txt",
    "stopped_by": "rule"
@@ -2668,6 +3122,12 @@
   },
   {
    "seed": 915,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 915,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_coffee.txt",
    "stopped_by": "menu"
@@ -2686,6 +3146,12 @@
   },
   {
    "seed": 915,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_call.txt",
    "stopped_by": "menu"
@@ -2699,6 +3165,12 @@
   {
    "seed": 915,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_call.txt",
    "stopped_by": "rule"
   },
@@ -2717,6 +3189,12 @@
   {
    "seed": 915,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_team.txt",
    "stopped_by": "rule"
   },
@@ -2752,6 +3230,12 @@
   },
   {
    "seed": 915,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 915,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_coffee.txt",
    "stopped_by": "rule"
@@ -2842,6 +3326,12 @@
   },
   {
    "seed": 916,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 916,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_car.txt",
    "stopped_by": "menu"
@@ -2860,6 +3350,12 @@
   },
   {
    "seed": 916,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_dentist.txt",
    "stopped_by": "menu"
@@ -2873,6 +3369,12 @@
   {
    "seed": 916,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_dentist.txt",
    "stopped_by": "rule"
   },
@@ -2891,6 +3393,12 @@
   {
    "seed": 916,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -2926,6 +3434,12 @@
   },
   {
    "seed": 916,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 916,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_car.txt",
    "stopped_by": "rule"
@@ -3016,6 +3530,12 @@
   },
   {
    "seed": 917,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 917,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_car.txt",
    "stopped_by": "menu"
@@ -3034,6 +3554,12 @@
   },
   {
    "seed": 917,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_call.txt",
    "stopped_by": "menu"
@@ -3047,6 +3573,12 @@
   {
    "seed": 917,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_call.txt",
    "stopped_by": "rule"
   },
@@ -3065,6 +3597,12 @@
   {
    "seed": 917,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -3100,6 +3638,12 @@
   },
   {
    "seed": 917,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 917,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_car.txt",
    "stopped_by": "rule"
@@ -3190,6 +3734,12 @@
   },
   {
    "seed": 918,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 918,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_call.txt",
    "stopped_by": "menu"
@@ -3208,6 +3758,12 @@
   },
   {
    "seed": 918,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -3221,6 +3777,12 @@
   {
    "seed": 918,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -3239,6 +3801,12 @@
   {
    "seed": 918,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -3274,6 +3842,12 @@
   },
   {
    "seed": 918,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 918,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_call.txt",
    "stopped_by": "rule"
@@ -3364,6 +3938,12 @@
   },
   {
    "seed": 919,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 919,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_car.txt",
    "stopped_by": "menu"
@@ -3382,6 +3962,12 @@
   },
   {
    "seed": 919,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "menu"
@@ -3395,6 +3981,12 @@
   {
    "seed": 919,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "rule"
   },
@@ -3413,6 +4005,12 @@
   {
    "seed": 919,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_kids'.txt",
    "stopped_by": "rule"
   },
@@ -3443,6 +4041,12 @@
   {
    "seed": 919,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 919,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_team.txt",
    "stopped_by": "rule"
   },
@@ -3538,6 +4142,12 @@
   },
   {
    "seed": 920,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 920,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_coffee.txt",
    "stopped_by": "menu"
@@ -3556,6 +4166,12 @@
   },
   {
    "seed": 920,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -3569,6 +4185,12 @@
   {
    "seed": 920,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -3587,6 +4209,12 @@
   {
    "seed": 920,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -3617,6 +4245,12 @@
   {
    "seed": 920,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 920,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_budget.txt",
    "stopped_by": "rule"
   },
@@ -3712,6 +4346,12 @@
   },
   {
    "seed": 921,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 921,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_kids'.txt",
    "stopped_by": "menu"
@@ -3730,6 +4370,12 @@
   },
   {
    "seed": 921,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -3743,6 +4389,12 @@
   {
    "seed": 921,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -3761,6 +4413,12 @@
   {
    "seed": 921,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -3791,6 +4449,12 @@
   {
    "seed": 921,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 921,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_car.txt",
    "stopped_by": "rule"
   },
@@ -3886,6 +4550,12 @@
   },
   {
    "seed": 922,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 922,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_car.txt",
    "stopped_by": "menu"
@@ -3904,6 +4574,12 @@
   },
   {
    "seed": 922,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -3917,6 +4593,12 @@
   {
    "seed": 922,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -3935,6 +4617,12 @@
   {
    "seed": 922,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -3970,6 +4658,12 @@
   },
   {
    "seed": 922,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 922,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_car.txt",
    "stopped_by": "rule"
@@ -4060,6 +4754,12 @@
   },
   {
    "seed": 923,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_kids'.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 923,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_team.txt",
    "stopped_by": "menu"
@@ -4078,6 +4778,12 @@
   },
   {
    "seed": 923,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_dentist.txt",
    "stopped_by": "menu"
@@ -4091,6 +4797,12 @@
   {
    "seed": 923,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_dentist.txt",
    "stopped_by": "rule"
   },
@@ -4109,6 +4821,12 @@
   {
    "seed": 923,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_coffee.txt",
    "stopped_by": "rule"
   },
@@ -4139,6 +4857,12 @@
   {
    "seed": 923,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 923,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_budget.txt",
    "stopped_by": "rule"
   },
@@ -4234,6 +4958,12 @@
   },
   {
    "seed": 924,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_car.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 924,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_coffee.txt",
    "stopped_by": "menu"
@@ -4252,6 +4982,12 @@
   },
   {
    "seed": 924,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_team.txt",
    "stopped_by": "menu"
@@ -4265,6 +5001,12 @@
   {
    "seed": 924,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_team.txt",
    "stopped_by": "rule"
   },
@@ -4283,6 +5025,12 @@
   {
    "seed": 924,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_budget.txt",
    "stopped_by": "rule"
   },
@@ -4313,6 +5061,12 @@
   {
    "seed": 924,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 924,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_dentist.txt",
    "stopped_by": "rule"
   },
@@ -4408,6 +5162,12 @@
   },
   {
    "seed": 925,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_budget.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 925,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_kids'.txt",
    "stopped_by": "menu"
@@ -4426,6 +5186,12 @@
   },
   {
    "seed": 925,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "menu"
@@ -4439,6 +5205,12 @@
   {
    "seed": 925,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_coffee.txt",
    "stopped_by": "rule"
   },
@@ -4457,6 +5229,12 @@
   {
    "seed": 925,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_team.txt",
    "stopped_by": "rule"
   },
@@ -4487,6 +5265,12 @@
   {
    "seed": 925,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 925,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_dentist.txt",
    "stopped_by": "rule"
   },
@@ -4582,6 +5366,12 @@
   },
   {
    "seed": 926,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 926,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_team.txt",
    "stopped_by": "menu"
@@ -4600,6 +5390,12 @@
   },
   {
    "seed": 926,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_dentist.txt",
    "stopped_by": "menu"
@@ -4613,6 +5409,12 @@
   {
    "seed": 926,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_dentist.txt",
    "stopped_by": "rule"
   },
@@ -4631,6 +5433,12 @@
   {
    "seed": 926,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_coffee.txt",
    "stopped_by": "rule"
   },
@@ -4666,6 +5474,12 @@
   },
   {
    "seed": 926,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 926,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_team.txt",
    "stopped_by": "rule"
@@ -4753,6 +5567,12 @@
    "mistake": "agreed: length left out",
    "email": "inbox/01_call.txt",
    "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_call.txt",
+   "stopped_by": "menu"
   },
   {
    "seed": 927,
@@ -4769,6 +5589,12 @@
   {
    "seed": 927,
    "mistake": "agreed: length left out",
+   "email": "inbox/02_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "invitation filed as a move",
    "email": "inbox/02_dentist.txt",
    "stopped_by": "rule"
   },
@@ -4787,6 +5613,12 @@
   {
    "seed": 927,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_budget.txt",
    "stopped_by": "rule"
   },
@@ -4805,6 +5637,12 @@
   {
    "seed": 927,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_car.txt",
    "stopped_by": "rule"
   },
@@ -4840,6 +5678,12 @@
   },
   {
    "seed": 927,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 927,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_dentist.txt",
    "stopped_by": "rule"
@@ -4930,6 +5774,12 @@
   },
   {
    "seed": 928,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_coffee.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 928,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_team.txt",
    "stopped_by": "menu"
@@ -4948,6 +5798,12 @@
   },
   {
    "seed": 928,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_team.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_car.txt",
    "stopped_by": "menu"
@@ -4961,6 +5817,12 @@
   {
    "seed": 928,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_car.txt",
    "stopped_by": "rule"
   },
@@ -4979,6 +5841,12 @@
   {
    "seed": 928,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_dentist.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_dentist.txt",
    "stopped_by": "rule"
   },
@@ -5014,6 +5882,12 @@
   },
   {
    "seed": 928,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/06_call.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 928,
    "mistake": "move linked to the wrong meeting",
    "email": "inbox/08_re_team.txt",
    "stopped_by": "rule"
@@ -5104,6 +5978,12 @@
   },
   {
    "seed": 929,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/01_dentist.txt",
+   "stopped_by": "menu"
+  },
+  {
+   "seed": 929,
    "mistake": "yes read as no (router)",
    "email": "inbox/02_car.txt",
    "stopped_by": "menu"
@@ -5122,6 +6002,12 @@
   },
   {
    "seed": 929,
+   "mistake": "invitation filed as a move",
+   "email": "inbox/02_car.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
    "mistake": "yes read as no (router)",
    "email": "inbox/03_budget.txt",
    "stopped_by": "menu"
@@ -5135,6 +6021,12 @@
   {
    "seed": 929,
    "mistake": "agreed: length left out",
+   "email": "inbox/03_budget.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "invitation filed as a move",
    "email": "inbox/03_budget.txt",
    "stopped_by": "rule"
   },
@@ -5153,6 +6045,12 @@
   {
    "seed": 929,
    "mistake": "agreed: length left out",
+   "email": "inbox/04_coffee.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "invitation filed as a move",
    "email": "inbox/04_coffee.txt",
    "stopped_by": "rule"
   },
@@ -5183,6 +6081,12 @@
   {
    "seed": 929,
    "mistake": "agreed: length left out",
+   "email": "inbox/06_kids'.txt",
+   "stopped_by": "rule"
+  },
+  {
+   "seed": 929,
+   "mistake": "invitation filed as a move",
    "email": "inbox/06_kids'.txt",
    "stopped_by": "rule"
   },

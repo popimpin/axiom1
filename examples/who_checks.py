@@ -74,6 +74,9 @@ def mistakes(answers, files):
             mut("yes read as no (router)", i, said_yes="no")
             mut("agreed filed as not_agreed", i, kind="not_agreed", date="", time="", duration="")
             mut("agreed: length left out", i, duration="")
+        if a["kind"] == "agreed":
+            for other in [x for x in agreed if x != a["file"]][:1]:
+                mut("invitation filed as a move", i, kind="moved_and_agreed", refers_to=other)
         if a.get("said_yes") == "no":
             m = re.search(r"on (.+?) at (.+?)\? It should take (about \d+ minutes)", text)
             mut("no read as yes (router)", i, said_yes="yes", kind="agreed", date=m.group(1), time=m.group(2),

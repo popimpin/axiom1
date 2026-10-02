@@ -368,6 +368,7 @@ through the production layers in order. `2026-10-02_who_checks.json`.
 | decline / newsletter filed as agreed | | | 60 | 0 |
 | **yes/no on an invitation read wrong (the router)** | 60 | | | **120** |
 | **all 870** | 90 | 630 | 60 | **120** |
+| *(rerun with "invitation filed as a move" added, after the consensus run found it: 150/150 stopped; all 1,020: 120 reach the user, the same 120)* | | | | |
 
 - **Everything except one decision is checked by the harness itself.** What reaches the user is a wrong
   yes/no on an invitation: the rules trust that answer, so nothing downstream can contradict it. That decision
@@ -378,3 +379,21 @@ through the production layers in order. `2026-10-02_who_checks.json`.
 - **Production consequence:** the router's freeze-on-witnessed has no witness in production. There, a reply's
   answer should be frozen when two independent resolvers agree (Nano and Super) or the user confirms it once,
   and a disagreement goes to the user instead of being guessed. Not built yet.
+
+## Production mode: two models must agree, else ask the person (2026-10-02)
+
+The router with no answer key (`consensus=True`): on a wording the table has not seen, Nano and Super both answer
+"is my reply a yes?"; agreement is frozen; a disagreement goes to the person as one tap (simulated here by someone
+who knows their own replies). The form on Nano. 20 inboxes never used before (seeds 720-739), empty table.
+`2026-10-02_consensus_curve.json`.
+
+- **19/20 witnessed, 0 taps, 0 wrong answers frozen** (all 33 table entries checked against the true meanings).
+  Nano and Super agreed on every new wording, including the trap Nano gets wrong alone ("No problem at all, see
+  you." -> agreed yes; on its own, Nano said no). The table answered 43%, 86%, 86%, 91% of yes/no by fives.
+- Cost of consensus: 33 calls each to Nano and Super for 140 yes/no decisions (12.6k + 16.3k tokens). The form:
+  Nano 180 calls, 196k tokens, 0 corrections, 18.1 s per inbox.
+- **The one miss was on the form**: Nano filed a new invitation ("Call with the landlord") as a move of the
+  dentist appointment. Fixed from structure: a move or cancel must be about an agreed meeting with the same
+  subject. Planted 150 times since: 150 stopped.
+- What a real user carries now: two different Nemotrons agreeing on a wrong yes/no (not seen in 140), and form
+  mistakes no rule yet covers (each one found so far has become a rule).

@@ -1256,6 +1256,12 @@ def calendar_item_checks(today, files=None):
             if same:
                 out.append(f"this email is about the meeting already agreed in {same[0]}: if it moves it, the kind is "
                            f"moved_and_agreed; if they called it off, cancelled_by_them; refers_to is {same[0]!r}")
+        if kind in ("move", "cancel") and files is not None and not any(
+                CALENDAR_KINDS[x["kind"]] == "add" and _topic(files[x["file"]]) == _topic(text) for x in answers):
+            # seen live (consensus run, seed 739): Nano filed a new invitation, "Call with the landlord", as a move
+            # of the dentist appointment; no agreed meeting had that subject, so it could not be a move
+            out.append(f"no meeting agreed so far has this email's subject ({_subject(text)!r}), so it cannot move or "
+                       f"cancel one. If it asks for a new meeting and I said yes, the kind is agreed")
         if kind in ("move", "cancel") and a["refers_to"] and files is not None:
             # seen live (routing curve, seed 713): a 1.7B pointed "Cancelled: Coffee with Sam" at the landlord call,
             # with the coffee meeting marked "same subject" right above it

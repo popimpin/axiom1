@@ -425,3 +425,25 @@ v5 9/10 (see the commit). Then **on Nemotron via Nebius, 20 inboxes never used i
   cancellation), and split Nano's question ("did I say yes?" / "cancelled or turned down since?").
 - The first Nebius attempt was spoiled by the simulation, not the system: the stand-in person answered by the
   meeting's title, and two threads shared one. It now answers per thread.
+
+## The same 20 inboxes after splitting the decision: 12 taps -> 3 (2026-10-02)
+
+Agreement split into its two smallest decisions ("does the first answer say yes?", shown only the thread up to
+that answer; then, only if messages followed, "Is the meeting cancelled?"), table keys with the meeting's name
+replaced by <meeting>, and no freezing from a single model. Same seeds 101-120, Nano slots, Nano+Super agreement.
+`2026-10-02_real_inbox_nebius_v2.json`.
+
+| | one question | split |
+|---|---|---|
+| witnessed | 20/20 | **20/20** |
+| asked, not guessed | 29/29 | **29/29** |
+| taps | 12 | **3** |
+| decisions from the table | 132 | 159 |
+| seconds per inbox | 4.8 | 6.7 |
+
+- The 3 taps: Nano "no" to "Sounds good." and Nano reading two move requests ("could we move it to Thursday at
+  9:00 am instead?") as cancellations; Super right each time. The move requests did not teach each other because
+  each names its own day and time: removing those from the key, as the meeting's name now is, is the next step.
+- Found on Bee on the way: the plain question "Is the meeting cancelled?" (21/21 on moves, turned-down moves,
+  cancellations) beat a longer one with a clause about moves (the 9B said no 4/4 on a cancellation); and one
+  model's frozen answer spread under the more general keys until the router stopped freezing single-model answers.

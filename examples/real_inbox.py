@@ -328,6 +328,8 @@ def run(n, model_name, agree_names, first_seed, out=None):
                 """A message as a table key: who wrote it, and its text with the meeting's name taken out, so one
                 answer about "cancel our lunch" also answers "cancel our coffee" (seen live: 9 taps, one per name)."""
                 body = re.sub(re.escape(subject), "<meeting>", msg["body"], flags=re.I) if subject else msg["body"]
+                for pattern in (DATE_RE, TIME_RE, LEN_RE):   # "move it to Thursday at 9" teaches "...to the 12th at 3"
+                    body = re.sub(pattern, "<when>", body, flags=re.I)
                 return ("me: " if M.mine([msg], ME) else "them: ") + body
             exp = truth["threads"][name]
             if not M.mine(msgs, ME):

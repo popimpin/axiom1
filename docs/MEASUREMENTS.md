@@ -447,3 +447,7 @@ replaced by <meeting>, and no freezing from a single model. Same seeds 101-120, 
 - Found on Bee on the way: the plain question "Is the meeting cancelled?" (21/21 on moves, turned-down moves,
   cancellations) beat a longer one with a clause about moves (the 9B said no 4/4 on a cancellation); and one
   model's frozen answer spread under the more general keys until the router stopped freezing single-model answers.
+- **Then day, time and length phrases left the key too** ("could we move it to <when> at <when> instead"): same
+  20 inboxes, **20/20, 29/29 asks, 0 taps**, 4.2 s per inbox (`2026-10-02_real_inbox_nebius_v3.json`). The
+  models are not perfectly repeatable run to run (the split run's 3 taps were Nano misreadings that did not
+  recur), so read 0 as "a handful at most", not a guarantee.

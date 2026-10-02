@@ -10,6 +10,10 @@ answers it. So the unit to size is the decision, not the job:
 An answer is frozen only after the delivery it was part of is WITNESSED (the server's check passed). A refuted
 delivery freezes nothing, so a wrong answer never becomes a rule. That is the same law as OhmOS's voice routing:
 verification-gated freeze.
+
+In production there is no server check to witness against, so `consensus=True` changes what counts as proof: every
+model routed to the decision answers, an answer they all agree on is frozen, and a disagreement goes to the person
+(`ask_user`) instead of being guessed. The person's answer is frozen too: they are asked once per wording.
 """
 import json
 import re
@@ -50,11 +54,14 @@ class Router:
     """decide() answers one decision from the table or the decision's models; it remembers what it answered so
     the caller can freeze() it if the delivery is witnessed, or forget() it if not."""
 
-    def __init__(self, table, routes):
+    def __init__(self, table, routes, consensus=False, ask_user=None):
         self.table = table
         self.routes = routes             # decision -> [model, ...], cheapest first
+        self.consensus = consensus       # all models must agree; agreement is the proof, and is frozen at once
+        self.ask_user = ask_user         # (decision, text, question, options, answers) -> answer; asked on disagreement
         self.pending = []
         self.log = []                    # (decision, text, answer, tier) for this delivery
+        self.asked = []                  # every question that reached the person
 
     def decide(self, decision, text, question, options):
         frozen = self.table.get(decision, text)
@@ -62,6 +69,8 @@ class Router:
             self.pending.append((decision, text, frozen))
             self.log.append((decision, text, frozen, "table"))
             return frozen, "table"
+        if self.consensus:
+            return self._agree(decision, text, question, options)
         for model in self.routes[decision]:
             answer = self._ask(model, question, options)
             if answer in options:
@@ -70,6 +79,24 @@ class Router:
                 return answer, getattr(model, "model", "model")
         self.log.append((decision, text, None, "unanswered"))
         return None, "unanswered"
+
+    def _agree(self, decision, text, question, options):
+        votes = {getattr(m, "model", "model"): self._ask(m, question, options) for m in self.routes[decision]}
+        answers = set(votes.values())
+        if len(answers) == 1 and None not in answers:
+            answer = answers.pop()
+            self.table.freeze([(decision, text, answer)])          # agreement is the proof in production
+            self.log.append((decision, text, answer, "agreed"))
+            return answer, "agreed"
+        self.asked.append({"decision": decision, "text": text, "question": question, "votes": votes})
+        if self.ask_user is None:
+            self.log.append((decision, text, None, "needs you"))
+            return None, "needs you"
+        answer = self.ask_user(decision, text, question, options, votes)
+        if answer in options:
+            self.table.freeze([(decision, text, answer)])          # asked once per wording, then remembered
+        self.log.append((decision, text, answer, "you"))
+        return answer, "you"
 
     @staticmethod
     def _ask(model, question, options):

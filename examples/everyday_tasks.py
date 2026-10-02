@@ -1373,6 +1373,7 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                 given, item_form = None, job["item_form"](files)
                 routed_calls0 = (sum(m.usage["calls"] for ms in router.routes.values() for m in ms if hasattr(m, "usage"))
                                  if router is not None else 0)
+                asked0 = len(router.asked) if router is not None else 0
                 if router is not None:
                     # "is my reply a yes?" leaves the small model's form: a frozen table, else the models routed to it
                     router.start()
@@ -1439,6 +1440,7 @@ def form_series(n_instances, model_name, first_seed, only, as_of=None, each=Fals
                        "corrections": res["corrections"], "reason": reason[:300], "model_calls": used["calls"],
                        "answers": res.get("answers") or (res.get("entry") or {}),     # to trace a refutation
                        "routed": routed, "table_size": len(router.table) if router is not None else None,
+                       "asked_you": router.asked[asked0:] if router is not None else [],
                        "router_model_calls": (sum(m.usage["calls"] for ms in router.routes.values() for m in ms
                                                   if hasattr(m, "usage")) - routed_calls0) if router is not None else 0,
                        "truth": truth,

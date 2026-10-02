@@ -66,6 +66,31 @@ class Routing(unittest.TestCase):
         self.assertEqual(r.decide("reply_is_yes", "Deal.", "reply: Deal.", ["yes", "no"]), ("yes", "large"))
         self.assertEqual((small.calls, large.calls), (1, 1))
 
+    def test_consensus_freezes_what_the_models_agree_on(self):
+        a, b = Model({"Deal": "yes"}, "a"), Model({"Deal": "yes"}, "b")
+        r = Router(Table(), {"reply_is_yes": [a, b]}, consensus=True)
+        self.assertEqual(r.decide("reply_is_yes", "Deal.", "reply: Deal.", ["yes", "no"]), ("yes", "agreed"))
+        self.assertEqual(r.decide("reply_is_yes", "deal", "reply: deal", ["yes", "no"]), ("yes", "table"))
+        self.assertEqual((a.calls, b.calls), (1, 1))
+
+    def test_a_disagreement_goes_to_the_person_once_per_wording(self):
+        a, b = Model({"No problem at all": "no"}, "a"), Model({"No problem at all": "yes"}, "b")
+        taps = []
+        r = Router(Table(), {"reply_is_yes": [a, b]}, consensus=True,
+                   ask_user=lambda d, text, q, opts, votes: taps.append(votes) or "yes")
+        self.assertEqual(r.decide("reply_is_yes", "No problem at all, see you.", "reply: No problem at all",
+                                  ["yes", "no"]), ("yes", "you"))
+        self.assertEqual(r.decide("reply_is_yes", "No problem at all, see you", "reply: No problem at all",
+                                  ["yes", "no"]), ("yes", "table"))
+        self.assertEqual(len(taps), 1)
+        self.assertEqual(taps[0], {"a": "no", "b": "yes"})
+
+    def test_with_no_one_to_ask_a_disagreement_is_left_open_not_guessed(self):
+        a, b = Model({"Hmm": "no"}, "a"), Model({"Hmm": "yes"}, "b")
+        r = Router(Table(), {"reply_is_yes": [a, b]}, consensus=True)
+        self.assertEqual(r.decide("reply_is_yes", "Hmm.", "reply: Hmm", ["yes", "no"]), (None, "needs you"))
+        self.assertEqual(len(r.table), 0)
+
     def test_norm(self):
         self.assertEqual(norm("  Works  for me!! "), "works for me")
 

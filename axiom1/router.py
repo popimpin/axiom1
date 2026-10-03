@@ -65,7 +65,9 @@ class Router:
 
     def decide(self, decision, text, question, options):
         frozen = self.table.get(decision, text)
-        if frozen is not None:
+        # a remembered answer that is not on THIS menu is someone else's (seen live: "the 14th", learned on one
+        # thread, was put on a thread that never says it)
+        if frozen is not None and frozen in options:
             self.pending.append((decision, text, frozen))
             self.log.append((decision, text, frozen, "table"))
             return frozen, "table"
@@ -82,6 +84,7 @@ class Router:
 
     def _agree(self, decision, text, question, options):
         votes = {getattr(m, "model", "model"): self._ask(m, question, options) for m in self.routes[decision]}
+        votes = {k: v if v in options else None for k, v in votes.items()}
         answers = set(votes.values())
         if len(answers) == 1 and None not in answers:
             answer = answers.pop()
@@ -118,11 +121,26 @@ class Router:
                        {"role": "user", "content": question}], [tool])
         for call in reply.get("tool_calls") or []:
             try:
-                return json.loads(call["function"].get("arguments") or "{}").get("answer")
+                return Router.on_menu(json.loads(call["function"].get("arguments") or "{}").get("answer"), options)
             except json.JSONDecodeError:
                 return None
-        content = (reply.get("content") or "").strip().lower()
-        return next((o for o in options if re.fullmatch(rf"\W*{re.escape(o)}\W*", content)), None)
+        return Router.on_menu(reply.get("content"), options)
+
+    @staticmethod
+    def on_menu(answer, options):
+        """The option the answer names, or None. Not pedantic about case or punctuation, and a shortened option
+        counts when it names exactly one (seen live: a 9B wrote "Tuesday" for the option "next Tuesday"); anything
+        else is off the menu, never passed through (it was, and "Tuesday" became the wrong week)."""
+        if not isinstance(answer, str):
+            return None
+        a = answer.strip().strip(".!?,;:'\"").lower()
+        if not a:
+            return None
+        exact = [o for o in options if o.lower() == a]
+        if exact:
+            return exact[0]
+        part = [o for o in options if re.search(rf"(?<!\w){re.escape(a)}(?!\w)", o.lower())]
+        return part[0] if len(part) == 1 else None
 
     def freeze(self):
         self.table.freeze(self.pending)

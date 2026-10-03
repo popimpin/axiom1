@@ -210,7 +210,7 @@ def render(messages):
     return "\n\n".join(out)
 
 
-TIME_RE = r"\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b|\b\d{1,2}:\d{2}\b|\bnoon\b"
+TIME_RE = r"\b\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)(?![a-z])|\b\d{1,2}:\d{2}\b|\bnoon\b"
 DATE_RE = (r"\b(?:next |this )?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:,? (?:january|february|"
            r"march|april|may|june|july|august|september|october|november|december) \d{1,2})?\b|\bthe \d{1,2}(?:st|nd|rd|th)\b"
            r"|\btomorrow\b|\bsometime next week\b")
@@ -240,6 +240,29 @@ def options(messages, pattern, within=None):
 def proposals(messages):
     """The messages that name a day or a time: where a meeting is proposed, or a move to another time."""
     return [k for k, m in enumerate(messages, 1) if re.search(DATE_RE, m["body"], re.I) or re.search(TIME_RE, m["body"], re.I)]
+
+
+def resolve_option(messages, key, option):
+    """What a menu option means: the ISO day (read from the day its message was sent) or the HH:MM time."""
+    m = re.fullmatch(r"(.*) \[message (\d+)\]", option)
+    phrase, holder = (m.group(1), messages[int(m.group(2)) - 1]) if m else (
+        option, next((x for x in reversed(messages) if option.lower() in x["body"].lower()), None))
+    try:
+        if key == "day":
+            return T.resolve_date(phrase, M.sent_on(holder["date"]))
+        if key == "time":
+            return T.parse_time(phrase)
+    except Exception:
+        return None
+    return None
+
+
+def oracle(options, resolver, want):
+    """The option a person who knows the answer would pick: the one that means `want`, else 'not settled'."""
+    for o in options or []:
+        if o != "not settled" and want is not None and resolver(o) == want:
+            return o
+    return "not settled"
 
 
 def slot_form(messages, within=None):
@@ -279,20 +302,159 @@ for t in entry["threads"]:
     if (not ln or ln.lower() == "same length") and len(set(x.lower() for x in stated)) == 1:
         ln = stated[0]          # "same length", or a length left blank, is the one length the thread states
     subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
+    # real invitations rarely state a length ("dinner at 6:00 p.m."): with open_end the meeting goes on the calendar
+    # with its end left blank - an honest blank, not a guessed length. The generated inbox stays strict.
+    open_end = entry.get("open_end", False)
     try:
-        if not day or not tm or not ln:
-            raise ValueError("the thread does not say " + ", ".join(x for x, v in (("which day", day), ("what time", tm), ("how long", ln)) if not v))
-        if ln.lower() == "same length":
+        if not day or not tm or (not ln and not open_end):
+            raise ValueError("the thread does not say " + ", ".join(x for x, v in (("which day", day), ("what time", tm), ("how long", ln or open_end)) if not v))
+        if ln and ln.lower() == "same length":
             raise ValueError("only 'same length' is given")
         start = time.parse_time(tm)
         d = time.resolve_date(day, mail.sent_on(dm["date"]))
-        rows.append({"date": d, "start": start, "end": time.add_minutes(start, time.parse_duration(ln)), "title": subject,
-                     "thread": t["file"]})
+        rows.append({"date": d, "start": start, "end": time.add_minutes(start, time.parse_duration(ln)) if ln else "",
+                     "title": subject, "thread": t["file"]})
     except Exception as e:
         asks.append({"thread": t["file"], "subject": subject, "why": str(e)})
 table.write_csv("calendar.csv", ["date", "start", "end", "title", "thread"], sorted(rows, key=lambda r: (r["date"], r["start"])))
 table.write_json("asks.json", asks)
 '''
+
+
+def decide_thread(name, text, router, model, person, teach):
+    """One thread, decided the harness's way: structure first, then the routed decisions, then the slot form.
+    `teach(decision)` is what the simulated person would answer if a question reached them. Returns (answer,
+    corrections). The generated inbox and the real (MailEx) one run this same function."""
+    corrections = []
+    msgs = M.split_thread(text)
+    shown = render(msgs)
+    last = msgs[-1]
+    key = ("me: " if M.mine([last], ME) else "them: ") + last["body"]
+    subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
+    # the person knows their own threads: answers are keyed per decision of THIS thread, not by its title
+    person.truth = {}
+    def keyed(msg, keep_when=False):
+        """A message as a table key: who wrote it, and its text with the meeting's name taken out, so one
+        answer about "cancel our lunch" also answers "cancel our coffee" (seen live: 9 taps, one per name).
+        keep_when: for a decision whose ANSWER is a when, the whens stay in the key (seen live: with them taken
+        out, "3:30pm" learned on one thread was answered for another that moved to 11:30)."""
+        body = re.sub(re.escape(subject), "<meeting>", msg["body"], flags=re.I) if subject else msg["body"]
+        for pattern in () if keep_when else (DATE_RE, TIME_RE, LEN_RE):   # "move it to Thursday at 9" teaches "...to the 12th at 3"
+            body = re.sub(pattern, "<when>", body, flags=re.I)
+        return ("me: " if M.mine([msg], ME) else "them: ") + body
+    blank = {"file": name, "agreed": False, "day": "", "time": "", "length": ""}
+    if not any(re.search(pat, m["body"], re.I) for m in msgs for pat in (DATE_RE, TIME_RE)):
+        return {**blank, "tier": "structure: no day or time anywhere"}, corrections
+    if M.mine(msgs, ME):
+        # real mail: most threads that mention a meeting are not arranging one for me (seen on Enron: a notice sent for
+        # my boss, "IF they are free we'll meet", a meeting that already happened)
+        mtg_key = "meeting? " + keyed(msgs[0])
+        person.truth[mtg_key] = teach("is_meeting", None, None)
+        is_mtg, mtg_tier = router.decide(
+            # chosen on all 103 threads that reach it, not on one probe (examples/is_meeting_wording.py): this wording
+            # kept 76/76 generated + 8/8 real meetings; "put something on my calendar" dropped every forwarded invite
+            # (read literally), "asked to go to" dropped vague ones. The car-service drops blamed on it were a run
+            # with thinking on (docs/measurements/2026-10-02_is_meeting_wording.json)
+            "is_meeting", mtg_key, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs this thread arranging a "
+            f"meeting or call that I will attend? (No if it already happened, it is someone else's, or nobody is "
+            f"actually setting one up.)", ["yes", "no"])
+        if is_mtg != "yes":
+            return {**blank, "tier": f"is_meeting {mtg_tier}"}, corrections
+    if not M.mine(msgs, ME):
+        # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
+        agreed, tier = "no", "structure: I never wrote"
+    else:
+        # the agreement, split into its two smallest decisions (seen live: Nano answered the one big question
+        # "yes" for 9 cancellations and 3 declines; Super answered "no")
+        i_started = M.mine([msgs[0]], ME)
+        reply_at = next((k for k, m in enumerate(msgs) if k > 0 and bool(M.mine([m], ME)) != bool(i_started)), None)
+        if reply_at is None:
+            agreed, tier = "no", "structure: nobody answered"
+        else:
+            person.truth[keyed(msgs[reply_at])] = teach("said_yes", None, None)
+            yes, tier = router.decide(
+                "said_yes", keyed(msgs[reply_at]),
+                # only the thread up to the answer: later messages (a move, "that doesn't work for me")
+                # leaked into the answer when the whole thread was shown (seen live on Bee)
+                f"Here is the start of an email thread. 'Me' is me.\n\n{render(msgs[:reply_at + 1])}\n\n"
+                f"Does message {reply_at + 1} say yes to meeting?",
+                ["yes", "no"])
+            agreed = yes
+            later = msgs[reply_at + 1:]
+            if yes == "yes" and later:
+                off_key = " / ".join(keyed(m) for m in later)
+                person.truth[off_key] = teach("called_off", None, None)
+                off, tier2 = router.decide(
+                    "called_off", off_key,
+                    # the plain question: a 9B said "no" 4/4 to "did anyone call it off entirely? (asking to
+                    # move it is not...)" and "yes" 4/4 to this, on the same cancellation
+                    f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs the meeting cancelled?", ["yes", "no"])
+                tier = f"{tier} + {tier2}"
+                if off != "no":
+                    agreed = "no" if off == "yes" else None
+    a = {"file": name, "agreed": agreed == "yes", "day": "", "time": "", "length": "", "tier": tier}
+    if a["agreed"]:
+        within = None
+        props = proposals(msgs)
+        if len(props) == 2:
+            # which proposal stands is its own decision, asked BEFORE the menus (seen live: a 1.7B, and on 2026-10-02 a
+            # 9B asked per field, put "let's keep the original time" on the proposed new day); menus then come from it.
+            # Only for an offer and one counter-offer: with three or more (real mail), "the latest" was someone else's
+            # "I have a 10:00 AM meeting" and an unanswered "3 or 3:30?" (both placed wrong on Enron, 2026-10-02 v6);
+            # there each field is decided on its own, with "not settled" as an answer
+            which_opts = ["the first proposal", "the latest proposal"]
+            stands = {"the first proposal": props[0], "the latest proposal": props[-1]}
+
+            def named(o):
+                """What a proposal names: the ISO days and HH:MM times its message resolves to."""
+                k = stands[o]
+                vals = {resolve_option(msgs, "day", x) for x in options(msgs, DATE_RE, [k])}
+                return vals | {resolve_option(msgs, "time", x) for x in options(msgs, TIME_RE, [k])}
+            wkey = "which proposal? " + " / ".join(keyed(m) for m in msgs[-2:])
+            person.truth[wkey] = teach("which_time", which_opts, named)
+            which, a["which_tier"] = router.decide(
+                "which_time", wkey, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nA time was proposed, and later "
+                f"a different one. Which did we end up agreeing on?", which_opts)
+            if which in stands:
+                within = [stands[which]]
+        schema = slot_form(msgs, within)
+        if within is not None:
+            # a field the standing proposal does not name falls back to the whole thread (seen on Enron: the day in
+            # one message, the time in another); with several options it is then decided below, "not settled" allowed
+            full = slot_form(msgs, None)
+            for key in ("day", "time"):
+                if key in full["properties"] and key not in schema["properties"]:
+                    schema["properties"][key] = full["properties"][key]
+                    schema["required"].append(key)
+        # a menu with one real option is not a decision: the harness fills it (seen live: a 1.7B wrote "Tuesday"
+        # three times when the only day on its menu was "tomorrow")
+        for key in list(schema["properties"]):
+            real = [o for o in schema["properties"][key]["enum"] if o]
+            if len(real) == 1:
+                a[key] = real[0]
+            elif key in ("day", "time"):
+                # several days or times in the thread: which one did we agree on is a judgement, routed, with "not
+                # settled" as an answer (seen on Enron: the day and the time arrive in different messages; "latest
+                # proposal" picked "I have a 10:00 AM meeting", someone else's)
+                opts = real + ["not settled"]
+                dkey = f"agreed {key}? " + " / ".join(keyed(m, keep_when=True) for m in msgs)
+                person.truth[dkey] = teach(f"agreed_{key}", opts, lambda o, k=key: resolve_option(msgs, k, o))
+                pick, a[f"{key}_tier"] = router.decide(
+                    f"agreed_{key}", dkey, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nWe agreed to meet. "
+                    f"Which {'day' if key == 'day' else 'start time'} did we end up agreeing on? If it was never settled, "
+                    f"answer 'not settled'.", opts)
+                a[key] = "" if pick in (None, "not settled") else pick
+            else:
+                continue
+            del schema["properties"][key]
+            schema["required"].remove(key)
+        if schema["properties"]:
+            res = forms.fill_each(model, "Put the meeting agreed in this thread on my calendar.",
+                                  [(name, shown)], lambda n_, ans: schema)
+            corrections += res["corrections"]
+            if res["ok"]:
+                a.update({k: res["answers"][0].get(k, "") for k in schema["properties"]})
+    return a, corrections
 
 
 def run(n, model_name, agree_names, first_seed, out=None):
@@ -308,8 +470,8 @@ def run(n, model_name, agree_names, first_seed, out=None):
         taps.append({"text": text, "votes": votes})
         return person.truth.get(text, "no")
     table = Table()
-    router = Router(table, {"said_yes": agree, "called_off": agree, "which_time": agree}, consensus=True,
-                    ask_user=person)
+    router = Router(table, {d: agree for d in ("is_meeting", "said_yes", "called_off", "which_time", "agreed_day", "agreed_time")},
+                    consensus=True, ask_user=person)
     rows = []
     for seed in range(first_seed, first_seed + n):
         files, truth = inbox(random.Random(seed))
@@ -317,82 +479,18 @@ def run(n, model_name, agree_names, first_seed, out=None):
         t0, used0 = _time.time(), dict(model.usage)
         answers, corrections = [], []
         for name in sorted(files):
-            msgs = M.split_thread(files[name])
-            shown = render(msgs)
-            last = msgs[-1]
-            key = ("me: " if M.mine([last], ME) else "them: ") + last["body"]
-            subject = re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I)
-            # the person knows their own threads: answers are keyed per decision of THIS thread, not by its title
-            person.truth = {}
-            def keyed(msg):
-                """A message as a table key: who wrote it, and its text with the meeting's name taken out, so one
-                answer about "cancel our lunch" also answers "cancel our coffee" (seen live: 9 taps, one per name)."""
-                body = re.sub(re.escape(subject), "<meeting>", msg["body"], flags=re.I) if subject else msg["body"]
-                for pattern in (DATE_RE, TIME_RE, LEN_RE):   # "move it to Thursday at 9" teaches "...to the 12th at 3"
-                    body = re.sub(pattern, "<when>", body, flags=re.I)
-                return ("me: " if M.mine([msg], ME) else "them: ") + body
             exp = truth["threads"][name]
-            if not M.mine(msgs, ME):
-                # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
-                agreed, tier = "no", "structure: I never wrote"
-            else:
-                # the agreement, split into its two smallest decisions (seen live: Nano answered the one big question
-                # "yes" for 9 cancellations and 3 declines; Super answered "no")
-                i_started = M.mine([msgs[0]], ME)
-                reply_at = next((k for k, m in enumerate(msgs) if k > 0 and bool(M.mine([m], ME)) != bool(i_started)), None)
-                if reply_at is None:
-                    agreed, tier = "no", "structure: nobody answered"
-                else:
-                    said = ("yes" if exp["scenario"] not in ("no",) else "no")
-                    person.truth[keyed(msgs[reply_at])] = said
-                    yes, tier = router.decide(
-                        "said_yes", keyed(msgs[reply_at]),
-                        # only the thread up to the answer: later messages (a move, "that doesn't work for me")
-                        # leaked into the answer when the whole thread was shown (seen live on Bee)
-                        f"Here is the start of an email thread. 'Me' is me.\n\n{render(msgs[:reply_at + 1])}\n\n"
-                        f"Does message {reply_at + 1} say yes to meeting?",
-                        ["yes", "no"])
-                    agreed = yes
-                    later = msgs[reply_at + 1:]
-                    if yes == "yes" and later:
-                        off_key = " / ".join(keyed(m) for m in later)
-                        person.truth[off_key] = "yes" if exp["scenario"] == "cancelled" else "no"
-                        off, tier2 = router.decide(
-                            "called_off", off_key,
-                            # the plain question: a 9B said "no" 4/4 to "did anyone call it off entirely? (asking to
-                            # move it is not...)" and "yes" 4/4 to this, on the same cancellation
-                            f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs the meeting cancelled?", ["yes", "no"])
-                        tier = f"{tier} + {tier2}"
-                        if off != "no":
-                            agreed = "no" if off == "yes" else None
-            a = {"file": name, "agreed": agreed == "yes", "day": "", "time": "", "length": "", "tier": tier}
-            if a["agreed"]:
-                within = proposals(msgs)
-                if len(within) > 1:
-                    # which proposal stands is its own decision (seen live: a 1.7B put "let's keep the original time"
-                    # on the proposed new day); the menus then come from that message only
-                    which, a["which_tier"] = router.decide(
-                        "which_time", ("me: " if M.mine([last], ME) else "them: ") + last["body"],
-                        f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nA time was proposed, and later a different "
-                        f"one. Which did we end up agreeing on?", ["the first proposal", "the latest proposal"])
-                    person.truth[("me: " if M.mine([last], ME) else "them: ") + last["body"]] = (
-                        "the first proposal" if truth["threads"][name]["scenario"] == "keep_original" else "the latest proposal")
-                    within = [within[0]] if which == "the first proposal" else [within[-1]]
-                schema = slot_form(msgs, within)
-                # a menu with one real option is not a decision: the harness fills it (seen live: a 1.7B wrote "Tuesday"
-                # three times when the only day on its menu was "tomorrow")
-                for key in list(schema["properties"]):
-                    real = [o for o in schema["properties"][key]["enum"] if o]
-                    if len(real) == 1:
-                        a[key] = real[0]
-                        del schema["properties"][key]
-                        schema["required"].remove(key)
-                if schema["properties"]:
-                    res = forms.fill_each(model, "Put the meeting agreed in this thread on my calendar.",
-                                          [(name, shown)], lambda n_, ans: schema)
-                    corrections += res["corrections"]
-                    if res["ok"]:
-                        a.update({k: res["answers"][0].get(k, "") for k in schema["properties"]})
+            def teach(d, opts, resolver, exp=exp):
+                if d == "agreed_day":
+                    return oracle(opts, resolver, (exp["slot"] or {}).get("date"))
+                if d == "agreed_time":
+                    return oracle(opts, resolver, (exp["slot"] or {}).get("start"))
+                if d == "which_time":
+                    return "the first proposal" if exp["scenario"] == "keep_original" else "the latest proposal"
+                return {"is_meeting": "yes", "said_yes": "no" if exp["scenario"] == "no" else "yes",
+                        "called_off": "yes" if exp["scenario"] == "cancelled" else "no"}[d]
+            a, more = decide_thread(name, files[name], router, model, person, teach)
+            corrections += more
             answers.append(a)
         ok, msg, produced = forms.run_pipeline(PIPELINE, {"threads": answers}, files)
         label = "refused"

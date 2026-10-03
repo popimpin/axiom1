@@ -451,3 +451,55 @@ replaced by <meeting>, and no freezing from a single model. Same seeds 101-120, 
   20 inboxes, **20/20, 29/29 asks, 0 taps**, 4.2 s per inbox (`2026-10-02_real_inbox_nebius_v3.json`). The
   models are not perfectly repeatable run to run (the split run's 3 taps were Nano misreadings that did not
   recur), so read 0 as "a handful at most", not a guarantee.
+
+## Real email: 50 Enron threads (MailEx), on Bee (2026-10-02)
+
+The calendar on real mail for the first time: 50 threads from MailEx (CC BY-SA 4.0), their dates recovered from the
+original Enron corpus, the final calendar state keyed by hand (`docs/data/mailex_calendar_key.json`, **read by
+Claude, not yet spot-checked by Adrian**). Same `decide_thread()` as the generated inbox; qwen3:1.7b fills slots,
+ornith:9b answers the yes/no decisions, temperature 0, thinking off. Scored by harm.
+`python examples/mailex_eval.py --model qwen3:1.7b --agree ornith:9b`
+
+| | v1 (first run) | **v7 (final)** |
+|---|---|---|
+| right | 40/50 | **43/50** |
+| **wrong meeting on the calendar** | 3 | **0** |
+| wrong time | 0 | **0** |
+| missed (should have been placed or asked) | 4 | 3 |
+| asked when it need not have | 3 | 4 |
+| taps (questions to the person) | 0 | 0 |
+
+What real mail has that the generated inbox did not, and what changed:
+- **Threads that mention a meeting without arranging one for me** (a notice sent for my boss, "IF they are free",
+  a meeting that already happened): a routed `is_meeting` decision, asked only of threads with a day or time in
+  them; a thread with none is settled by structure (23 of 50, zero model calls).
+- **The day and the time in different messages**: each is chosen from its own menu, with "not settled" as an
+  answer. "Which proposal stands" (first or latest) is asked only for an offer and one counter-offer: with three
+  or more, "the latest" was someone else's "I have a 10:00 AM meeting" and an unanswered "3 or 3:30?" (v6: 1 wrong
+  on the calendar, 1 wrong time).
+- **No stated length**: the meeting goes on with its end left blank, not a guessed length.
+- **The router passed off-menu answers through.** A frozen answer learned on one thread ("the 14th") was used on a
+  thread that never says it, and a model's "Tuesday" for the option "next Tuesday" landed a week early. Every
+  vote and every table hit is now checked against the current menu (`Router.on_menu`). The 0 wrong on the
+  calendar comes from this check: no `is_meeting` wording stopped v1's wrong placements.
+
+**The `is_meeting` wording was chosen on all 103 threads that reach it, not on a probe** (`examples/is_meeting_wording.py`,
+`2026-10-02_is_meeting_wording.json`):
+
+| wording | generated kept (must be yes) | real meetings kept | real "off" said no |
+|---|---|---|---|
+| **"Is this thread arranging a meeting or call that I will attend? (No if ...)"** | **76/76** | **8/8** | 9/19 |
+| "...trying to put something on my calendar..." | 65/76 (drops every forward) | 5/8 | 13/19 |
+| "...that I am being asked to go to?" | 68/76 (drops vague ones) | 4/8 | 14/19 |
+| "...that I might go to?" | 27/76 | 7/8 | 14/19 |
+
+Generated inbox on Bee, same code (10 inboxes, seed 1): **7/10, the same as before these changes** (v8 -> v13). The
+3 refuted are all the same 9B misreading: "I can't wait!" answered "no" to "does message 2 say yes?", 8 times out
+of 8 at temperature 0. Nemotron Super answers it correctly (the 20/20 runs above).
+
+**Runs not to quote:** mailex v2/v3 and real_inbox v9/v10 ran with thinking ON (Ollama's /v1 needs
+`AXIOM_THINKING_SWITCH=reasoning_effort`): the 9B spent its answer budget thinking and returned nothing, every
+empty vote went to the simulated person, who answers from the key, so v2/v3's 47/50 is inflated. v3/v10 also ran
+with half the edits applied. v4 (42/50, 0 wrong) and v5 (43/50, 0 wrong) are valid steps; v6 is the regression
+described above. A diagnosis drawn from the thinking-on runs ("meeting or call" drops appointments) was wrong too,
+which is how the wording table above came to be measured.

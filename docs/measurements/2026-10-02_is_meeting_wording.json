@@ -1,0 +1,3013 @@
+{
+ "model": "ornith:9b",
+ "cases": 103,
+ "wordings": {
+  "calendar": {
+   "question": "Is someone in this thread trying to put something on my calendar - a meeting, a call or an appointment?",
+   "score": {
+    "generated_yes": "65/76",
+    "real_meetings_kept": "5/8",
+    "real_off_said_no": "13/19",
+    "dropped": [
+     "1/threads/05.txt (forward)",
+     "2/threads/09.txt (no)",
+     "3/threads/03.txt (forward)",
+     "3/threads/09.txt (vague)",
+     "4/threads/10.txt (vague)",
+     "5/threads/07.txt (forward)",
+     "5/threads/08.txt (vague)",
+     "6/threads/02.txt (forward)",
+     "7/threads/04.txt (vague)",
+     "8/threads/07.txt (vague)",
+     "9/threads/01.txt (forward)",
+     "corman-s_inbox_archives142 (owner wants a 1-hour staff meeting tomorrow or Friday; avail)",
+     "shackleton-s_inbox677 (owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol)",
+     "wolfe-j_inbox436 (game night declined for tonight; owner: 'how about tomorrow?)"
+    ]
+   },
+   "rows": [
+    {
+     "set": "generated",
+     "id": "1/threads/01.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/05.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/06.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/08.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/07.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/03.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/04.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/07.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/10.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/01.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/03.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/07.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/08.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/10.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/02.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/03.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/10.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/03.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/04.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/05.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/06.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/07.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/10.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/02.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/03.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/05.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/07.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/01.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/04.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/10.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/01.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/02.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/03.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/04.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/05.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox216",
+     "kind": "drafting an agreement on Wednesday is a task, not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox288",
+     "kind": "a call that happened yesterday",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox_187",
+     "kind": "another person mentions an existing 9-10 meeting with the ow",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "corman-s_inbox_archives142",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "dasovich-j_inbox657",
+     "kind": "someone else's meeting on the 22nd",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "donoho-l_inbox_junk_file418",
+     "kind": "a meeting that already happened",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "giron-d_inbox393",
+     "kind": "'I'll call you later this morning' is not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "haedicke-m_inbox287",
+     "kind": "a meeting that already happened; 'I'll give you a call'",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox249",
+     "kind": "'How about 11:30 downstairs' after the owner's last message;",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox_118",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "kaminski-v_inbox21",
+     "kind": "owner: 'Let's meet at the hotel at 6:00 p.m.'; reply 'seeing",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "martin-t_inbox211",
+     "kind": "interviews Wed May 30 1-4 pm, 'please reserve this time'; ow",
+     "want": "no",
+     "got": null
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox201",
+     "kind": "'Tuesday' (sent Mon 2001-12-10); 'How about 9:30' - owner: '",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox_323",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox76",
+     "kind": "weather question",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox_52",
+     "kind": "owner calls off today's meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "shackleton-s_inbox677",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "smith-m_inbox425",
+     "kind": "no meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox58",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox6",
+     "kind": "dinner proposed; 'won't know my schedule until tomorrow'",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox99",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "tycholiz-b_inbox368",
+     "kind": "meetings being arranged by others",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox219",
+     "kind": "status report",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox471",
+     "kind": "cat show not settled",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox504",
+     "kind": "party probably skipped",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "white-s_inbox389",
+     "kind": "owner mentions an existing Friday meeting; nothing agreed in",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "wolfe-j_inbox436",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "want": "yes",
+     "got": "no"
+    }
+   ]
+  },
+  "meeting_or_call": {
+   "question": "Is this thread arranging a meeting or call that I will attend? (No if it already happened, it is someone else's, or nobody is actually setting one up.)",
+   "score": {
+    "generated_yes": "76/76",
+    "real_meetings_kept": "8/8",
+    "real_off_said_no": "9/19",
+    "dropped": []
+   },
+   "rows": [
+    {
+     "set": "generated",
+     "id": "1/threads/01.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/05.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/06.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/08.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/07.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/03.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/04.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/07.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/10.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/01.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/03.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/07.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/08.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/10.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/02.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/03.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/10.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/03.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/04.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/05.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/06.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/07.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/10.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/02.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/03.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/05.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/07.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/01.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/04.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/10.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/01.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/02.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/03.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/04.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/05.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox216",
+     "kind": "drafting an agreement on Wednesday is a task, not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox288",
+     "kind": "a call that happened yesterday",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox_187",
+     "kind": "another person mentions an existing 9-10 meeting with the ow",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "corman-s_inbox_archives142",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "dasovich-j_inbox657",
+     "kind": "someone else's meeting on the 22nd",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "donoho-l_inbox_junk_file418",
+     "kind": "a meeting that already happened",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "giron-d_inbox393",
+     "kind": "'I'll call you later this morning' is not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "haedicke-m_inbox287",
+     "kind": "a meeting that already happened; 'I'll give you a call'",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox249",
+     "kind": "'How about 11:30 downstairs' after the owner's last message;",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox_118",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "kaminski-v_inbox21",
+     "kind": "owner: 'Let's meet at the hotel at 6:00 p.m.'; reply 'seeing",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "martin-t_inbox211",
+     "kind": "interviews Wed May 30 1-4 pm, 'please reserve this time'; ow",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox201",
+     "kind": "'Tuesday' (sent Mon 2001-12-10); 'How about 9:30' - owner: '",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox_323",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox76",
+     "kind": "weather question",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox_52",
+     "kind": "owner calls off today's meeting",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "shackleton-s_inbox677",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "smith-m_inbox425",
+     "kind": "no meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox58",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox6",
+     "kind": "dinner proposed; 'won't know my schedule until tomorrow'",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox99",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "tycholiz-b_inbox368",
+     "kind": "meetings being arranged by others",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox219",
+     "kind": "status report",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox471",
+     "kind": "cat show not settled",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox504",
+     "kind": "party probably skipped",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "white-s_inbox389",
+     "kind": "owner mentions an existing Friday meeting; nothing agreed in",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "wolfe-j_inbox436",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "want": "yes",
+     "got": "yes"
+    }
+   ]
+  },
+  "asked_to_go": {
+   "question": "Is there something in this thread - a meeting, a call, an appointment or an event - that I am being asked to go to?",
+   "score": {
+    "generated_yes": "68/76",
+    "real_meetings_kept": "4/8",
+    "real_off_said_no": "14/19",
+    "dropped": [
+     "1/threads/09.txt (vague)",
+     "3/threads/09.txt (vague)",
+     "4/threads/10.txt (vague)",
+     "5/threads/08.txt (vague)",
+     "7/threads/04.txt (vague)",
+     "8/threads/07.txt (vague)",
+     "9/threads/07.txt (no_time)",
+     "10/threads/03.txt (no_time)",
+     "corman-s_inbox_archives142 (owner wants a 1-hour staff meeting tomorrow or Friday; avail)",
+     "kaminski-v_inbox21 (owner: 'Let's meet at the hotel at 6:00 p.m.'; reply 'seeing)",
+     "shackleton-s_inbox677 (owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol)",
+     "wolfe-j_inbox436 (game night declined for tonight; owner: 'how about tomorrow?)"
+    ]
+   },
+   "rows": [
+    {
+     "set": "generated",
+     "id": "1/threads/01.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/05.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/06.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/08.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/07.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/03.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/04.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/07.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/10.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/01.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/03.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/07.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/08.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/10.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/02.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/03.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/10.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/03.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/04.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/05.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/06.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/07.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/10.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/02.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/03.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/05.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/07.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/01.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/04.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/10.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/01.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/02.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/03.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/04.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/05.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox216",
+     "kind": "drafting an agreement on Wednesday is a task, not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox288",
+     "kind": "a call that happened yesterday",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox_187",
+     "kind": "another person mentions an existing 9-10 meeting with the ow",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "corman-s_inbox_archives142",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "dasovich-j_inbox657",
+     "kind": "someone else's meeting on the 22nd",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "donoho-l_inbox_junk_file418",
+     "kind": "a meeting that already happened",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "giron-d_inbox393",
+     "kind": "'I'll call you later this morning' is not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "haedicke-m_inbox287",
+     "kind": "a meeting that already happened; 'I'll give you a call'",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox249",
+     "kind": "'How about 11:30 downstairs' after the owner's last message;",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox_118",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "kaminski-v_inbox21",
+     "kind": "owner: 'Let's meet at the hotel at 6:00 p.m.'; reply 'seeing",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "martin-t_inbox211",
+     "kind": "interviews Wed May 30 1-4 pm, 'please reserve this time'; ow",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox201",
+     "kind": "'Tuesday' (sent Mon 2001-12-10); 'How about 9:30' - owner: '",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox_323",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox76",
+     "kind": "weather question",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox_52",
+     "kind": "owner calls off today's meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "shackleton-s_inbox677",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "smith-m_inbox425",
+     "kind": "no meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox58",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox6",
+     "kind": "dinner proposed; 'won't know my schedule until tomorrow'",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox99",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "tycholiz-b_inbox368",
+     "kind": "meetings being arranged by others",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox219",
+     "kind": "status report",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox471",
+     "kind": "cat show not settled",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox504",
+     "kind": "party probably skipped",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "white-s_inbox389",
+     "kind": "owner mentions an existing Friday meeting; nothing agreed in",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "wolfe-j_inbox436",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "want": "yes",
+     "got": "no"
+    }
+   ]
+  },
+  "might_go": {
+   "question": "Is this thread about a meeting, call, appointment or event that I might go to?",
+   "score": {
+    "generated_yes": "27/76",
+    "real_meetings_kept": "7/8",
+    "real_off_said_no": "14/19",
+    "dropped": [
+     "1/threads/01.txt (keep_original)",
+     "1/threads/04.txt (they_confirm)",
+     "1/threads/05.txt (forward)",
+     "1/threads/06.txt (cancelled)",
+     "1/threads/08.txt (no_time)",
+     "1/threads/09.txt (vague)",
+     "2/threads/03.txt (forward)",
+     "2/threads/04.txt (they_confirm)",
+     "2/threads/09.txt (no)",
+     "3/threads/02.txt (they_confirm)",
+     "3/threads/03.txt (forward)",
+     "3/threads/06.txt (yes)",
+     "3/threads/07.txt (moved)",
+     "3/threads/09.txt (vague)",
+     "3/threads/10.txt (cancelled)",
+     "4/threads/01.txt (group)",
+     "4/threads/02.txt (they_confirm)",
+     "4/threads/03.txt (cancelled)",
+     "4/threads/05.txt (keep_original)",
+     "4/threads/09.txt (no)",
+     "4/threads/10.txt (vague)",
+     "5/threads/03.txt (they_confirm)",
+     "5/threads/05.txt (keep_original)",
+     "5/threads/06.txt (yes)",
+     "5/threads/09.txt (yes)",
+     "5/threads/10.txt (no_time)",
+     "6/threads/02.txt (forward)",
+     "6/threads/03.txt (no)",
+     "6/threads/05.txt (keep_original)",
+     "6/threads/08.txt (no_time)",
+     "6/threads/09.txt (yes)",
+     "6/threads/10.txt (moved)",
+     "7/threads/04.txt (vague)",
+     "7/threads/05.txt (group)",
+     "7/threads/06.txt (moved)",
+     "8/threads/02.txt (no_time)",
+     "8/threads/04.txt (they_confirm)",
+     "8/threads/07.txt (vague)",
+     "8/threads/08.txt (yes)",
+     "8/threads/10.txt (keep_original)",
+     "9/threads/01.txt (forward)",
+     "9/threads/03.txt (yes)",
+     "9/threads/07.txt (no_time)",
+     "9/threads/08.txt (yes)",
+     "9/threads/10.txt (no)",
+     "10/threads/01.txt (moved)",
+     "10/threads/02.txt (cancelled)",
+     "10/threads/05.txt (no)",
+     "10/threads/09.txt (they_confirm)",
+     "wolfe-j_inbox436 (game night declined for tonight; owner: 'how about tomorrow?)"
+    ]
+   },
+   "rows": [
+    {
+     "set": "generated",
+     "id": "1/threads/01.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/05.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "1/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/06.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/08.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "2/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/03.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/07.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/09.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "3/threads/10.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/01.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/02.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/03.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/04.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/07.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/09.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "4/threads/10.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/01.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/03.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/06.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/07.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/08.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "5/threads/10.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/02.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/03.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/05.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/06.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "6/threads/10.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/03.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/04.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/05.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/06.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/07.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/08.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "7/threads/10.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/02.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/03.txt",
+     "kind": "group",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/04.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/05.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/07.txt",
+     "kind": "vague",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/09.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "8/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/01.txt",
+     "kind": "forward",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/03.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/04.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/07.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/08.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "9/threads/10.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/01.txt",
+     "kind": "moved",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/02.txt",
+     "kind": "cancelled",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/03.txt",
+     "kind": "no_time",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/04.txt",
+     "kind": "yes",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/05.txt",
+     "kind": "no",
+     "want": "yes",
+     "got": "no"
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/09.txt",
+     "kind": "they_confirm",
+     "want": "yes",
+     "got": null
+    },
+    {
+     "set": "generated",
+     "id": "10/threads/10.txt",
+     "kind": "keep_original",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox216",
+     "kind": "drafting an agreement on Wednesday is a task, not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox288",
+     "kind": "a call that happened yesterday",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "blair-l_inbox_187",
+     "kind": "another person mentions an existing 9-10 meeting with the ow",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "corman-s_inbox_archives142",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "dasovich-j_inbox657",
+     "kind": "someone else's meeting on the 22nd",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "donoho-l_inbox_junk_file418",
+     "kind": "a meeting that already happened",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "giron-d_inbox393",
+     "kind": "'I'll call you later this morning' is not a meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "haedicke-m_inbox287",
+     "kind": "a meeting that already happened; 'I'll give you a call'",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox249",
+     "kind": "'How about 11:30 downstairs' after the owner's last message;",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "heard-m_inbox_118",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "kaminski-v_inbox21",
+     "kind": "owner: 'Let's meet at the hotel at 6:00 p.m.'; reply 'seeing",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "martin-t_inbox211",
+     "kind": "interviews Wed May 30 1-4 pm, 'please reserve this time'; ow",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox201",
+     "kind": "'Tuesday' (sent Mon 2001-12-10); 'How about 9:30' - owner: '",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "rapp-b_inbox_323",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox76",
+     "kind": "weather question",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "reitmeyer-j_inbox_52",
+     "kind": "owner calls off today's meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "shackleton-s_inbox677",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "smith-m_inbox425",
+     "kind": "no meeting",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox58",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox6",
+     "kind": "dinner proposed; 'won't know my schedule until tomorrow'",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "steffes-j_inbox99",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "want": "yes",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "tycholiz-b_inbox368",
+     "kind": "meetings being arranged by others",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox219",
+     "kind": "status report",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox471",
+     "kind": "cat show not settled",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "watson-k_inbox504",
+     "kind": "party probably skipped",
+     "want": "no",
+     "got": "no"
+    },
+    {
+     "set": "real",
+     "id": "white-s_inbox389",
+     "kind": "owner mentions an existing Friday meeting; nothing agreed in",
+     "want": "no",
+     "got": "yes"
+    },
+    {
+     "set": "real",
+     "id": "wolfe-j_inbox436",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "want": "yes",
+     "got": "no"
+    }
+   ]
+  }
+ }
+}

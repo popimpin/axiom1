@@ -13,6 +13,43 @@ applies one rule to everything that passes through it:
 - **A "done" is a claim until the server checks it.** Agents can only *declare*. `witnessed` and
   `refuted` are written by the server alone. No agent-facing call takes a label.
 
+## Reading is not obeying
+
+The hardest problem in running several agents together isn't any single task. **An agent has to be
+able to read old instructions without acting on them.** Shared memory is full of instructions: a
+handoff that says "next, do X", another agent's message, a note an agent left for itself last week.
+In most shared-memory setups, whatever an agent reads can steer it, so one agent's stale or wrong
+note becomes every agent's next action.
+
+In Axiom-1, **no agent can poison what the others know**. That holds by design:
+
+- What an agent writes is stored as what it *said*, with who said it. It never becomes what is *true*.
+  A fact carries the check that proved it (`[fixed]`, `[no regression]`), and only the server can
+  attach that.
+- A message counts as received only when the recipient echoes its sha256, so nothing is acted on
+  secondhand or altered.
+- A correction replaces the entry it corrects. A superseded result can't still be lying in memory,
+  waiting to instruct the next agent.
+
+This comes from daily work. Two agents, Claude and Gemini ("agy"), build together and read each
+other's notes all day. Their real false "done"s are what Axiom-1 was built to stop:
+- a bridge that reported `ok` after typing into the wrong window;
+- "13/13 witnessed paint" that had read 0 pixels;
+- a green push that silently left out a file.
+
+Each was caught by a person or another agent checking by hand. Axiom-1 makes that check the
+server's job.
+
+What the design does **not** do yet:
+- **It can't stop a model being steered by what it reads.** The server decides what is *true*, but a
+  peer's message is still text in the reading model's context. A persuasive "do X next" can change
+  what that model *does*, even though it can't change what is recorded as fact. Peer messages and
+  memory are not yet passed to the model fenced off as untrusted data. That's on the roadmap. Until
+  then, the guarantee is about knowledge, not behaviour. Any action an agent takes on bad advice
+  still has to pass a check before anyone else believes it.
+- **It can't stop an agent misreading its *own* earlier work**, such as a stale "tests pass" or a run
+  command missing a flag. An agent's own earlier output is a claim until a check confirms it.
+
 ## How a claim is checked: fail before, pass after
 
 A claim says "commit AFTER fixes what was wrong at commit BEFORE". The server runs a check a

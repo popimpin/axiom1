@@ -105,7 +105,7 @@ def main():
                 # the proposal that names the keyed day or time; with neither keyed, the latest stands
                 return next((o for o in opts if {e.get("date"), e.get("start")} & resolver(o) - {None}),
                             "the latest proposal")
-            yes = e["expect"] in ("on", "ask")
+            yes = e["expect"] in ("on", "ask", "follow_up", "invite")
             return {"is_meeting": "yes" if yes else "no", "said_yes": "yes" if yes else "no",
                     "called_off": "no" if yes else "yes"}[dec]
         t0 = _time.time()

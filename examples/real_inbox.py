@@ -115,6 +115,7 @@ def inbox(rng):
             th.add(me, rng.choice(NO))
         elif sc == "no_reply":
             th.add(them, f"Would {phrase} at {t} work for {topic.lower()}? {length.capitalize()}.")
+            asks.append(f"threads/{i:02d}.txt")      # invited, never answered in email: follow-up (Adrian, 2026-10-03)
         elif sc == "moved":
             th.add(them, f"Can we do {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
             th.add(me, rng.choice(YES))
@@ -162,6 +163,7 @@ def inbox(rng):
             other = rng.choice([p for p in PEOPLE if p != them])
             th.add(them, f"Hi all - {topic.lower()} {phrase} at {t}? {length.capitalize()}.")
             th.add(other, "Works for me!")
+            asks.append(f"threads/{i:02d}.txt")      # invited with the group, never answered: follow-up
         elif sc == "newsletter":
             th.subject = "Webinar: Spring savings"
             th.add(("Deals Weekly", "news@deals.example"), f"Join our free webinar {phrase} at {t}! Spaces are "
@@ -213,7 +215,12 @@ def render(messages):
 TIME_RE = r"\b\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)(?![a-z])|\b\d{1,2}:\d{2}\b|\bnoon\b"
 DATE_RE = (r"\b(?:next |this )?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:,? (?:january|february|"
            r"march|april|may|june|july|august|september|october|november|december) \d{1,2})?\b|\bthe \d{1,2}(?:st|nd|rd|th)\b"
-           r"|\btomorrow\b|\bsometime next week\b")
+           r"|\btomorrow\b|\bsometime next week\b"
+           # real mail names dates by month and by number ("July 18th", "Nov. 13", "11/20"); the date engine already
+           # resolved them, but this detector did not see them (seen in whole Enron mailboxes, 2026-10-03)
+           r"|\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?"
+           r"|nov(?:ember)?|dec(?:ember)?)\.? \d{1,2}(?:st|nd|rd|th)?\b(?!:)"
+           r"|\b(?:1[0-2]|0?[1-9])/(?:3[01]|[12]\d|0?[1-9])(?:/(?:\d{4}|\d{2}))?\b(?! ?(?:hour|hr|of|cup|mile))")
 LEN_RE = r"\babout an hour\b|\babout \d+ minutes\b|\b\d+ minutes\b|\ban hour\b|\bsame length\b"
 # The arranging moved to a phone call. Part of why AI misreads email so badly (Adrian, 2026-10-03): a call breaks the
 # timeline. What was decided on it never comes back into the thread, which then reads as unfinished, or picks up
@@ -233,6 +240,11 @@ def hands_off(m):
     """This message moves the arranging to a phone call."""
     return bool(re.search(HANDOFF_RE, m["body"], re.I)) and any(
         re.search(p, m["body"], re.I) for p in (SCHED_RE, DATE_RE, TIME_RE))
+
+
+def email_date(phrase):
+    """'Nov. 13' -> 'Nov 13': the date engine reads a month without its abbreviation dot."""
+    return re.sub(r"^([A-Za-z]{3,4})\.\s", r"\1 ", phrase or "")
 
 
 def email_time(phrase):
@@ -274,7 +286,7 @@ def resolve_option(messages, key, option):
         option, next((x for x in reversed(messages) if option.lower() in x["body"].lower()), None))
     try:
         if key == "day":
-            return T.resolve_date(phrase, M.sent_on(holder["date"]))
+            return T.resolve_date(email_date(phrase), M.sent_on(holder["date"]))
         if key == "time":
             return T.parse_time(email_time(phrase))
     except Exception:
@@ -322,6 +334,11 @@ for t in entry["threads"]:
             # nothing agreed in writing, and the thread went to a call: open-ended, so it goes in "follow-up needed"
             asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
                          "kind": "follow_up", "why": CALL, "missing": ["what was decided on the call"], "tentative": {}})
+        elif t.get("invited"):
+            # invited, and I never answered in email: probably answered by a calendar click or a call
+            asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
+                         "kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click",
+                         "missing": ["whether I am going"], "tentative": {}})
         continue
     def pick(v):
         if not v:
@@ -343,7 +360,7 @@ for t in entry["threads"]:
     tentative = {}
     try:
         if day:
-            tentative["date"] = time.resolve_date(day, mail.sent_on(dm["date"]))
+            tentative["date"] = time.resolve_date(re.sub(r"^([A-Za-z]{3,4})\.\s", r"\1 ", day), mail.sent_on(dm["date"]))
         if tm:
             tentative["start"] = time.parse_time(EMAIL_TIME(tm))
     except Exception:
@@ -404,27 +421,29 @@ def decide_thread(name, text, router, model, person, teach):
     if not handoff and not any(re.search(pat, m["body"], re.I) for m in msgs for pat in (DATE_RE, TIME_RE)):
         return {**blank, "tier": "structure: no day or time anywhere"}, corrections
     confirm = []      # decisions nobody could make: a disagreement with no person to ask (production)
-    if M.mine(msgs, ME):
-        # real mail: most threads that mention a meeting are not arranging one for me (seen on Enron: a notice sent for
-        # my boss, "IF they are free we'll meet", a meeting that already happened)
-        mtg_key = "meeting? " + keyed(msgs[0])
-        person.truth[mtg_key] = teach("is_meeting", None, None)
-        is_mtg, mtg_tier = router.decide(
-            # chosen on all 103 threads that reach it, not on one probe (examples/is_meeting_wording.py): this wording
-            # kept 76/76 generated + 8/8 real meetings; "put something on my calendar" dropped every forwarded invite
-            # (read literally), "asked to go to" dropped vague ones. The car-service drops blamed on it were a run
-            # with thinking on (docs/measurements/2026-10-02_is_meeting_wording.json)
-            "is_meeting", mtg_key, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs this thread arranging a "
-            f"meeting or call that I will attend? (No if it already happened, it is someone else's, or nobody is "
-            f"actually setting one up.)", ["yes", "no"])
-        if is_mtg is None:
-            # undecided is not "no": a dropped thread is a meeting nobody hears about. Carry on, held for confirmation
-            confirm.append("whether this thread is arranging a meeting for me")
-        elif is_mtg != "yes":
-            return {**blank, "tier": f"is_meeting {mtg_tier}"}, corrections
+    # asked of every thread that names a day or time, mine or not (Adrian, 2026-10-03: an invitation I never
+    # answered goes to follow-up). Real mail: most threads that mention a meeting are not arranging one for me
+    # (seen on Enron: a notice sent for my boss, "IF they are free we'll meet", a meeting that already happened)
+    mtg_key = "meeting? " + keyed(msgs[0])
+    person.truth[mtg_key] = teach("is_meeting", None, None)
+    is_mtg, mtg_tier = router.decide(
+        # chosen on all 103 threads that reach it, not on one probe (examples/is_meeting_wording.py): this wording
+        # kept 76/76 generated + 8/8 real meetings; "put something on my calendar" dropped every forwarded invite
+        # (read literally), "asked to go to" dropped vague ones. The car-service drops blamed on it were a run
+        # with thinking on (docs/measurements/2026-10-02_is_meeting_wording.json)
+        "is_meeting", mtg_key, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs this thread arranging a "
+        f"meeting or call that I will attend? (No if it already happened, it is someone else's, or nobody is "
+        f"actually setting one up.)", ["yes", "no"])
+    if is_mtg is None:
+        # undecided is not "no": a dropped thread is a meeting nobody hears about. Carry on, held for confirmation
+        confirm.append("whether this thread is arranging a meeting for me")
+    elif is_mtg != "yes":
+        return {**blank, "tier": f"is_meeting {mtg_tier}"}, corrections
     if not M.mine(msgs, ME):
-        # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
-        agreed, tier = "no", "structure: I never wrote"
+        # I never wrote, and it is a meeting for me: an invitation I never answered in email. Not agreed (seen live:
+        # a 9B read someone ELSE's "Works for me!" as my agreement), so never on the calendar: follow-up instead,
+        # because the answer was probably a calendar click or a call
+        return {**blank, "invited": True, "tier": f"invited: is_meeting {mtg_tier}", "confirm": confirm}, corrections
     else:
         # the agreement, split into its two smallest decisions (seen live: Nano answered the one big question
         # "yes" for 9 cancellations and 3 declines; Super answered "no")
@@ -554,7 +573,8 @@ def run(n, model_name, agree_names, first_seed, out=None):
                     return oracle(opts, resolver, (exp["slot"] or {}).get("start"))
                 if d == "which_time":
                     return "the first proposal" if exp["scenario"] == "keep_original" else "the latest proposal"
-                return {"is_meeting": "yes", "said_yes": "no" if exp["scenario"] == "no" else "yes",
+                return {"is_meeting": "no" if exp["scenario"] == "newsletter" else "yes",
+                        "said_yes": "no" if exp["scenario"] == "no" else "yes",
                         "called_off": "yes" if exp["scenario"] == "cancelled" else "no"}[d]
             a, more = decide_thread(name, files[name], router, model, person, teach)
             corrections += more

@@ -37,7 +37,7 @@ def run_thread(name, text, router, model):
     t0 = _time.time()
     answer, _ = R.decide_thread(name, text, router, model, person, teach)
     row = {"thread": name, "tier": answer.get("tier"), "got": "off", "placed": None, "reminder": None}
-    if answer.get("agreed") or answer.get("handoff"):
+    if answer.get("agreed") or answer.get("handoff") or answer.get("invited"):
         ok, msg, produced = forms.run_pipeline(R.PIPELINE, {"threads": [answer], "open_end": True}, {name: text})
         if ok:
             cal = list(csv.DictReader(io.StringIO(produced.get("calendar.csv", ""))))

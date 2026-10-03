@@ -604,3 +604,26 @@ reminders not needed are the 3 Adrian ruled "nothing", each from a single model'
 3,331 messages -> 2,130 threads; **76% need no model call at all** (no day or time named, or I am not in it); 508
 threads would reach the first yes/no question. Loader `examples/mailbox.py`, runner `examples/mailbox_run.py`
 (resumable; production mode: no key, no stand-in person, an undecided decision becomes "confirm").
+
+## Dates as real mail writes them, and invitations nobody answered (2026-10-03)
+
+- **Dates by month and by number** ("July 18th", "Nov. 13", "11/20"): the date engine already resolved them, but
+  the detector did not see them. Found in whole Enron mailboxes. "1/2 hour" and "1/2 of the volume" stay ignored;
+  a past date is refused, not guessed.
+- **Invitations never answered in email go to follow-up** (Adrian's call): "is this a meeting for me?" is now
+  asked of every thread that names a day or time, mine or not. Mine and agreed -> the calendar path as before; not
+  mine but a meeting for me -> follow-up needed ("invited, no reply in email - probably answered on a call or by a
+  calendar click"). Never on the calendar: I did not agree in writing. In the generated inbox, an unanswered
+  invitation and a group invitation I stayed silent on are now follow-ups; the newsletter stays filed.
+
+Same 50 threads, Bee (`2026-10-03_mailex_bee_v11.json`): **0 wrong on the calendar, 0 wrong holds, 0 in the wrong
+section**; 43/50 right (was 45). The 2 new misses are the rule's own cost, both threads the owner never wrote in
+that the 9B read as an invitation for him: family plans he was not part of, and an invitation already declined on
+his behalf (by an assistant). Generated inbox: 7/10 (`2026-10-03_real_inbox_bee_v17.json`), the same three "I can't
+wait!" misses; every unanswered and group-invite scenario lands in follow-up.
+
+**Whole mailboxes (structure, deduplicated):** five employees, 9,124 threads, **82.7% need no model call**. Lay
+(CEO) 90.7%, Haedicke (general counsel) 87.2%, Giron (trading) 79.2%, Heard 75.1%, Steffes (regulatory) 74.6%. The
+CEO's sent mail is written by his assistant. Two loader fixes the numbers depended on: Enron files one email in
+`all_documents` and `sent` under different message ids (1,345 duplicate pairs in Haedicke alone), and keeping only
+one copy flipped the owner to another alias (his own threads 343 -> 49) - every folder a copy was filed in is kept.

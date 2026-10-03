@@ -34,12 +34,32 @@ QUOTE = re.compile(r"^\s*-{3,}\s*Original Message\s*-{3,}|^\s*-{5,}\s*Forwarded 
 PREFIX = re.compile(r"^\s*(?:(?:re|fwd?|fw)\s*:\s*)+", re.I)
 
 
+def one_copy(msgs):
+    """The same email filed in two folders (all_documents and sent) carries two different message ids: seen on
+    Haedicke, 1,345 of 1,462 two-message "threads" were one email twice. One copy per sender + time + body.
+    A date before 1997 is a broken header (1980-01-01 appears), so it is unknown, not ancient."""
+    # every folder a copy was filed in is kept: the owner is read from the sent folder, and keeping only the
+    # all_documents copy flipped Haedicke's owner to another alias (343 -> 49 threads "mine")
+    seen, out = {}, []
+    for m in msgs:
+        if m["date"] and m["date"] < "1997":
+            m = {**m, "date": None}
+        k = (m["from"], m["date"], re.sub(r"\s+", " ", m["body"]).strip()[:400])
+        if k in seen:
+            seen[k]["folders"].append(m["folder"])
+            continue
+        m = {**m, "folders": [m["folder"]]}
+        seen[k] = m
+        out.append(m)
+    return out
+
+
 def load(box):
     """Every message in one mailbox, one copy each, cached as JSON (reading the corpus takes a while)."""
     CACHE.mkdir(parents=True, exist_ok=True)
     cached = CACHE / f"{box}.json"
     if cached.exists():
-        return json.loads(cached.read_text(encoding="utf-8"))
+        return one_copy(json.loads(cached.read_text(encoding="utf-8")))
     import pyarrow.compute as pc
     import pyarrow.parquet as pq
     rows = []
@@ -57,12 +77,12 @@ def load(box):
                     "date": r["date"].astimezone(timezone.utc).isoformat() if r["date"] else None})
     out.sort(key=lambda m: m["date"] or "")
     cached.write_text(json.dumps(out), encoding="utf-8")
-    return out
+    return one_copy(out)
 
 
 def owner_of(msgs):
     """The address the sent folder is sent from."""
-    sent = collections.Counter(m["from"] for m in msgs if "sent" in m["folder"])
+    sent = collections.Counter(m["from"] for m in msgs if any("sent" in f for f in m.get("folders", [m["folder"]])))
     return sent.most_common(1)[0][0] if sent else None
 
 

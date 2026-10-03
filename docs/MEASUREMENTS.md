@@ -536,3 +536,43 @@ Same 50 threads, Bee, `2026-10-03_mailex_bee_v8.json`:
   anything), but noise; the pattern should require the call to be about the arranging. Some keyed "off" may
   honestly be reminders (blair-l_inbox_66: dates offered, then "give me a call") - the key is Adrian's to revise.
 - Generated inbox unchanged: 7/10 (`2026-10-03_real_inbox_bee_v14.json`), the same three "I can't wait!" misses.
+
+## Sign-offs, "3:00", and a gate that failed (2026-10-03)
+
+Two fixes, same 50 threads, Bee (`2026-10-03_mailex_bee_v9.json`):
+- **A call counts as a hand-off only when it is part of the arranging**: the same message names a day or time or
+  talks about meeting. The three sign-offs ("If you have any questions, please do not hesitate to give me a call")
+  no longer make reminders; ybarbo is still caught.
+- **A bare "3:00" in email is 3 in the afternoon** (hours 1-6 without am/pm). It had been held as 03:00.
+
+| | v8 | **v9** |
+|---|---|---|
+| right | 40 | **43** |
+| wrong meeting on the calendar | 0 | **0** |
+| hold on the wrong day | 0 | **0** |
+| missed | 2 | 2 |
+| reminder not needed | 8 | **5** |
+
+Generated inbox unchanged: 7/10 (`2026-10-03_real_inbox_bee_v15.json`).
+
+**Tried and rejected: a model gate before every reminder ("is anything left for me to do?").** Asked of 23
+threads that need a reminder and 5 that do not (`examples/followup_wording.py`, `2026-10-03_followup_wording.json`),
+the 9B kept **0/23** with "still waiting on me" and "something I need to do", 9/23 with "still being arranged". It
+says "no" to nearly everything: whether something is owed is an obligation judgement, not a reading of the email,
+and the gate would silently lose real meetings. The 5 needless reminders left come from one model's "is this a
+meeting?" or "was it called off?"; the fix for that is a second model (Nano and Super must agree, else the person),
+not another question to the same one.
+
+## Filed, and a timeline (2026-10-03)
+
+Every thread is now filed whole (folder = its topic without Re:/Fwd:, or the people in it), and every message is an
+event: a day or time named, a hand-off to a call (a gap: what was decided there is not in the email), or anything
+else. The outcome sits at the end with the receipt of what decided it. No model in this path
+(`examples/inbox_timeline.py`, tests 7/7; with the hand-off check sabotaged, 2 go red).
+
+On the 50 threads with v9's outcomes: **37 filed and nothing more**, 11 reminders, 2 on the calendar, 5 call gaps.
+Every folder holds one thread here, because MailEx draws each thread from a different mailbox; grouping by topic
+needs one person's inbox.
+
+The page: `web/timeline/` (3D; depth is when a thread started, left to right is time inside it, a call is a break
+in the line). Measured with the lint engine's own script at 360/768/1280/1920 px: 0 findings, 0 contrast failures.

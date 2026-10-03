@@ -1,0 +1,615 @@
+{
+ "model": "ornith:9b",
+ "cases": 28,
+ "wordings": {
+  "waiting_on_me": {
+   "question": "Is anyone in this thread still waiting on me - to settle a day or time, to reply, or to confirm?",
+   "score": {
+    "kept": "0/23",
+    "quieted": "4/5",
+    "lost": [
+     "1/threads/08.txt (no_time)",
+     "1/threads/09.txt (vague)",
+     "2/threads/06.txt (vague)",
+     "2/threads/07.txt (no_time)",
+     "3/threads/09.txt (vague)",
+     "4/threads/04.txt (no_time)",
+     "4/threads/10.txt (vague)",
+     "5/threads/08.txt (vague)",
+     "5/threads/10.txt (no_time)",
+     "6/threads/08.txt (no_time)",
+     "7/threads/04.txt (vague)",
+     "7/threads/08.txt (no_time)",
+     "8/threads/02.txt (no_time)",
+     "8/threads/07.txt (vague)",
+     "9/threads/07.txt (no_time)",
+     "10/threads/03.txt (no_time)",
+     "corman-s_inbox_archives142 (owner wants a 1-hour staff meeting tomorrow or Friday; avail)",
+     "shackleton-s_inbox677 (owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol)",
+     "steffes-j_inbox58 (call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun)",
+     "steffes-j_inbox99 (owner: 'Let's sit down on Thursday am'; 'Thursday works for )",
+     "ybarbo-p_inbox214 (a June meeting agreed in principle; dates to be proposed)",
+     "rapp-b_inbox_323 (call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f)",
+     "wolfe-j_inbox436 (game night declined for tonight; owner: 'how about tomorrow?)"
+    ],
+    "still_reminds": [
+     "watson-k_inbox471"
+    ]
+   },
+   "rows": [
+    {
+     "id": "1/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "1/threads/09.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "2/threads/06.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "2/threads/07.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "3/threads/09.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "4/threads/04.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "4/threads/10.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "5/threads/08.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "5/threads/10.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "6/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "7/threads/04.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "7/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "8/threads/02.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "8/threads/07.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "9/threads/07.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "10/threads/03.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "corman-s_inbox_archives142",
+     "want": "yes",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "got": "no"
+    },
+    {
+     "id": "shackleton-s_inbox677",
+     "want": "yes",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "got": "no"
+    },
+    {
+     "id": "steffes-j_inbox58",
+     "want": "yes",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "got": null
+    },
+    {
+     "id": "steffes-j_inbox99",
+     "want": "yes",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "got": "no"
+    },
+    {
+     "id": "ybarbo-p_inbox214",
+     "want": "yes",
+     "kind": "a June meeting agreed in principle; dates to be proposed",
+     "got": "no"
+    },
+    {
+     "id": "rapp-b_inbox_323",
+     "want": "yes",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "got": null
+    },
+    {
+     "id": "wolfe-j_inbox436",
+     "want": "yes",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "got": "no"
+    },
+    {
+     "id": "heard-m_inbox_118",
+     "want": "no",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "got": "no"
+    },
+    {
+     "id": "reitmeyer-j_inbox_52",
+     "want": "no",
+     "kind": "owner calls off today's meeting",
+     "got": "no"
+    },
+    {
+     "id": "tycholiz-b_inbox368",
+     "want": "no",
+     "kind": "meetings being arranged by others",
+     "got": "no"
+    },
+    {
+     "id": "watson-k_inbox471",
+     "want": "no",
+     "kind": "cat show not settled",
+     "got": null
+    },
+    {
+     "id": "blair-l_inbox_66",
+     "want": "no",
+     "kind": "owner offers three slots; no answer",
+     "got": "no"
+    }
+   ]
+  },
+  "left_to_do": {
+   "question": "Is there still something I need to do about this meeting - settle a day or time, reply, or confirm it?",
+   "score": {
+    "kept": "0/23",
+    "quieted": "3/5",
+    "lost": [
+     "1/threads/08.txt (no_time)",
+     "1/threads/09.txt (vague)",
+     "2/threads/06.txt (vague)",
+     "2/threads/07.txt (no_time)",
+     "3/threads/09.txt (vague)",
+     "4/threads/04.txt (no_time)",
+     "4/threads/10.txt (vague)",
+     "5/threads/08.txt (vague)",
+     "5/threads/10.txt (no_time)",
+     "6/threads/08.txt (no_time)",
+     "7/threads/04.txt (vague)",
+     "7/threads/08.txt (no_time)",
+     "8/threads/02.txt (no_time)",
+     "8/threads/07.txt (vague)",
+     "9/threads/07.txt (no_time)",
+     "10/threads/03.txt (no_time)",
+     "corman-s_inbox_archives142 (owner wants a 1-hour staff meeting tomorrow or Friday; avail)",
+     "shackleton-s_inbox677 (owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol)",
+     "steffes-j_inbox58 (call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun)",
+     "steffes-j_inbox99 (owner: 'Let's sit down on Thursday am'; 'Thursday works for )",
+     "ybarbo-p_inbox214 (a June meeting agreed in principle; dates to be proposed)",
+     "rapp-b_inbox_323 (call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f)",
+     "wolfe-j_inbox436 (game night declined for tonight; owner: 'how about tomorrow?)"
+    ],
+    "still_reminds": [
+     "heard-m_inbox_118",
+     "blair-l_inbox_66"
+    ]
+   },
+   "rows": [
+    {
+     "id": "1/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "1/threads/09.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "2/threads/06.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "2/threads/07.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "3/threads/09.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "4/threads/04.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "4/threads/10.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "5/threads/08.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "5/threads/10.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "6/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "7/threads/04.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "7/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "8/threads/02.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "8/threads/07.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "9/threads/07.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "10/threads/03.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "corman-s_inbox_archives142",
+     "want": "yes",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "got": "no"
+    },
+    {
+     "id": "shackleton-s_inbox677",
+     "want": "yes",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "got": null
+    },
+    {
+     "id": "steffes-j_inbox58",
+     "want": "yes",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "got": "no"
+    },
+    {
+     "id": "steffes-j_inbox99",
+     "want": "yes",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "got": "no"
+    },
+    {
+     "id": "ybarbo-p_inbox214",
+     "want": "yes",
+     "kind": "a June meeting agreed in principle; dates to be proposed",
+     "got": "no"
+    },
+    {
+     "id": "rapp-b_inbox_323",
+     "want": "yes",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "got": "no"
+    },
+    {
+     "id": "wolfe-j_inbox436",
+     "want": "yes",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "got": "no"
+    },
+    {
+     "id": "heard-m_inbox_118",
+     "want": "no",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "got": null
+    },
+    {
+     "id": "reitmeyer-j_inbox_52",
+     "want": "no",
+     "kind": "owner calls off today's meeting",
+     "got": "no"
+    },
+    {
+     "id": "tycholiz-b_inbox368",
+     "want": "no",
+     "kind": "meetings being arranged by others",
+     "got": "no"
+    },
+    {
+     "id": "watson-k_inbox471",
+     "want": "no",
+     "kind": "cat show not settled",
+     "got": "no"
+    },
+    {
+     "id": "blair-l_inbox_66",
+     "want": "no",
+     "kind": "owner offers three slots; no answer",
+     "got": "yes"
+    }
+   ]
+  },
+  "still_arranging": {
+   "question": "Is a meeting that I am going to still being arranged in this thread?",
+   "score": {
+    "kept": "9/23",
+    "quieted": "2/5",
+    "lost": [
+     "1/threads/08.txt (no_time)",
+     "1/threads/09.txt (vague)",
+     "2/threads/06.txt (vague)",
+     "3/threads/09.txt (vague)",
+     "4/threads/10.txt (vague)",
+     "5/threads/08.txt (vague)",
+     "5/threads/10.txt (no_time)",
+     "6/threads/08.txt (no_time)",
+     "7/threads/04.txt (vague)",
+     "7/threads/08.txt (no_time)",
+     "8/threads/02.txt (no_time)",
+     "8/threads/07.txt (vague)",
+     "9/threads/07.txt (no_time)",
+     "10/threads/03.txt (no_time)"
+    ],
+    "still_reminds": [
+     "reitmeyer-j_inbox_52",
+     "tycholiz-b_inbox368",
+     "blair-l_inbox_66"
+    ]
+   },
+   "rows": [
+    {
+     "id": "1/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "1/threads/09.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "2/threads/06.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "2/threads/07.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "yes"
+    },
+    {
+     "id": "3/threads/09.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "4/threads/04.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "yes"
+    },
+    {
+     "id": "4/threads/10.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "5/threads/08.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "5/threads/10.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "6/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "7/threads/04.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "7/threads/08.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "8/threads/02.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "8/threads/07.txt",
+     "want": "yes",
+     "kind": "vague",
+     "got": "no"
+    },
+    {
+     "id": "9/threads/07.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "10/threads/03.txt",
+     "want": "yes",
+     "kind": "no_time",
+     "got": "no"
+    },
+    {
+     "id": "corman-s_inbox_archives142",
+     "want": "yes",
+     "kind": "owner wants a 1-hour staff meeting tomorrow or Friday; avail",
+     "got": "yes"
+    },
+    {
+     "id": "shackleton-s_inbox677",
+     "want": "yes",
+     "kind": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absol",
+     "got": "yes"
+    },
+    {
+     "id": "steffes-j_inbox58",
+     "want": "yes",
+     "kind": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they coun",
+     "got": "yes"
+    },
+    {
+     "id": "steffes-j_inbox99",
+     "want": "yes",
+     "kind": "owner: 'Let's sit down on Thursday am'; 'Thursday works for ",
+     "got": "yes"
+    },
+    {
+     "id": "ybarbo-p_inbox214",
+     "want": "yes",
+     "kind": "a June meeting agreed in principle; dates to be proposed",
+     "got": "yes"
+    },
+    {
+     "id": "rapp-b_inbox_323",
+     "want": "yes",
+     "kind": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks f",
+     "got": "yes"
+    },
+    {
+     "id": "wolfe-j_inbox436",
+     "want": "yes",
+     "kind": "game night declined for tonight; owner: 'how about tomorrow?",
+     "got": "yes"
+    },
+    {
+     "id": "heard-m_inbox_118",
+     "want": "no",
+     "kind": "owner sends a meeting notice for someone else; the invitee d",
+     "got": "no"
+    },
+    {
+     "id": "reitmeyer-j_inbox_52",
+     "want": "no",
+     "kind": "owner calls off today's meeting",
+     "got": "yes"
+    },
+    {
+     "id": "tycholiz-b_inbox368",
+     "want": "no",
+     "kind": "meetings being arranged by others",
+     "got": "yes"
+    },
+    {
+     "id": "watson-k_inbox471",
+     "want": "no",
+     "kind": "cat show not settled",
+     "got": "no"
+    },
+    {
+     "id": "blair-l_inbox_66",
+     "want": "no",
+     "kind": "owner offers three slots; no answer",
+     "got": null
+    }
+   ]
+  }
+ }
+}

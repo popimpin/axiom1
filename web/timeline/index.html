@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Axiom-1 Inbox Timeline</title>
+<style>
+  @font-face { font-family: "Space Grotesk"; src: url("fonts/space-grotesk-var.woff2") format("woff2");
+               font-weight: 300 700; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono-var.woff2") format("woff2");
+               font-weight: 400 800; font-display: swap; }
+
+  :root {
+    /* contract names (shared with the Design Studio's global tools) */
+    --color-surface: #0A0E12;
+    --color-surface-2: #10161C;
+    --color-surface-3: #18212A;
+    --color-text: #E6EDF3;
+    --color-text-dim: #9AA7B4;
+    --color-text-faint: #7A8794;          /* AA on the surface (~5:1); #5B6875 failed 6 elements */
+    --color-primary: #5CCFE6;          /* a day or time was named: the only decorative hue */
+    --color-accent: #5CCFE6;
+    --color-border: #22303B;
+    --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --radius-base: 3px;
+    /* semantic: each hue means one thing, never decoration */
+    --color-verified: #7CE38B;         /* on the calendar */
+    --color-pending: #FFB454;          /* a reminder: someone still has to settle it */
+    --font-data: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    /* type scale: exactly 1.25 from 12px (body = 15); the hero is the one deliberate jump */
+    --fs-1: 12px; --fs-2: 15px; --fs-3: 18.75px; --fs-4: 23.44px; --fs-5: 29.3px; --fs-hero: 73.24px;
+    /* depth, light from above */
+    --elev-1: 0 1px 2px rgba(0,0,0,.45);
+    --elev-2: 0 4px 16px rgba(0,0,0,.5);
+    --elev-3: 0 12px 40px rgba(0,0,0,.6);
+    --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--color-surface); color: var(--color-text);
+               font-family: var(--font-body); font-size: var(--font-size-md, 15px); line-height: var(--line-height-px, 24px); }
+  #gl { position: fixed; inset: 0; }
+  #gl canvas { display: block; }
+  /* one texture move: a faint vertical falloff so the river reads as receding */
+  .falloff { position: fixed; inset: 0; pointer-events: none;
+             background: linear-gradient(180deg, rgba(10,14,18,.0) 55%, rgba(10,14,18,.85) 100%); }
+
+  .hud { position: fixed; z-index: 2; }
+  header.hud { top: 24px; left: 24px; right: 24px; display: flex; gap: 24px; align-items: flex-start;
+               justify-content: space-between; pointer-events: none; flex-wrap: wrap; }
+  .title { pointer-events: auto; max-width: 560px; }
+  .eyebrow { font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .14em; text-transform: uppercase;
+             color: var(--color-text-faint); }
+  .hero { display: flex; align-items: baseline; gap: 16px; margin-top: 8px; }
+  .hero b { font-family: var(--font-heading); font-weight: 700; font-size: var(--fs-hero); line-height: .9;
+            letter-spacing: -.03em; }
+  .hero span { font-size: var(--fs-3); line-height: 1.25; color: var(--color-text-dim); font-weight: 500; }
+  .thesis { margin-top: 8px; font-size: var(--fs-2); color: var(--color-text-faint); }
+
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; pointer-events: auto; justify-content: flex-end; }
+  .pill { font-family: var(--font-data); font-size: var(--fs-1); padding: 4px 8px; border: 1px solid var(--color-border);
+          border-radius: var(--radius-base); background: rgba(16,22,28,.8); box-shadow: var(--elev-1);
+          color: var(--color-text-dim); cursor: pointer; transition: border-color 160ms var(--ease), color 160ms var(--ease); }
+  .pill b { color: var(--color-text); font-weight: 600; }
+  .pill:hover, .pill:focus-visible { border-color: var(--color-text-faint); color: var(--color-text); outline: none; }
+  .pill[aria-pressed="true"] { border-color: var(--color-text-dim); color: var(--color-text); background: var(--color-surface-3); }
+  .pill.cal b { color: var(--color-verified); }
+  .pill.rem b { color: var(--color-pending); }
+
+  .legend { left: 24px; bottom: 64px; display: grid; gap: 4px; font-size: var(--fs-1); color: var(--color-text-dim);
+            font-family: var(--font-data); pointer-events: none; }
+  .legend i { display: inline-block; width: 16px; height: 8px; margin-right: 8px; vertical-align: middle; }
+  .k-proposed { background: var(--color-primary); border-radius: 50%; width: 8px !important; margin-left: 4px; margin-right: 12px !important; }
+  .k-message { background: var(--color-text-faint); border-radius: 50%; width: 8px !important; margin-left: 4px; margin-right: 12px !important; }
+  .k-gap { border-top: 1px dashed var(--color-text-dim); height: 0 !important; }
+  .k-cal { background: var(--color-verified); width: 8px !important; margin-left: 4px; margin-right: 12px !important; }
+  .k-rem { border: 2px solid var(--color-pending); border-radius: 50%; width: 10px !important; height: 10px !important; margin-left: 3px; margin-right: 11px !important; }
+  .k-filed { background: var(--color-text-dim); width: 12px !important; height: 3px !important; margin-left: 2px; margin-right: 10px !important; }
+
+  .scrub { left: 24px; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 16px;
+           font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-faint); }
+  .scrub input { flex: 1; accent-color: var(--color-text-dim); }
+  .scrub output { color: var(--color-text); min-width: 96px; text-align: right; }
+
+  .tip { position: fixed; z-index: 3; pointer-events: none; max-width: 340px; padding: 8px 12px;
+         background: rgba(16,22,28,.96); border: 1px solid var(--color-border); border-radius: var(--radius-base);
+         box-shadow: var(--elev-2); font-size: var(--fs-2); opacity: 0; transform: translateY(4px);
+         transition: opacity 120ms var(--ease), transform 120ms var(--ease); }
+  .tip.on { opacity: 1; transform: none; }
+  .tip .who { font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-faint); margin-bottom: 4px; }
+  .tip .whens { margin-top: 4px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-primary); }
+  .tip .gap { margin-top: 4px; font-size: var(--fs-1); color: var(--color-text-dim); font-style: italic; }
+
+  aside.inspector { position: fixed; z-index: 4; top: 0; right: 0; bottom: 0; width: min(440px, 100vw);
+           background: var(--color-surface-2); border-left: 1px solid var(--color-border); box-shadow: var(--elev-3);
+           transform: translateX(100%); transition: transform 200ms var(--ease); display: flex; flex-direction: column; }
+  aside.inspector.open { transform: none; }
+  .insp-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--color-border); }
+  .insp-head h2 { font-size: var(--fs-4); line-height: 1.2; font-weight: 700; letter-spacing: -.01em; margin-top: 4px; }
+  .close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: var(--radius-base);
+           background: transparent; border: 1px solid var(--color-border); color: var(--color-text-dim); cursor: pointer;
+           font: inherit; transition: color 160ms var(--ease), border-color 160ms var(--ease); }
+  .close:hover, .close:focus-visible { color: var(--color-text); border-color: var(--color-text-faint); outline: none; }
+  .receipt { margin: 16px 24px 0; padding: 12px 16px; border-radius: var(--radius-base); border: 1px solid var(--color-border);
+             background: var(--color-surface-3); box-shadow: var(--elev-1); }
+  .receipt .kind { font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .12em; text-transform: uppercase; }
+  .receipt .what { margin-top: 4px; font-size: var(--fs-3); font-weight: 600; }
+  .receipt .by { margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-faint); }
+  .receipt.calendar .kind { color: var(--color-verified); }
+  .receipt.reminder .kind { color: var(--color-pending); }
+  .receipt.filed .kind { color: var(--color-text-dim); }
+  ol.events { list-style: none; overflow-y: auto; padding: 16px 24px 24px; display: grid; gap: 12px; }
+  ol.events li { padding-left: 16px; border-left: 2px solid var(--color-border); }
+  ol.events li.proposed { border-left-color: var(--color-primary); }
+  ol.events li.call { border-left: 2px dashed var(--color-text-dim); }
+  ol.events .meta { font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-faint); }
+  ol.events .said { margin-top: 4px; font-size: var(--fs-2); color: var(--color-text-dim); }
+  ol.events .whens { margin-top: 4px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-primary); }
+  ol.events .gapnote { margin-top: 4px; font-size: var(--fs-2); color: var(--color-text); font-style: italic; }
+
+  .empty { position: fixed; inset: 0; display: grid; place-items: center; color: var(--color-text-dim); font-family: var(--font-data); }
+
+  @media (max-width: 720px) {
+    header.hud { top: 16px; left: 16px; right: 16px; }
+    .hero b { font-size: 46.88px; }
+    .hero span { font-size: var(--fs-3); }
+    .stats { justify-content: flex-start; }
+    .legend { display: none; }
+    .scrub { left: 16px; right: 16px; bottom: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div id="gl" aria-hidden="true"></div>
+  <div class="falloff"></div>
+
+  <header class="hud">
+    <div class="title">
+      <div class="eyebrow">Axiom-1 · inbox timeline · nothing guessed across a phone call</div>
+      <div class="hero"><b id="heroNum">--</b><span id="heroText">of -- threads just need filing</span></div>
+      <p class="thesis" id="thesis">Every thread is filed whole. A calendar entry or a reminder is something extra a thread may carry.</p>
+    </div>
+    <nav class="stats" aria-label="Filter threads">
+      <button class="pill" data-filter="all" aria-pressed="true">all <b id="sAll">--</b></button>
+      <button class="pill cal" data-filter="calendar" aria-pressed="false">on calendar <b id="sCal">--</b></button>
+      <button class="pill rem" data-filter="reminder" aria-pressed="false">reminders <b id="sRem">--</b></button>
+      <button class="pill" data-filter="gap" aria-pressed="false">call gaps <b id="sGap">--</b></button>
+      <button class="pill" data-filter="filed" aria-pressed="false">filed only <b id="sFiled">--</b></button>
+    </nav>
+  </header>
+
+  <div class="hud legend">
+    <div><i class="k-proposed"></i>a message names a day or time</div>
+    <div><i class="k-message"></i>any other message</div>
+    <div><i class="k-gap"></i>moved to a phone call: not in the email</div>
+    <div><i class="k-cal"></i>on the calendar</div>
+    <div><i class="k-rem"></i>reminder (ghost = tentative hold)</div>
+    <div><i class="k-filed"></i>filed</div>
+  </div>
+
+  <div class="hud scrub">
+    <span>older</span>
+    <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Travel through time" />
+    <span>newer</span>
+    <output id="scrubDate">--</output>
+  </div>
+
+  <div class="tip" id="tip" role="status"></div>
+
+  <aside class="inspector" id="insp" aria-label="Thread">
+    <div class="insp-head">
+      <button class="close" id="close" aria-label="Close">✕</button>
+      <div class="eyebrow" id="iFolder">--</div>
+      <h2 id="iSubject">--</h2>
+      <div class="eyebrow" id="iSpan" style="margin-top:8px">--</div>
+    </div>
+    <div class="receipt" id="iReceipt"></div>
+    <ol class="events" id="iEvents"></ol>
+  </aside>
+
+<script src="timeline.data.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from "three";
+
+const DATA = window.AXIOM_TIMELINE;
+const css = getComputedStyle(document.documentElement);
+const C = k => new THREE.Color(css.getPropertyValue(k).trim());
+const COL = { primary: C("--color-primary"), verified: C("--color-verified"), pending: C("--color-pending"),
+              text: C("--color-text"), dim: C("--color-text-dim"), faint: C("--color-text-faint"),
+              border: C("--color-border"), surface: C("--color-surface") };
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NARROW = innerWidth < 900 || innerHeight > innerWidth;   // phone or portrait tablet: names sit above each lane
+const $ = id => document.getElementById(id);
+const FAINT = css.getPropertyValue("--color-text-faint").trim();
+
+if (!DATA) {
+  document.body.insertAdjacentHTML("beforeend",
+    '<div class="empty">No timeline.data.js - run: python examples/inbox_timeline.py --rows &lt;eval receipt&gt; --js web/timeline/timeline.data.js</div>');
+  throw new Error("no data");
+}
+// lane labels are drawn into canvases once: the faces must be loaded first or they bake in the fallback font
+await Promise.all([document.fonts.load('500 30px "Space Grotesk"'), document.fonts.load('400 24px "JetBrains Mono"')]);
+
+// ---- data -> lanes ----------------------------------------------------------------------------------------
+// depth = when the thread started (scrolling travels through history); x = time elapsed inside the thread, on a
+// log scale (an hour, a day, a week all stay readable); each message a bead; the outcome at the lane's end.
+const threads = DATA.folders.flatMap(f => f.threads.map(t => ({ ...t, folder: f.folder })));
+threads.sort((a, b) => (a.span ? a.span[0] : "9999").localeCompare(b.span ? b.span[0] : "9999"));
+const LANE = 2.4, X0 = 0, K = 3.2;
+const hours = (a, b) => (new Date(b) - new Date(a)) / 3.6e6;
+const xOf = h => X0 + K * Math.log10(1 + Math.max(0, h));
+const kindOf = t => t.outcome.kind.startsWith("reminder") ? "reminder" : t.outcome.kind;
+
+threads.forEach((t, i) => {
+  t.z = -i * LANE;
+  const start = t.span ? t.span[0] : null;
+  let lastX = X0;
+  t.events.forEach(e => {
+    e.x = (start && e.at) ? Math.max(xOf(hours(start, e.at)), lastX) : lastX + (e.message > 1 ? .45 : 0);
+    lastX = e.x;
+  });
+  t.endX = lastX + 1.6;
+  t.hasGap = t.events.some(e => e.kind === "call");
+});
+
+const total = threads.length;
+const counts = { calendar: 0, reminder: 0, filed: 0, gap: 0 };
+threads.forEach(t => { counts[kindOf(t)]++; if (t.hasGap) counts.gap++; });
+$("heroNum").textContent = counts.filed;
+$("heroText").textContent = `of ${total} threads just need filing`;
+$("sAll").textContent = total; $("sCal").textContent = counts.calendar; $("sRem").textContent = counts.reminder;
+$("sGap").textContent = counts.gap; $("sFiled").textContent = counts.filed;
+
+// ---- scene ------------------------------------------------------------------------------------------------
+const host = $("gl");
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(COL.surface);
+host.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(COL.surface, 14, 46);
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, .1, 200);
+scene.add(new THREE.AmbientLight(0xffffff, .55));
+const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(4, 12, 6); scene.add(key);   // light from above
+
+function label(text, { size = 34, color = "#9AA7B4", weight = 500, family = "Space Grotesk", align = "left", sub = null } = {}) {
+  const pad = 8, c = document.createElement("canvas"), g = c.getContext("2d");
+  const subFont = `400 ${Math.round(size * .62)}px "JetBrains Mono"`;
+  g.font = `${weight} ${size}px "${family}"`;
+  let w = g.measureText(text).width;
+  if (sub) { g.font = subFont; w = Math.max(w, g.measureText(sub).width); }
+  c.width = Math.ceil(w) + pad * 2; c.height = Math.ceil(size * (sub ? 1.75 : 1)) + pad * 2;
+  g.textBaseline = "top"; g.textAlign = align === "right" ? "right" : "left";
+  const tx = align === "right" ? c.width - pad : pad;
+  g.font = `${weight} ${size}px "${family}"`; g.fillStyle = color; g.fillText(text, tx, pad);
+  if (sub) { g.font = subFont; g.fillStyle = FAINT; g.fillText(sub, tx, pad + size * 1.08); }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  // drawn over the lines (a lane line struck through "Tetco"); labels sit off the bead area, so nothing real is hidden
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }));
+  s.renderOrder = 10;
+  const scale = .0105;
+  s.scale.set(c.width * scale, c.height * scale, 1);
+  s.center.set(align === "right" ? 1 : 0, .5);
+  return s;
+}
+
+// elapsed-time ticks on the floor: the x axis's meaning, stated once
+const ticks = new THREE.Group(); scene.add(ticks);
+[["", 0], ["+1 hour", 1], ["+1 day", 24], ["+1 week", 168], ["+1 month", 720]].forEach(([txt, h]) => {
+  const x = xOf(h);
+  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, -.02, 4), new THREE.Vector3(x, -.02, -total * LANE)]);
+  ticks.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color: COL.border, transparent: true, opacity: .55 })));
+  if (!txt) return;
+  const l = label(txt, { size: 20, color: FAINT, family: "JetBrains Mono", weight: 400 });
+  l.position.set(x + .08, .02, 0); l.userData.tick = true; ticks.add(l);
+});
+
+const beadGeo = new THREE.SphereGeometry(.13, 20, 14);
+const calGeo = new THREE.BoxGeometry(.42, .42, .42);
+const remGeo = new THREE.TorusGeometry(.24, .05, 10, 40);
+const filedGeo = new THREE.BoxGeometry(.34, .04, .22);
+const pickables = [];
+const lanes = [];
+
+threads.forEach((t, i) => {
+  const lane = new THREE.Group(); lane.position.z = t.z; scene.add(lane);
+  const mats = [];
+  const mat = (o) => { const m = o; m.transparent = true; mats.push(m); return m; };
+
+  // the line between messages: solid, except after a hand-off to a call, where it breaks into a dashed void
+  for (let k = 0; k < t.events.length; k++) {
+    const e = t.events[k], nextX = k + 1 < t.events.length ? t.events[k + 1].x : t.endX;
+    if (nextX - e.x < .01) continue;
+    const pts = [new THREE.Vector3(e.x, 0, 0), new THREE.Vector3(nextX, 0, 0)];
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    let line;
+    if (e.kind === "call") {
+      line = new THREE.Line(geo, mat(new THREE.LineDashedMaterial({ color: COL.dim, dashSize: .12, gapSize: .14, opacity: .9 })));
+      line.computeLineDistances();
+      const gl = label("call · not in the email", { size: 20, color: "#9AA7B4", family: "JetBrains Mono", weight: 400 });
+      gl.position.set(e.x + .15, .3, 0); gl.material.opacity = .95; mats.push(gl.material); lane.add(gl);
+    } else {
+      line = new THREE.Line(geo, mat(new THREE.LineBasicMaterial({ color: COL.border, opacity: 1 })));
+    }
+    lane.add(line);
+  }
+
+  t.events.forEach(e => {
+    const proposed = e.kind === "proposed";
+    const m = mat(new THREE.MeshStandardMaterial({
+      color: proposed ? COL.primary : COL.faint, emissive: proposed ? COL.primary : COL.faint,
+      emissiveIntensity: proposed ? .55 : .15, roughness: .4, metalness: .1 }));
+    const b = new THREE.Mesh(beadGeo, m);
+    b.position.set(e.x, 0, 0);
+    b.userData = { thread: t, event: e };
+    lane.add(b); pickables.push(b);
+  });
+
+  // the outcome, with its receipt one click away
+  const kind = kindOf(t);
+  let end;
+  if (kind === "calendar") {
+    end = new THREE.Mesh(calGeo, mat(new THREE.MeshStandardMaterial({ color: COL.verified, emissive: COL.verified, emissiveIntensity: .35, roughness: .35 })));
+  } else if (kind === "reminder") {
+    end = new THREE.Mesh(remGeo, mat(new THREE.MeshStandardMaterial({ color: COL.pending, emissive: COL.pending, emissiveIntensity: .45, roughness: .4 })));
+    end.rotation.y = Math.PI / 2.6;
+    if (t.outcome.tentative && Object.keys(t.outcome.tentative).length) {
+      const ghost = new THREE.Mesh(new THREE.SphereGeometry(.2, 20, 14),
+        mat(new THREE.MeshBasicMaterial({ color: COL.pending, opacity: .22, depthWrite: false })));
+      ghost.position.set(t.endX + .62, 0, 0); lane.add(ghost);
+    }
+  } else {
+    end = new THREE.Mesh(filedGeo, mat(new THREE.MeshStandardMaterial({ color: COL.dim, roughness: .8 })));
+  }
+  end.position.set(t.endX, 0, 0);
+  end.userData = { thread: t, outcome: true };
+  lane.add(end); pickables.push(end);
+
+  const name = (t.subject || t.folder || "").replace(/^\s*((re|fwd?|fw)\s*:\s*)+/i, "") || "(no subject)";
+  const nl = label(name.length > 34 ? name.slice(0, 33) + "…" : name,
+                   { size: 30, color: "#E6EDF3", align: NARROW ? "left" : "right", sub: t.span ? t.span[0].slice(0, 10) : "no date" });
+  if (NARROW) nl.position.set(X0 - .1, .62, 0); else nl.position.set(X0 - .35, .12, 0); mats.push(nl.material); lane.add(nl);
+
+  lanes.push({ t, lane, mats, i, shown: 1, target: 1 });
+});
+
+// ---- camera: travels along depth (= history) ---------------------------------------------------------------
+const MIN_TRAVEL = -LANE * 2;                         // pulled back: the oldest lane sits mid-screen, not under the lens
+let travel = MIN_TRAVEL, travelTarget = MIN_TRAVEL;
+const maxTravel = Math.max(0, (total - 4) * LANE);
+function placeCamera() {
+  const z = -travel;
+  // phone: the names are what must not be cut; the far right (a month in) may crop instead
+  camera.position.set(NARROW ? 2.2 : 3.9, NARROW ? 8.5 : 5.6, z + (NARROW ? 16 : 12.5));
+  camera.lookAt(NARROW ? 2.9 : 4.6, 0, z - 5);
+}
+function setTravel(v) { travelTarget = Math.min(maxTravel, Math.max(MIN_TRAVEL, v)); }
+addEventListener("wheel", e => { if (!e.target.closest("aside")) { setTravel(travelTarget + e.deltaY * .012); } }, { passive: true });
+const scrub = $("scrub");
+scrub.addEventListener("input", () => setTravel(MIN_TRAVEL + scrub.value / 1000 * (maxTravel - MIN_TRAVEL)));
+let dragY = null;
+renderer.domElement.addEventListener("pointerdown", e => { dragY = e.clientY; });
+addEventListener("pointerup", () => { dragY = null; });
+addEventListener("pointermove", e => {
+  if (dragY !== null && e.pointerType === "touch") { setTravel(travelTarget + (dragY - e.clientY) * .03); dragY = e.clientY; }
+});
+addEventListener("keydown", e => {
+  if (e.key === "ArrowDown" || e.key === "PageDown") setTravel(travelTarget + LANE * (e.key === "PageDown" ? 6 : 1));
+  if (e.key === "ArrowUp" || e.key === "PageUp") setTravel(travelTarget - LANE * (e.key === "PageUp" ? 6 : 1));
+  if (e.key === "Escape") closeInspector();
+});
+
+// ---- filters ------------------------------------------------------------------------------------------------
+let filter = "all";
+const matches = t => filter === "all" || (filter === "gap" ? t.hasGap : kindOf(t) === filter);
+document.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => {
+  filter = p.dataset.filter;
+  document.querySelectorAll(".pill").forEach(q => q.setAttribute("aria-pressed", String(q === p)));
+  lanes.forEach(L => { L.target = matches(L.t) ? 1 : .08; });
+  const first = lanes.find(L => matches(L.t));
+  if (first && filter !== "all") setTravel(first.i * LANE + MIN_TRAVEL);
+}));
+
+// ---- hover tooltip + click inspector ---------------------------------------------------------------------
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+const tip = $("tip");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function hit(e) {
+  ptr.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  return ray.intersectObjects(pickables, false).find(h => matches(h.object.userData.thread));
+}
+const outcomeLine = t => {
+  const o = t.outcome;
+  if (o.kind === "calendar") return `On the calendar: ${o.date} ${o.start}${o.end ? "-" + o.end : ""}`;
+  if (o.kind.startsWith("reminder")) {
+    const hold = o.tentative && Object.keys(o.tentative).length ? ` · holding ${Object.values(o.tentative).join(" ")}` : "";
+    return `Reminder (${o.kind.split(":")[1]}): ${o.why}${hold}`;
+  }
+  return "Filed. Nothing else needed.";
+};
+renderer.domElement.addEventListener("pointermove", e => {
+  const h = hit(e);
+  if (!h) { tip.classList.remove("on"); renderer.domElement.style.cursor = ""; return; }
+  renderer.domElement.style.cursor = "pointer";
+  const { thread: t, event: ev } = h.object.userData;
+  tip.innerHTML = ev
+    ? `<div class="who">#${ev.message} · ${esc(ev.who)} · ${esc(ev.at ? ev.at.replace("T", " ") : "no date")}</div>${esc(ev.said)}`
+      + (ev.whens ? `<div class="whens">names: ${ev.whens.map(esc).join(" · ")}</div>` : "")
+      + (ev.gap ? `<div class="gap">${esc(ev.gap)}</div>` : "")
+    : `<div class="who">${esc(t.subject)}</div>${esc(outcomeLine(t))}`;
+  const x = Math.min(e.clientX + 16, innerWidth - 356), y = Math.min(e.clientY + 16, innerHeight - 140);
+  tip.style.left = x + "px"; tip.style.top = y + "px"; tip.classList.add("on");
+});
+renderer.domElement.addEventListener("pointerleave", () => tip.classList.remove("on"));
+renderer.domElement.addEventListener("click", e => { const h = hit(e); if (h) openInspector(h.object.userData.thread); });
+
+const insp = $("insp");
+function openInspector(t) {
+  $("iFolder").textContent = `folder · ${t.folder}`;
+  $("iSubject").textContent = t.subject || "(no subject)";
+  $("iSpan").textContent = t.span ? `${t.span[0].replace("T", " ")} → ${t.span[1].replace("T", " ")} · ${t.messages} messages` : `${t.messages} messages · no dates`;
+  const k = kindOf(t), o = t.outcome;
+  const receipt = $("iReceipt");
+  receipt.className = "receipt " + k;
+  receipt.innerHTML = `<div class="kind">${esc(k === "reminder" ? o.kind.replace(":", " · ") : k)}</div>`
+    + `<div class="what">${esc(outcomeLine(t))}</div>`
+    + `<div class="by">decided by: ${esc(o.decided_by || "structure (no decision needed)")}</div>`;
+  $("iEvents").innerHTML = t.events.map(ev => `<li class="${ev.kind}">`
+    + `<div class="meta">#${ev.message} · ${esc(ev.who)} · ${esc(ev.at ? ev.at.replace("T", " ") : "no date")} · ${ev.kind}</div>`
+    + `<div class="said">${esc(ev.said)}</div>`
+    + (ev.whens ? `<div class="whens">names: ${ev.whens.map(esc).join(" · ")}</div>` : "")
+    + (ev.gap ? `<div class="gapnote">${esc(ev.gap)}</div>` : "") + `</li>`).join("");
+  insp.classList.add("open");
+  $("close").focus();
+}
+function closeInspector() { insp.classList.remove("open"); }
+
+// for tests and agents: where a bead (message N, or "end" for the outcome) is on screen right now, and a way to
+// open a thread without pixel-hunting
+window.axiomTimeline = {
+  screenOf(thread, message = "end") {
+    const m = pickables.find(o => o.userData.thread.thread === thread &&
+      (message === "end" ? o.userData.outcome : o.userData.event && o.userData.event.message === message));
+    if (!m) return null;
+    const v = m.getWorldPosition(new THREE.Vector3()).project(camera);
+    return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight };
+  },
+  open(thread) { const t = threads.find(x => x.thread === thread); if (t) openInspector(t); return !!t; },
+  travelTo(thread) { const L = lanes.find(x => x.t.thread === thread); if (L) setTravel(L.i * LANE + MIN_TRAVEL); return !!L; },
+};
+$("close").addEventListener("click", closeInspector);
+
+// ---- loop: entrance (lanes rise in, staggered 70ms), travel easing, filter fades ---------------------------
+addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+const t0 = performance.now();
+const dateOut = $("scrubDate");
+function frame(now) {
+  travel += (travelTarget - travel) * (reduced ? 1 : .12);
+  placeCamera();
+  ticks.children.forEach(c => { if (c.userData.tick) c.position.z = -travel + 1.6; });
+  const front = lanes[Math.min(total - 1, Math.max(0, Math.round((travel - MIN_TRAVEL) / LANE)))];
+  dateOut.textContent = front && front.t.span ? front.t.span[0].slice(0, 10) : "--";
+  if (document.activeElement !== scrub) scrub.value = String(Math.round((travel - MIN_TRAVEL) / (maxTravel - MIN_TRAVEL) * 1000));
+  lanes.forEach(L => {
+    const enter = reduced ? 1 : Math.min(1, Math.max(0, (now - t0 - L.i * 70) / 500));
+    const ease = 1 - Math.pow(1 - enter, 3);
+    L.lane.position.y = (1 - ease) * -1.2;
+    L.shown += (L.target - L.shown) * (reduced ? 1 : .15);
+    const o = ease * L.shown;
+    L.mats.forEach(m => { m.opacity = (m.userData.base ??= (m.opacity ?? 1)) * o; });
+  });
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+document.fonts.ready.then(() => requestAnimationFrame(frame));
+</script>
+</body>
+</html>

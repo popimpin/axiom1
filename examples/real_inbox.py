@@ -222,6 +222,24 @@ LEN_RE = r"\babout an hour\b|\babout \d+ minutes\b|\b\d+ minutes\b|\ban hour\b|\
 HANDOFF_RE = (r"\b(?:give (?:me|him|her|us) a (?:call|ring)|(?:please )?call me\b(?! at the)|i(?:'ll| will) (?:call|phone|ring) "
               r"you|(?:will|can) call you|left (?:you |him |her )?a (?:voice ?mail|message)|voice ?mail|reach(?:ing)? me on "
               r"my (?:mobile|cell)|talk (?:by|on the) phone)")
+# ...and only when the call is part of the arranging: the same message names a day or time or talks about meeting.
+# Without this a sign-off ("If you have any questions, please do not hesitate to give me a call") made 3 needless
+# reminders on Enron (2026-10-03 v8), and a 9B reads "give me a call" as "arranging a call".
+SCHED_RE = (r"\b(?:meet(?:ing)?s?|get together|sit down|schedul\w*|availab\w*|any of these work|works? for (?:you|me)"
+            r"|the days?|what time|when (?:do|can|would) you)\b")
+
+
+def hands_off(m):
+    """This message moves the arranging to a phone call."""
+    return bool(re.search(HANDOFF_RE, m["body"], re.I)) and any(
+        re.search(p, m["body"], re.I) for p in (SCHED_RE, DATE_RE, TIME_RE))
+
+
+def email_time(phrase):
+    """A time as email means it: a bare "3:00" is 3 in the afternoon, not 03:00 (seen on Enron: "3:00" held as
+    03:00). Hours 1-6 without am/pm are afternoon; anything with am/pm, or 7:00 and later, is read as written."""
+    m = re.fullmatch(r"\s*([1-6])(:\d{2})\s*", phrase or "")
+    return f"{m.group(1)}{m.group(2)} pm" if m else phrase
 
 
 def options(messages, pattern, within=None):
@@ -258,7 +276,7 @@ def resolve_option(messages, key, option):
         if key == "day":
             return T.resolve_date(phrase, M.sent_on(holder["date"]))
         if key == "time":
-            return T.parse_time(phrase)
+            return T.parse_time(email_time(phrase))
     except Exception:
         return None
     return None
@@ -293,6 +311,10 @@ present = sorted(p.as_posix() for p in Path("threads").glob("*.txt"))
 if sorted(t["file"] for t in entry["threads"]) != present:
     raise SystemExit("EngineError: the answers must cover every thread")
 CALL = "the arranging moved to a phone call, so the email cannot show what was decided"
+def EMAIL_TIME(phrase):
+    """A bare "3:00" in email is 3 in the afternoon (same rule as email_time() in real_inbox.py)."""
+    m = re.fullmatch(r"\s*([1-6])(:\d{2})\s*", phrase or "")
+    return f"{m.group(1)}{m.group(2)} pm" if m else phrase
 for t in entry["threads"]:
     msgs = mail.split_thread(Path(t["file"]).read_text(encoding="utf-8"))
     if not t["agreed"]:
@@ -323,7 +345,7 @@ for t in entry["threads"]:
         if day:
             tentative["date"] = time.resolve_date(day, mail.sent_on(dm["date"]))
         if tm:
-            tentative["start"] = time.parse_time(tm)
+            tentative["start"] = time.parse_time(EMAIL_TIME(tm))
     except Exception:
         pass
     missing = [x for x, v in (("which day", "date" in tentative), ("what time", "start" in tentative),
@@ -374,7 +396,7 @@ def decide_thread(name, text, router, model, person, teach):
         return ("me: " if M.mine([msg], ME) else "them: ") + body
     blank = {"file": name, "agreed": False, "day": "", "time": "", "length": ""}
     # a hand-off to a phone call, in a thread I am part of: the email cannot show what was decided
-    handoff = bool(M.mine(msgs, ME)) and any(re.search(HANDOFF_RE, m["body"], re.I) for m in msgs)
+    handoff = bool(M.mine(msgs, ME)) and any(hands_off(m) for m in msgs)
     if not handoff and not any(re.search(pat, m["body"], re.I) for m in msgs for pat in (DATE_RE, TIME_RE)):
         return {**blank, "tier": "structure: no day or time anywhere"}, corrections
     confirm = []      # decisions nobody could make: a disagreement with no person to ask (production)

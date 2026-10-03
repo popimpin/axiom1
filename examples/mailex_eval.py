@@ -91,7 +91,7 @@ def main():
         return person.truth.get(text, "no")
     router = Router(Table(), {d: agree for d in ("is_meeting", "said_yes", "called_off", "which_time", "agreed_day", "agreed_time")},
                     consensus=True, ask_user=person)
-    rows, score = [], {"right": 0, "WRONG_ON_CALENDAR": 0, "missed": 0, "needless_ask": 0, "wrong_time": 0}
+    rows, score = [], {"right": 0, "WRONG_ON_CALENDAR": 0, "missed": 0, "needless_ask": 0, "wrong_time": 0, "wrong_section": 0}
     for name in sorted(a.only or key):
         exp = key[name]
         d = json.load(open(DATED / f"{name}.json", encoding="utf-8"))
@@ -126,6 +126,11 @@ def main():
             verdict = ("right" if placed[:2] == (exp["date"], exp["start"]) else "wrong_time") if got == "on" else "missed"
         elif e == "ask":
             verdict = "right" if got == "ask" else ("WRONG_ON_CALENDAR" if got == "on" else "missed")
+        elif e == "follow_up":
+            # open-ended (Adrian, 2026-10-03: most are "handled by a call"): right only in the follow-up section
+            rk = ((json.loads(produced.get("asks.json", "[]")) or [{}])[0].get("kind")) if ok else None
+            verdict = ("right" if rk == "follow_up" else "wrong_section") if got == "ask" else \
+                      ("WRONG_ON_CALENDAR" if got == "on" else "missed")
         elif e == "invite":
             verdict = "WRONG_ON_CALENDAR" if got == "on" else "right"       # off or ask both acceptable for now
         else:

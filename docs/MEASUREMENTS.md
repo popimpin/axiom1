@@ -576,3 +576,31 @@ needs one person's inbox.
 
 The page: `web/timeline/` (3D; depth is when a thread started, left to right is time inside it, a call is a break
 in the line). Measured with the lint engine's own script at 360/768/1280/1920 px: 0 findings, 0 contrast failures.
+
+## Follow-up needed: the open-ended threads get their own section (2026-10-03)
+
+Adrian's ruling on the key: most open-ended threads "will be handled by a call", so they are not reminders and not
+nothing; they need their own section. The rule is structural:
+- **reminder (finalize)**: something is settled (a day or a time is held) and one named piece is missing
+- **follow-up needed**: open-ended. Nothing is settled, or the arranging moved to a phone call
+Key rulings (Adrian): 5 threads -> follow-up (blair-l_66, watson-k_471, shackleton-s_677, ybarbo-p_214, wolfe-j_436);
+3 -> nothing (tycholiz-b_368, heard-m_118, reitmeyer-j_52). The scorer now also checks the section (`wrong_section`).
+
+Same 50 threads, Bee (`2026-10-03_mailex_bee_v10.json`):
+
+| | v9 | **v10** |
+|---|---|---|
+| right | 43 | **45** |
+| wrong meeting on the calendar | 0 | **0** |
+| hold on the wrong day / wrong section | 0 / - | **0 / 0** |
+| missed | 2 | 2 |
+| reminder not needed | 5 | **3** |
+
+4 of the 5 open-ended threads land in follow-up; wolfe-j_436 is dropped by one model's "is this a meeting?". The 3
+reminders not needed are the 3 Adrian ruled "nothing", each from a single model's yes. Generated inbox unchanged:
+7/10 (`2026-10-03_real_inbox_bee_v16.json`).
+
+**Whole mailboxes, first look (structure only, no model):** one person's mailbox (Steffes, regulatory affairs):
+3,331 messages -> 2,130 threads; **76% need no model call at all** (no day or time named, or I am not in it); 508
+threads would reach the first yes/no question. Loader `examples/mailbox.py`, runner `examples/mailbox_run.py`
+(resumable; production mode: no key, no stand-in person, an undecided decision becomes "confirm").

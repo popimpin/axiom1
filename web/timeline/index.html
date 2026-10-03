@@ -26,7 +26,8 @@
     --radius-base: 3px;
     /* semantic: each hue means one thing, never decoration */
     --color-verified: #7CE38B;         /* on the calendar */
-    --color-pending: #FFB454;          /* a reminder: someone still has to settle it */
+    --color-pending: #FFB454;          /* a reminder: one named piece is still missing */
+    --color-open: #E6EDF3;             /* follow-up needed: open-ended, likely settled on a call */
     --font-data: "JetBrains Mono", ui-monospace, Consolas, monospace;
     /* type scale: exactly 1.25 from 12px (body = 15); the hero is the one deliberate jump */
     --fs-1: 12px; --fs-2: 15px; --fs-3: 18.75px; --fs-4: 23.44px; --fs-5: 29.3px; --fs-hero: 73.24px;
@@ -66,6 +67,7 @@
   .pill[aria-pressed="true"] { border-color: var(--color-text-dim); color: var(--color-text); background: var(--color-surface-3); }
   .pill.cal b { color: var(--color-verified); }
   .pill.rem b { color: var(--color-pending); }
+  .pill.fol b { color: var(--color-open); }
 
   .legend { left: 24px; bottom: 64px; display: grid; gap: 4px; font-size: var(--fs-1); color: var(--color-text-dim);
             font-family: var(--font-data); pointer-events: none; }
@@ -75,6 +77,7 @@
   .k-gap { border-top: 1px dashed var(--color-text-dim); height: 0 !important; }
   .k-cal { background: var(--color-verified); width: 8px !important; margin-left: 4px; margin-right: 12px !important; }
   .k-rem { border: 2px solid var(--color-pending); border-radius: 50%; width: 10px !important; height: 10px !important; margin-left: 3px; margin-right: 11px !important; }
+  .k-fol { border: 2px dashed var(--color-open); border-radius: 50%; width: 10px !important; height: 10px !important; margin-left: 3px; margin-right: 11px !important; }
   .k-filed { background: var(--color-text-dim); width: 12px !important; height: 3px !important; margin-left: 2px; margin-right: 10px !important; }
 
   .scrub { left: 24px; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 16px;
@@ -109,6 +112,7 @@
   .receipt.calendar .kind { color: var(--color-verified); }
   .receipt.reminder .kind { color: var(--color-pending); }
   .receipt.filed .kind { color: var(--color-text-dim); }
+  .receipt.follow_up .kind { color: var(--color-open); }
   ol.events { list-style: none; overflow-y: auto; padding: 16px 24px 24px; display: grid; gap: 12px; }
   ol.events li { padding-left: 16px; border-left: 2px solid var(--color-border); }
   ol.events li.proposed { border-left-color: var(--color-primary); }
@@ -147,6 +151,7 @@
       <button class="pill" data-filter="all" aria-pressed="true">all <b id="sAll">--</b></button>
       <button class="pill cal" data-filter="calendar" aria-pressed="false">on calendar <b id="sCal">--</b></button>
       <button class="pill rem" data-filter="reminder" aria-pressed="false">reminders <b id="sRem">--</b></button>
+      <button class="pill fol" data-filter="follow_up" aria-pressed="false">follow-up needed <b id="sFol">--</b></button>
       <button class="pill" data-filter="gap" aria-pressed="false">call gaps <b id="sGap">--</b></button>
       <button class="pill" data-filter="filed" aria-pressed="false">filed only <b id="sFiled">--</b></button>
     </nav>
@@ -157,7 +162,8 @@
     <div><i class="k-message"></i>any other message</div>
     <div><i class="k-gap"></i>moved to a phone call: not in the email</div>
     <div><i class="k-cal"></i>on the calendar</div>
-    <div><i class="k-rem"></i>reminder (ghost = tentative hold)</div>
+    <div><i class="k-rem"></i>reminder: one piece missing (ghost = what is held)</div>
+    <div><i class="k-fol"></i>follow-up needed: open-ended</div>
     <div><i class="k-filed"></i>filed</div>
   </div>
 
@@ -191,7 +197,7 @@ import * as THREE from "three";
 const DATA = window.AXIOM_TIMELINE;
 const css = getComputedStyle(document.documentElement);
 const C = k => new THREE.Color(css.getPropertyValue(k).trim());
-const COL = { primary: C("--color-primary"), verified: C("--color-verified"), pending: C("--color-pending"),
+const COL = { primary: C("--color-primary"), verified: C("--color-verified"), pending: C("--color-pending"), open: C("--color-open"),
               text: C("--color-text"), dim: C("--color-text-dim"), faint: C("--color-text-faint"),
               border: C("--color-border"), surface: C("--color-surface") };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -230,12 +236,12 @@ threads.forEach((t, i) => {
 });
 
 const total = threads.length;
-const counts = { calendar: 0, reminder: 0, filed: 0, gap: 0 };
+const counts = { calendar: 0, reminder: 0, follow_up: 0, filed: 0, gap: 0 };
 threads.forEach(t => { counts[kindOf(t)]++; if (t.hasGap) counts.gap++; });
 $("heroNum").textContent = counts.filed;
 $("heroText").textContent = `of ${total} threads just need filing`;
 $("sAll").textContent = total; $("sCal").textContent = counts.calendar; $("sRem").textContent = counts.reminder;
-$("sGap").textContent = counts.gap; $("sFiled").textContent = counts.filed;
+$("sGap").textContent = counts.gap; $("sFol").textContent = counts.follow_up; $("sFiled").textContent = counts.filed;
 
 // ---- scene ------------------------------------------------------------------------------------------------
 const host = $("gl");
@@ -336,6 +342,15 @@ threads.forEach((t, i) => {
         mat(new THREE.MeshBasicMaterial({ color: COL.pending, opacity: .22, depthWrite: false })));
       ghost.position.set(t.endX + .62, 0, 0); lane.add(ghost);
     }
+  } else if (kind === "follow_up") {
+    end = new THREE.Group();
+    for (let k = 0; k < 8; k++) {
+      const arc = new THREE.Mesh(new THREE.TorusGeometry(.24, .04, 8, 8, Math.PI / 8),
+        mat(new THREE.MeshStandardMaterial({ color: COL.open, emissive: COL.open, emissiveIntensity: .3, roughness: .5 })));
+      arc.rotation.z = k * Math.PI / 4; end.add(arc);
+    }
+    end.rotation.y = Math.PI / 2.6;
+    end.children.forEach(c => { c.userData = { thread: t, outcome: true }; pickables.push(c); });
   } else {
     end = new THREE.Mesh(filedGeo, mat(new THREE.MeshStandardMaterial({ color: COL.dim, roughness: .8 })));
   }
@@ -400,6 +415,7 @@ function hit(e) {
 const outcomeLine = t => {
   const o = t.outcome;
   if (o.kind === "calendar") return `On the calendar: ${o.date} ${o.start}${o.end ? "-" + o.end : ""}`;
+  if (o.kind === "follow_up") return `Follow-up needed: ${o.why}`;
   if (o.kind.startsWith("reminder")) {
     const hold = o.tentative && Object.keys(o.tentative).length ? ` · holding ${Object.values(o.tentative).join(" ")}` : "";
     return `Reminder (${o.kind.split(":")[1]}): ${o.why}${hold}`;
@@ -430,7 +446,7 @@ function openInspector(t) {
   const k = kindOf(t), o = t.outcome;
   const receipt = $("iReceipt");
   receipt.className = "receipt " + k;
-  receipt.innerHTML = `<div class="kind">${esc(k === "reminder" ? o.kind.replace(":", " · ") : k)}</div>`
+  receipt.innerHTML = `<div class="kind">${esc(k === "reminder" ? o.kind.replace(":", " · ") : k === "follow_up" ? "follow-up needed" : k)}</div>`
     + `<div class="what">${esc(outcomeLine(t))}</div>`
     + `<div class="by">decided by: ${esc(o.decided_by || "structure (no decision needed)")}</div>`;
   $("iEvents").innerHTML = t.events.map(ev => `<li class="${ev.kind}">`

@@ -319,9 +319,9 @@ for t in entry["threads"]:
     msgs = mail.split_thread(Path(t["file"]).read_text(encoding="utf-8"))
     if not t["agreed"]:
         if t.get("handoff"):
-            # nothing agreed in writing, but the thread went to a call: remind me to confirm what was decided there
+            # nothing agreed in writing, and the thread went to a call: open-ended, so it goes in "follow-up needed"
             asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
-                         "kind": "finalize", "why": CALL, "missing": ["what was decided on the call"], "tentative": {}})
+                         "kind": "follow_up", "why": CALL, "missing": ["what was decided on the call"], "tentative": {}})
         continue
     def pick(v):
         if not v:
@@ -364,9 +364,13 @@ for t in entry["threads"]:
         else:
             rows.append(row)
     except Exception as e:
-        # the people have not finished deciding (or decided on a call): remind me to finalize what is missing
+        # the people have not finished deciding. Two different things (Adrian, 2026-10-03: most open-ended threads
+        # "will be handled by a call", so "they need their own section"):
+        #   finalize   something is settled (a day or a time is held) and one named piece is missing
+        #   follow_up  open-ended: nothing is settled, or it moved to a call; there is nothing to hold, only to follow up
         why = str(e) + ("; " + CALL if t.get("handoff") else "")
-        asks.append({"thread": t["file"], "subject": subject, "kind": "finalize", "missing": missing or [str(e)],
+        kind = "finalize" if tentative and not t.get("handoff") else "follow_up"
+        asks.append({"thread": t["file"], "subject": subject, "kind": kind, "missing": missing or [str(e)],
                      "why": why, "tentative": tentative})
 table.write_csv("calendar.csv", ["date", "start", "end", "title", "thread"], sorted(rows, key=lambda r: (r["date"], r["start"])))
 table.write_json("asks.json", asks)

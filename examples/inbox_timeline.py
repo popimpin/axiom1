@@ -15,7 +15,7 @@ Events, in order:
             timeline says so instead of guessing across it
   message   anything else
 and one outcome per thread, with the receipt of what decided it: calendar (placed), reminder (finalize/confirm,
-with its tentative hold), or filed.
+with its tentative hold), follow-up needed (open-ended: nothing settled, or it moved to a call), or filed.
 
     python examples/inbox_timeline.py --rows docs/measurements/2026-10-03_mailex_bee_v9.json --out timeline.json
 """
@@ -86,6 +86,10 @@ def outcome(row):
         d, s, e = row["placed"]
         return {"kind": "calendar", "date": d, "start": s, "end": e, "decided_by": row.get("tier")}
     rem = row.get("reminder")
+    if rem and rem.get("kind") == "follow_up":
+        # open-ended (nothing settled, or it moved to a call): its own section, not a reminder with a hold
+        return {"kind": "follow_up", "why": rem.get("why"), "tentative": rem.get("tentative") or {},
+                "decided_by": row.get("tier")}
     if rem:
         return {"kind": f"reminder:{rem.get('kind')}", "why": rem.get("why"), "tentative": rem.get("tentative") or {},
                 "decided_by": row.get("tier")}

@@ -215,6 +215,13 @@ DATE_RE = (r"\b(?:next |this )?(?:monday|tuesday|wednesday|thursday|friday|satur
            r"march|april|may|june|july|august|september|october|november|december) \d{1,2})?\b|\bthe \d{1,2}(?:st|nd|rd|th)\b"
            r"|\btomorrow\b|\bsometime next week\b")
 LEN_RE = r"\babout an hour\b|\babout \d+ minutes\b|\b\d+ minutes\b|\ban hour\b|\bsame length\b"
+# The arranging moved to a phone call. Part of why AI misreads email so badly (Adrian, 2026-10-03): a call breaks the
+# timeline. What was decided on it never comes back into the thread, which then reads as unfinished, or picks up
+# already decided. Seen on Enron: "Please give me a call and let me know if any of these work", "left a message with
+# his secretary", "Have you tried reaching me on my mobile phone?". A phone number in a signature is not a hand-off.
+HANDOFF_RE = (r"\b(?:give (?:me|him|her|us) a (?:call|ring)|(?:please )?call me\b(?! at the)|i(?:'ll| will) (?:call|phone|ring) "
+              r"you|(?:will|can) call you|left (?:you |him |her )?a (?:voice ?mail|message)|voice ?mail|reach(?:ing)? me on "
+              r"my (?:mobile|cell)|talk (?:by|on the) phone)")
 
 
 def options(messages, pattern, within=None):
@@ -285,10 +292,15 @@ rows, asks = [], []
 present = sorted(p.as_posix() for p in Path("threads").glob("*.txt"))
 if sorted(t["file"] for t in entry["threads"]) != present:
     raise SystemExit("EngineError: the answers must cover every thread")
+CALL = "the arranging moved to a phone call, so the email cannot show what was decided"
 for t in entry["threads"]:
-    if not t["agreed"]:
-        continue
     msgs = mail.split_thread(Path(t["file"]).read_text(encoding="utf-8"))
+    if not t["agreed"]:
+        if t.get("handoff"):
+            # nothing agreed in writing, but the thread went to a call: remind me to confirm what was decided there
+            asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
+                         "kind": "finalize", "why": CALL, "missing": ["what was decided on the call"], "tentative": {}})
+        continue
     def pick(v):
         if not v:
             return None, None
@@ -305,17 +317,35 @@ for t in entry["threads"]:
     # real invitations rarely state a length ("dinner at 6:00 p.m."): with open_end the meeting goes on the calendar
     # with its end left blank - an honest blank, not a guessed length. The generated inbox stays strict.
     open_end = entry.get("open_end", False)
+    # what IS settled becomes a tentative hold on any reminder: menu-checked like a firm entry, never on the calendar
+    tentative = {}
     try:
-        if not day or not tm or (not ln and not open_end):
-            raise ValueError("the thread does not say " + ", ".join(x for x, v in (("which day", day), ("what time", tm), ("how long", ln or open_end)) if not v))
+        if day:
+            tentative["date"] = time.resolve_date(day, mail.sent_on(dm["date"]))
+        if tm:
+            tentative["start"] = time.parse_time(tm)
+    except Exception:
+        pass
+    missing = [x for x, v in (("which day", "date" in tentative), ("what time", "start" in tentative),
+                              ("how long", ln or open_end)) if not v]
+    try:
+        if missing:
+            raise ValueError("the thread does not say " + ", ".join(missing))
         if ln and ln.lower() == "same length":
             raise ValueError("only 'same length' is given")
-        start = time.parse_time(tm)
-        d = time.resolve_date(day, mail.sent_on(dm["date"]))
-        rows.append({"date": d, "start": start, "end": time.add_minutes(start, time.parse_duration(ln)) if ln else "",
-                     "title": subject, "thread": t["file"]})
+        row = {"date": tentative["date"], "start": tentative["start"], "title": subject, "thread": t["file"],
+               "end": time.add_minutes(tentative["start"], time.parse_duration(ln)) if ln else ""}
+        if t.get("confirm"):
+            # settled in the thread, but a decision about it had no answer: held until I confirm it
+            asks.append({"thread": t["file"], "subject": subject, "kind": "confirm", "missing": [],
+                         "why": "please confirm " + " and ".join(t["confirm"]), "tentative": row})
+        else:
+            rows.append(row)
     except Exception as e:
-        asks.append({"thread": t["file"], "subject": subject, "why": str(e)})
+        # the people have not finished deciding (or decided on a call): remind me to finalize what is missing
+        why = str(e) + ("; " + CALL if t.get("handoff") else "")
+        asks.append({"thread": t["file"], "subject": subject, "kind": "finalize", "missing": missing or [str(e)],
+                     "why": why, "tentative": tentative})
 table.write_csv("calendar.csv", ["date", "start", "end", "title", "thread"], sorted(rows, key=lambda r: (r["date"], r["start"])))
 table.write_json("asks.json", asks)
 '''
@@ -343,8 +373,11 @@ def decide_thread(name, text, router, model, person, teach):
             body = re.sub(pattern, "<when>", body, flags=re.I)
         return ("me: " if M.mine([msg], ME) else "them: ") + body
     blank = {"file": name, "agreed": False, "day": "", "time": "", "length": ""}
-    if not any(re.search(pat, m["body"], re.I) for m in msgs for pat in (DATE_RE, TIME_RE)):
+    # a hand-off to a phone call, in a thread I am part of: the email cannot show what was decided
+    handoff = bool(M.mine(msgs, ME)) and any(re.search(HANDOFF_RE, m["body"], re.I) for m in msgs)
+    if not handoff and not any(re.search(pat, m["body"], re.I) for m in msgs for pat in (DATE_RE, TIME_RE)):
         return {**blank, "tier": "structure: no day or time anywhere"}, corrections
+    confirm = []      # decisions nobody could make: a disagreement with no person to ask (production)
     if M.mine(msgs, ME):
         # real mail: most threads that mention a meeting are not arranging one for me (seen on Enron: a notice sent for
         # my boss, "IF they are free we'll meet", a meeting that already happened)
@@ -358,7 +391,10 @@ def decide_thread(name, text, router, model, person, teach):
             "is_meeting", mtg_key, f"Here is an email thread. 'Me' is me.\n\n{shown}\n\nIs this thread arranging a "
             f"meeting or call that I will attend? (No if it already happened, it is someone else's, or nobody is "
             f"actually setting one up.)", ["yes", "no"])
-        if is_mtg != "yes":
+        if is_mtg is None:
+            # undecided is not "no": a dropped thread is a meeting nobody hears about. Carry on, held for confirmation
+            confirm.append("whether this thread is arranging a meeting for me")
+        elif is_mtg != "yes":
             return {**blank, "tier": f"is_meeting {mtg_tier}"}, corrections
     if not M.mine(msgs, ME):
         # seen live: a 9B read someone ELSE's "Works for me!" as my agreement, and the table spread it
@@ -392,7 +428,12 @@ def decide_thread(name, text, router, model, person, teach):
                 tier = f"{tier} + {tier2}"
                 if off != "no":
                     agreed = "no" if off == "yes" else None
-    a = {"file": name, "agreed": agreed == "yes", "day": "", "time": "", "length": "", "tier": tier}
+    if agreed is None:
+        # the same: an undecided "did we agree?" is held for confirmation, never silently dropped
+        confirm.append("whether we agreed to meet")
+        agreed = "yes"
+    a = {"file": name, "agreed": agreed == "yes", "day": "", "time": "", "length": "", "tier": tier,
+         "handoff": handoff, "confirm": confirm}
     if a["agreed"]:
         within = None
         props = proposals(msgs)

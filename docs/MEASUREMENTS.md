@@ -503,3 +503,36 @@ empty vote went to the simulated person, who answers from the key, so v2/v3's 47
 with half the edits applied. v4 (42/50, 0 wrong) and v5 (43/50, 0 wrong) are valid steps; v6 is the regression
 described above. A diagnosis drawn from the thinking-on runs ("meeting or call" drops appointments) was wrong too,
 which is how the wording table above came to be measured.
+
+## Reminders: finalize, confirm, and the phone call (2026-10-03)
+
+An unclear thread used to have three outcomes: on the calendar, a question now, or nothing. Now a question is a
+**reminder** of one of two kinds, carrying a **tentative hold** for whatever is settled. Holds are never written to
+`calendar.csv`; a hold on the wrong day is scored as harm (`WRONG_HOLD`).
+- **finalize**: the people have not finished deciding. A field is "not settled" (steffes: "how does 3 or 3:30
+  look?", never answered -> hold Tue 2001-10-30, missing: what time), or **the arranging moved to a phone call**.
+- **confirm**: a decision nobody could make (models disagree, no person to ask). Before this, an undecided "is this
+  a meeting?" or "did we agree?" was **silently dropped** as "no".
+
+Why the phone call: part of why AI misreads email is that a call breaks the timeline. What was decided on it never
+comes back into the thread, which then reads as unfinished, or resumes already decided. 21 of the 50 threads
+mention a phone, but the mention alone is noise (signatures, "call me" about something else). The signal is a
+hand-off while arranging ("Please give me a call and let me know if any of these work", "left a message with his
+secretary", "Have you tried reaching me on my mobile phone?").
+
+Same 50 threads, Bee, `2026-10-03_mailex_bee_v8.json`:
+
+| | v7 | **v8 (reminders)** |
+|---|---|---|
+| right | 43 | 40 |
+| **wrong meeting on the calendar** | 0 | **0** |
+| **hold on the wrong day** | - | **0** |
+| missed | 3 | **2** (ybarbo now caught by the hand-off) |
+| reminder not needed | 4 | 8 |
+
+- The 5 threads keyed "ask" that were caught all became `finalize`, 3 with the right day held.
+- **The cost:** 4 new reminders that were not needed, all from the hand-off pattern matching a sign-off ("If you
+  have any questions, please do not hesitate to give me a call"). Not harm (a reminder does not block or place
+  anything), but noise; the pattern should require the call to be about the arranging. Some keyed "off" may
+  honestly be reminders (blair-l_inbox_66: dates offered, then "give me a call") - the key is Adrian's to revise.
+- Generated inbox unchanged: 7/10 (`2026-10-03_real_inbox_bee_v14.json`), the same three "I can't wait!" misses.

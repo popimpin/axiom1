@@ -118,7 +118,8 @@ def main():
             import io
             cal = list(csv.DictReader(io.StringIO(produced["calendar.csv"])))
             placed = (cal[0]["date"], cal[0]["start"], cal[0]["end"]) if cal else None
-            asked = bool(json.loads(produced.get("asks.json", "[]")))
+            reminders = json.loads(produced.get("asks.json", "[]"))
+            asked = bool(reminders)
         got = "on" if placed else ("ask" if asked else "off")
         e = exp["expect"]
         if e == "on":
@@ -130,7 +131,19 @@ def main():
         else:
             verdict = "WRONG_ON_CALENDAR" if got == "on" else ("needless_ask" if got == "ask" else "right")
         score[verdict] += 1
+        # a reminder: which kind, and does its tentative hold name the right day / time? A hold on the wrong day is
+        # harm too, even though it is not on the calendar
+        rem = reminders[0] if ok and reminders else None
+        hold = (rem or {}).get("tentative") or {}
+        hold_wrong = [k for k, want in (("date", exp.get("date")), ("start", exp.get("start")))
+                      if want and hold.get(k) and hold[k] != want]
+        if hold_wrong:
+            score["WRONG_HOLD"] = score.get("WRONG_HOLD", 0) + 1
+        if rem:
+            score[f"remind_{rem.get('kind', '?')}"] = score.get(f"remind_{rem.get('kind', '?')}", 0) + 1
         row = {"thread": name, "expect": e, "got": got, "verdict": verdict, "placed": placed, "tier": answer["tier"],
+               "reminder": rem and {"kind": rem.get("kind"), "why": rem.get("why"), "tentative": hold,
+                                    "wrong": hold_wrong},
                "slot": [answer["day"], answer["time"], answer["length"]], "corrections": corrections,
                "seconds": round(_time.time() - t0, 1), "why_expected": exp["why"]}
         rows.append(row)

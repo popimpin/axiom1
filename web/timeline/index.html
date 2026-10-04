@@ -68,6 +68,12 @@
   .pill.cal b { color: var(--color-verified); }
   .pill.rem b { color: var(--color-pending); }
   .pill.fol b { color: var(--color-open); }
+  .pill.over b { color: var(--color-pending); }
+  .receipt .sandbox { display: inline-block; margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1);
+                      color: var(--color-text); border: 1px solid var(--color-pending); border-radius: var(--radius-base); padding: 4px 8px;
+                      text-decoration: none; transition: background 160ms var(--ease); }
+  .receipt .sandbox:hover, .receipt .sandbox:focus-visible { background: var(--color-surface-2); outline: none; }
+  .receipt .over { margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-pending); }
   .pill.static { cursor: default; box-shadow: none; background: transparent; }
   .people { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; pointer-events: auto; }
   .person { font: 500 var(--fs-1)/1 var(--font-body); padding: 8px 12px; border-radius: var(--radius-base);
@@ -227,6 +233,7 @@
       <button class="pill rem" data-filter="reminder" aria-pressed="false">reminders <b id="sRem">--</b></button>
       <button class="pill fol" data-filter="follow_up" aria-pressed="false">follow-up needed <b id="sFol">--</b></button>
       <button class="pill" data-filter="gap" aria-pressed="false">call gaps <b id="sGap">--</b></button>
+      <button class="pill over" data-filter="oversight" aria-pressed="false" title="code, commands or instructions sent in mail: never acted on, a person looks">needs oversight <b id="sOver">--</b></button>
       <span class="pill static" title="counted, not drawn: nothing to do but keep them">filed only <b id="sFiled">--</b></span>
     </nav>
   </header>
@@ -346,6 +353,7 @@ function headline(set) {
   $("sAll").textContent = fmt(threads.length); $("sCal").textContent = fmt(o.calendar || 0); $("sRem").textContent = fmt(rem);
   $("sFol").textContent = fmt(o.follow_up || 0); $("sGap").textContent = fmt(threads.filter(t => t.hasGap).length);
   $("sFiled").textContent = fmt(o.filed || 0);
+  $("sOver").textContent = fmt(threads.filter(t => (t.oversight || []).length).length);
 }
 
 // ---- scene ------------------------------------------------------------------------------------------------
@@ -501,6 +509,7 @@ addEventListener("keydown", e => {
 // ---- filters ------------------------------------------------------------------------------------------------
 let filter = "all";
 const matches = t => filter === "all" || (filter === "gap" ? t.hasGap
+  : filter === "oversight" ? (t.oversight || []).length > 0
   : filter.startsWith("project:") ? t.project === filter.slice(8) : kindOf(t) === filter);
 document.querySelectorAll(".pill[data-filter]").forEach(p => p.addEventListener("click", () => {
   filter = p.dataset.filter;
@@ -555,7 +564,9 @@ function openInspector(t) {
   receipt.className = "receipt " + k;
   receipt.innerHTML = `<div class="kind">${esc(k === "reminder" ? o.kind.replace(":", " · ") : k === "follow_up" ? "follow-up needed" : k)}</div>`
     + `<div class="what">${esc(outcomeLine(t))}</div>`
-    + `<div class="by">decided by: ${esc(o.decided_by || "structure (no decision needed)")}</div>`;
+    + `<div class="by">decided by: ${esc(o.decided_by || "structure (no decision needed)")}</div>`
+    + ((t.oversight || []).length ? `<div class="over">needs human oversight: ${esc(t.oversight.join(", "))} - nothing in it is run or acted on</div>`
+      + `<a class="sandbox" href="inspect.html?box=${encodeURIComponent(current)}&thread=${encodeURIComponent(t.thread)}" target="_blank" rel="noopener noreferrer">open in the review sandbox (read only, no network)</a>` : "");
   $("iSummary").innerHTML = summarize(t).map(s => `<li class="${s.kind}">${esc(s.text)}`
     + `<span class="src">${esc(s.src)}</span></li>`).join("");
   $("iEvents").innerHTML = t.events.map(ev => `<li class="${ev.kind}">`

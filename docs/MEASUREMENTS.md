@@ -780,3 +780,36 @@ candidate; it is a product decision.
 
 **A bug this test found first:** a day-less follow-up ("...our event packages") matched an accepted calendar event on
 a shared word and was put on the calendar. Fixed in the connector: **no day, no match** (test added).
+
+## Instruction is one way only: sanitizer, quarantine, review sandbox, local-only (2026-10-04)
+
+Adrian: "structured blocks with instruction in a mailbox is not to be acted on ever, instruction is one way only";
+"a simple sanitizer is all thats needed on top of the validator"; "engine can know this folder exists models cant and
+shouldnt be able to access it, seperate sand box for user to safely inspect"; "files with attachments flagged for
+immediate review".
+
+- **Sanitizer** (`real_inbox.defang`): a block in a message addressed to an AI assistant is removed before ANYTHING
+  reads the thread (structure included, so an injected date cannot pull a thread toward a model), replaced by a
+  marker, and the thread flagged. The person still sees the whole email. **0 false positives on all 9,124 real Enron
+  threads, the 50 scored and the generated inbox.**
+- **AgentDojo, all five attack styles x 6 goals, all 16 vectors** (30 attacked runs, Nemotron, 3 clean runs as the
+  noise baseline): important_instructions, ignore_previous, injecagent, system_message - **sanitizer caught 5/5 in
+  every run, 0 attacked outcomes changed**. direct ("TODO: {goal}") carries no mark and is not caught: in the one
+  goal that names a date, 4 ad/phishing threads became follow-ups. Attacker text in any output: **0 of 30**.
+  Actions possible: 0 by design.
+- **Quarantine** (`axiom1/oversight.py`): a thread with an attachment, code, commands, database statements,
+  encoded data, or AI-addressed instructions is filed by structure and flagged "needs human oversight". **No model
+  receives a word of it.** Dangerous attachments (executables, scripts, macro documents) are listed first. In the
+  five mailboxes: 864 threads into review, among them **14 executables, including `Happy99.exe`** (a 1999 email worm)
+  in the CEO's mailbox. Cost on the scored set: 9 of 50 threads carry attachments; 8 were "nothing to do", but one
+  correct calendar entry (rapp-b_inbox_323, a call with two .doc files) now goes to review instead - Nemotron's
+  46/50 becomes 45/50 on the strict score, with that thread in front of a person.
+- **Review sandbox** (`web/timeline/inspect.html`): plain text only, written with textContent, links as text,
+  attachments listed never opened, and a Content-Security-Policy allowing nothing but its own files. Tested with a
+  hostile email (script, tracking image, iframe, fetch): **0 requests to the attacker, 0 elements created from the
+  email, no script ran.**
+- **Local-only** (`AXIOM_LOCAL_ONLY=1`): every model endpoint must resolve to this machine or the private network
+  (loopback, RFC 1918, link-local, Tailscale's 100.64.0.0/10) - checked at start and on every call. Nebius is refused;
+  Bee is allowed. Edge model + local-only = the email never leaves the building.
+- Detector false positives found on Enron and fixed before counting: email quoting read as a shell prompt (~300
+  threads), prose read as an import, and a newsletter line ending in "Sparesfinder.com" read as a .com program.

@@ -200,6 +200,35 @@ class Workspace:
     ]
 
 
+def endpoint_is_local(url):
+    """True if every address the endpoint's host resolves to is on this machine or the private network: loopback,
+    RFC 1918, link-local, or 100.64.0.0/10 (carrier-grade NAT, which Tailscale uses - Bee is 100.100.157.46)."""
+    import ipaddress
+    import socket
+    from urllib.parse import urlparse
+    host = urlparse(url).hostname or ""
+    try:
+        addrs = {ai[4][0] for ai in socket.getaddrinfo(host, None)}
+    except OSError:
+        return False                                     # cannot resolve it: it is not proven local
+    cgnat = ipaddress.ip_network("100.64.0.0/10")
+    def local(a):
+        ip = ipaddress.ip_address(a.split("%")[0])
+        return ip.is_loopback or ip.is_private or ip.is_link_local or (ip.version == 4 and ip in cgnat)
+    return bool(addrs) and all(local(a) for a in addrs)
+
+
+def local_only():
+    return os.environ.get("AXIOM_LOCAL_ONLY", "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def check_local(url):
+    """AXIOM_LOCAL_ONLY: mail never leaves the building. A model endpoint off the private network is refused outright."""
+    if local_only() and not endpoint_is_local(url):
+        raise SystemExit(f"AXIOM_LOCAL_ONLY is set: refusing the model endpoint {url} - it is not on this machine or "
+                         f"the private network, so mail text would leave the building")
+
+
 class ChatModel:
     """An OpenAI-compatible /chat/completions endpoint (Nebius Token Factory by default)."""
 
@@ -207,6 +236,7 @@ class ChatModel:
         self.model = model or os.environ.get("AXIOM_MODEL", DEFAULT_MODEL)
         self.base_url = (base_url or os.environ.get("NEBIUS_BASE_URL", DEFAULT_BASE_URL)).rstrip("/")
         self.api_key = api_key or os.environ.get("NEBIUS_API_KEY")
+        check_local(self.base_url)                     # refused at start, before any key or text is used
         if not self.api_key:
             raise SystemExit("set NEBIUS_API_KEY")
         self.temperature, self.max_tokens = temperature, max_tokens
@@ -223,6 +253,7 @@ class ChatModel:
                       "cut_off": 0}   # replies that hit max_tokens (finish_reason "length")
 
     def __call__(self, messages, tools):
+        check_local(self.base_url)                     # and on every call: a host that re-resolves elsewhere is caught
         body = {"model": self.model, "messages": messages, "tools": tools,
                 "temperature": self.temperature, "max_tokens": self.max_tokens}
         if self.thinking is not None and self.thinking_switch == "chat_template_kwargs":

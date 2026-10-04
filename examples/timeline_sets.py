@@ -32,7 +32,7 @@ def short_list(tl):
     """Only the threads that carry something beyond filing."""
     folders = []
     for f in tl["folders"]:
-        ts = [t for t in f["threads"] if t["outcome"]["kind"] != "filed"]
+        ts = [t for t in f["threads"] if t["outcome"]["kind"] != "filed" or t.get("oversight")]
         if ts:
             folders.append({**f, "threads": ts})
     return folders
@@ -61,9 +61,31 @@ def main():
             if t["project"] and t["outcome"]["kind"] != "filed":
                 open_by[t["project"]] = open_by.get(t["project"], 0) + 1
         projects = [{"name": n, "threads": c, "open": open_by.get(n, 0)} for n, c in sizes.most_common(24)]
+        # needs human oversight (code, commands, database statements, encoded blobs, AI-addressed instructions):
+        # read from the original messages, structure only; such a thread joins the short list whatever else it is
+        import mailbox as MB
+        from axiom1 import oversight as O
+        raw = MB.threads(MB.load(box))
+        topic_of = {r["thread"]: r.get("topic") for r in rows}
+        for t in everything:
+            ms = raw.get(topic_of.get(t["thread"]), [])
+            t["oversight"] = O.reasons([MB.new_text(m) for m in ms])
+        s["oversight"] = sum(1 for t in everything if t["oversight"])
+        # the review folder's text, for the sandboxed inspector only (web/timeline/inspect.html): the original messages
+        # as plain text, never rendered as HTML, attachments listed by name and never opened
+        review = {}
+        for t in everything:
+            if t["oversight"]:
+                ms = raw.get(topic_of.get(t["thread"]), [])
+                review[t["thread"]] = {"subject": t["subject"], "reasons": t["oversight"],
+                                       "attachments": O.attachments([m["body"] for m in ms]),
+                                       "messages": [{"from": m["from"], "date": m["date"], "body": MB.new_text(m)} for m in ms]}
+        rv = OUT.parent / f"review_{box}.js"
+        rv.write_text(f"(window.AXIOM_REVIEW = window.AXIOM_REVIEW || {{}})[{json.dumps(box)}] = "
+                      + json.dumps(review, ensure_ascii=False) + ";\n", encoding="utf-8")
         sets.append({"id": box, "name": name, "role": role, "note": note, "whole_mailbox": True, "projects": projects,
                      "summary": {"threads": s["threads"], "messages": s["messages"], "outcomes": s["outcomes"],
-                                 "call_gaps": s["call_gaps"], "announcements": s.get("announcements", 0),
+                                 "call_gaps": s["call_gaps"], "announcements": s.get("announcements", 0), "oversight": s.get("oversight", 0),
                                  "zero_model_calls": s["zero_model_calls"], "confirm_items": s["confirm_items"],
                                  "models": MODELS},
                      "folders": short_list(tl)})

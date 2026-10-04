@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- The review sandbox. This page may load only its own script and data file, and nothing else: no images (no tracking
+     pixels), no network requests, no frames, no forms, no plugins. The email's text is placed with textContent and never
+     rendered as HTML, so nothing in it can run; links stay plain text; attachments are listed by name, never opened. -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'none';
+               connect-src 'none'; frame-src 'none'; object-src 'none'; media-src 'none'; form-action 'none'; base-uri 'none'" />
+<meta name="referrer" content="no-referrer" />
+<title>Review Sandbox</title>
+<style>
+  @font-face { font-family: "Space Grotesk"; src: url("fonts/space-grotesk-var.woff2") format("woff2"); font-weight: 300 700; }
+  @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono-var.woff2") format("woff2"); font-weight: 400 800; }
+  :root {
+    --color-surface: #0A0E12; --color-surface-2: #10161C; --color-surface-3: #18212A;
+    --color-text: #E6EDF3; --color-text-dim: #9AA7B4; --color-text-faint: #7A8794; --color-border: #22303B;
+    --color-primary: #5CCFE6; --color-accent: #5CCFE6; --color-pending: #FFB454; --color-danger: #FF7B72;
+    --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif; --font-body: var(--font-heading);
+    --font-data: "JetBrains Mono", ui-monospace, Consolas, monospace; --radius-base: 3px;
+    --fs-1: 12px; --fs-2: 15px; --fs-3: 18.75px; --fs-4: 23.44px;
+    --elev-1: 0 1px 2px rgba(0,0,0,.45); --elev-2: 0 4px 16px rgba(0,0,0,.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--color-surface); color: var(--color-text); font: var(--fs-2)/24px var(--font-body); padding: 24px; }
+  main { max-width: 920px; margin: 0 auto; }
+  .seal { font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .1em; text-transform: uppercase; color: var(--color-text-dim);
+          border: 1px solid var(--color-border); border-radius: var(--radius-base); padding: 8px 12px; background: var(--color-surface-2); }
+  h1 { font-size: var(--fs-4); font-weight: 700; margin: 24px 0 8px; }
+  .why { display: grid; gap: 4px; margin: 12px 0 24px; }
+  .why div { font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-pending); }
+  .why div.danger { color: var(--color-danger); font-weight: 700; }
+  .files { border: 1px dashed var(--color-border); border-radius: var(--radius-base); padding: 12px 16px; margin-bottom: 24px; }
+  .files li { list-style: none; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-dim); }
+  .msg { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-base);
+         box-shadow: var(--elev-1); margin-bottom: 16px; }
+  .msg header { padding: 12px 16px; border-bottom: 1px solid var(--color-border); font-family: var(--font-data);
+                font-size: var(--fs-1); color: var(--color-text-faint); }
+  .msg pre { padding: 16px; white-space: pre-wrap; word-break: break-word; font: var(--fs-2)/24px var(--font-data); color: var(--color-text); }
+  .empty { color: var(--color-text-dim); margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="seal">review sandbox · read only · no network, no images, no scripts from the email · nothing here is run or opened</div>
+  <h1 id="subject">-</h1>
+  <div class="why" id="why"></div>
+  <div class="files" id="files" hidden><div class="seal" style="border:0;padding:0;background:none">attachments - listed, never opened</div><ul id="fileList"></ul></div>
+  <div id="messages"></div>
+</main>
+<script src="inspect.js"></script>
+</body>
+</html>

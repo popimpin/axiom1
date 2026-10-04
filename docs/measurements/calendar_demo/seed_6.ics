@@ -1,0 +1,46 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Axiom-1//generated demo calendar//EN
+BEGIN:VEVENT
+UID:6-threads/02.txt
+SUMMARY:Car service
+DTSTART:20260515T090000
+ATTENDEE;CN=Other:mailto:ana@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:6-threads/05.txt
+SUMMARY:Car service
+DTSTART:20260509T160000
+ATTENDEE;CN=Other:mailto:dev@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:6-threads/09.txt
+SUMMARY:Car service
+DTSTART:20260514T110000
+ATTENDEE;CN=Other:mailto:ana@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:6-threads/10.txt
+SUMMARY:Book club
+DTSTART:20260507T120000
+ATTENDEE;CN=Other:mailto:grace@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:6-threads/01.txt
+SUMMARY:Quarterly planning
+DTSTART:20260506T153000
+ATTENDEE;CN=Other:mailto:sam@example.com
+ATTENDEE;PARTSTAT=DECLINED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:6-threads/04.txt
+SUMMARY:Budget review
+DTSTART:20260513T120000
+ATTENDEE;CN=Other:mailto:sam@example.com
+ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:me@example.com
+END:VEVENT
+END:VCALENDAR

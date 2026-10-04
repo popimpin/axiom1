@@ -1,0 +1,53 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Axiom-1//generated demo calendar//EN
+BEGIN:VEVENT
+UID:8-threads/03.txt
+SUMMARY:Budget review
+DTSTART:20260511T130000
+ATTENDEE;CN=Other:mailto:grace@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:8-threads/04.txt
+SUMMARY:Quarterly planning
+DTSTART:20260507T153000
+ATTENDEE;CN=Other:mailto:priya@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:8-threads/05.txt
+SUMMARY:Budget review
+DTSTART:20260515T113000
+ATTENDEE;CN=Other:mailto:dev@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:8-threads/08.txt
+SUMMARY:Quarterly planning
+DTSTART:20260518T140000
+ATTENDEE;CN=Other:mailto:dev@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:8-threads/09.txt
+SUMMARY:1:1
+DTSTART:20260510T090000
+ATTENDEE;CN=Other:mailto:sam@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:8-threads/10.txt
+SUMMARY:Dentist check-up
+DTSTART:20260506T123000
+ATTENDEE;CN=Other:mailto:ana@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:8-threads/01.txt
+SUMMARY:Design review
+DTSTART:20260506T120000
+ATTENDEE;CN=Other:mailto:ana@example.com
+ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:me@example.com
+END:VEVENT
+END:VCALENDAR

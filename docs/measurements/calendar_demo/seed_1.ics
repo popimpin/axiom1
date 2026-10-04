@@ -1,0 +1,46 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Axiom-1//generated demo calendar//EN
+BEGIN:VEVENT
+UID:1-threads/01.txt
+SUMMARY:Coffee
+DTSTART:20260508T120000
+ATTENDEE;CN=Other:mailto:ana@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:1-threads/03.txt
+SUMMARY:Coffee
+DTSTART:20260505T130000
+ATTENDEE;CN=Other:mailto:dev@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:1-threads/04.txt
+SUMMARY:1:1
+DTSTART:20260505T090000
+ATTENDEE;CN=Other:mailto:grace@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:1-threads/05.txt
+SUMMARY:Car service
+DTSTART:20260513T140000
+ATTENDEE;CN=Other:mailto:grace@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:1-threads/02.txt
+SUMMARY:Coffee
+DTSTART:20260507T130000
+ATTENDEE;CN=Other:mailto:sam@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:1-threads/07.txt
+SUMMARY:Book club
+DTSTART:20260514T130000
+ATTENDEE;CN=Other:mailto:sam@example.com
+ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:me@example.com
+END:VEVENT
+END:VCALENDAR

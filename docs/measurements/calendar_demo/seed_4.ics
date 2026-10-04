@@ -1,0 +1,39 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Axiom-1//generated demo calendar//EN
+BEGIN:VEVENT
+UID:4-threads/01.txt
+SUMMARY:Car service
+DTSTART:20260509T140000
+ATTENDEE;CN=Other:mailto:dev@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:4-threads/02.txt
+SUMMARY:Dentist check-up
+DTSTART:20260513T090000
+ATTENDEE;CN=Other:mailto:jo@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:4-threads/05.txt
+SUMMARY:Car service
+DTSTART:20260506T090000
+ATTENDEE;CN=Other:mailto:priya@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:4-threads/07.txt
+SUMMARY:Project kickoff
+DTSTART:20260507T153000
+ATTENDEE;CN=Other:mailto:grace@example.com
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:me@example.com
+END:VEVENT
+BEGIN:VEVENT
+UID:4-threads/06.txt
+SUMMARY:Dentist check-up
+DTSTART:20260507T090000
+ATTENDEE;CN=Other:mailto:sam@example.com
+ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:me@example.com
+END:VEVENT
+END:VCALENDAR

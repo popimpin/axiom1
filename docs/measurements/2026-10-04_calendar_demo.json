@@ -1,0 +1,1009 @@
+{
+ "tally": {
+  "follow_ups_before": 23,
+  "follow_ups_after": 13,
+  "accepted_to_calendar": 4,
+  "declined_to_filed": 6,
+  "still_open_said_why": 7,
+  "entries_verified": 40,
+  "conflicts_flagged": 8,
+  "left_open_ambiguous": 1,
+  "wrong": 0
+ },
+ "rows": [
+  {
+   "seed": 1,
+   "thread": "threads/01.txt",
+   "subject": "Coffee",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Coffee 2026-05-08T12:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-08T12:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/02.txt",
+   "subject": "Coffee",
+   "before": "follow_up",
+   "after": "calendar",
+   "receipt": "accepted in your calendar: Coffee 2026-05-07T13:00",
+   "calendar_says": [
+    "calendar",
+    "2026-05-07T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/03.txt",
+   "subject": "Coffee",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-05T12:00, your calendar says 2026-05-05T13:00 (Coffee)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-05T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/04.txt",
+   "subject": "1:1",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: 1:1 2026-05-05T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-05T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/05.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-13T14:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-13T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/07.txt",
+   "subject": "Book club",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "needs-action in your calendar: Book club 2026-05-14T13:00",
+   "calendar_says": [
+    "follow_up",
+    "2026-05-14T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/08.txt",
+   "subject": "Quarterly planning",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 1,
+   "thread": "threads/09.txt",
+   "subject": "Car service",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/01.txt",
+   "subject": "Lunch",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Lunch 2026-05-13T12:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-13T12:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/02.txt",
+   "subject": "Quarterly planning",
+   "before": "follow_up",
+   "after": "filed",
+   "receipt": "declined in your calendar: Quarterly planning 2026-05-06T13:00",
+   "calendar_says": [
+    "filed",
+    "2026-05-06T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/03.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-11T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-11T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/04.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-18T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-18T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/05.txt",
+   "subject": "Car service",
+   "before": "follow_up",
+   "after": "calendar",
+   "receipt": "accepted in your calendar: Car service 2026-05-13T12:00",
+   "calendar_says": [
+    "calendar",
+    "2026-05-13T12:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/06.txt",
+   "subject": "Design review",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/07.txt",
+   "subject": "Design review",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 2,
+   "thread": "threads/08.txt",
+   "subject": "Quarterly planning",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-16T09:00, your calendar says 2026-05-16T10:00 (Quarterly planning)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-16T10:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/02.txt",
+   "subject": "Project kickoff",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Project kickoff 2026-05-15T13:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-15T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/03.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-13T10:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-13T10:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/04.txt",
+   "subject": "Lunch",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "a calendar event fits this and another thread equally; not resolved by guessing",
+   "calendar_says": [
+    "filed",
+    "2026-05-06T12:00"
+   ],
+   "right": false
+  },
+  {
+   "seed": 3,
+   "thread": "threads/05.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-05T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-05T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/06.txt",
+   "subject": "Book club",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Book club 2026-05-15T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-15T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/07.txt",
+   "subject": "Dentist check-up",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Dentist check-up 2026-05-10T10:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-10T10:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/08.txt",
+   "subject": "Design review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-07T11:30, your calendar says 2026-05-07T12:30 (Design review)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-07T12:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 3,
+   "thread": "threads/09.txt",
+   "subject": "Lunch",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "a calendar event fits this and another thread equally; not resolved by guessing",
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/01.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-09T14:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-09T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/02.txt",
+   "subject": "Dentist check-up",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Dentist check-up 2026-05-13T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-13T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/04.txt",
+   "subject": "Design review",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/05.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-06T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-06T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/06.txt",
+   "subject": "Dentist check-up",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "needs-action in your calendar: Dentist check-up 2026-05-07T09:00",
+   "calendar_says": [
+    "follow_up",
+    "2026-05-07T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/07.txt",
+   "subject": "Project kickoff",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Project kickoff 2026-05-07T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 4,
+   "thread": "threads/10.txt",
+   "subject": "Project kickoff",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/02.txt",
+   "subject": "Lunch",
+   "before": "follow_up",
+   "after": "filed",
+   "receipt": "declined in your calendar: Lunch 2026-05-05T11:30",
+   "calendar_says": [
+    "filed",
+    "2026-05-05T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/03.txt",
+   "subject": "Project kickoff",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Project kickoff 2026-05-07T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/04.txt",
+   "subject": "Coffee",
+   "before": "follow_up",
+   "after": "filed",
+   "receipt": "declined in your calendar: Coffee 2026-05-12T09:00",
+   "calendar_says": [
+    "filed",
+    "2026-05-12T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/05.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-12T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-12T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/06.txt",
+   "subject": "Project kickoff",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Project kickoff 2026-05-06T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-06T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/07.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-14T16:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-14T16:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/08.txt",
+   "subject": "Project kickoff",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/09.txt",
+   "subject": "Quarterly planning",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Quarterly planning 2026-05-07T10:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T10:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 5,
+   "thread": "threads/10.txt",
+   "subject": "Budget review",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/01.txt",
+   "subject": "Quarterly planning",
+   "before": "follow_up",
+   "after": "filed",
+   "receipt": "declined in your calendar: Quarterly planning 2026-05-06T15:30",
+   "calendar_says": [
+    "filed",
+    "2026-05-06T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/02.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-15T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-15T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/04.txt",
+   "subject": "Budget review",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "needs-action in your calendar: Budget review 2026-05-13T12:00",
+   "calendar_says": [
+    "follow_up",
+    "2026-05-13T12:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/05.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Car service 2026-05-09T16:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-09T16:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/08.txt",
+   "subject": "1:1",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/09.txt",
+   "subject": "Car service",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-14T10:00, your calendar says 2026-05-14T11:00 (Car service)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-14T11:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 6,
+   "thread": "threads/10.txt",
+   "subject": "Book club",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Book club 2026-05-07T12:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T12:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/01.txt",
+   "subject": "Lunch",
+   "before": "follow_up",
+   "after": "calendar",
+   "receipt": "accepted in your calendar: Lunch 2026-05-11T13:00",
+   "calendar_says": [
+    "calendar",
+    "2026-05-11T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/03.txt",
+   "subject": "1:1",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: 1:1 2026-05-13T13:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-13T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/04.txt",
+   "subject": "Budget review",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/05.txt",
+   "subject": "Book club",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Book club 2026-05-14T16:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-14T16:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/06.txt",
+   "subject": "Quarterly planning",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Quarterly planning 2026-05-14T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-14T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/07.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-07T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/08.txt",
+   "subject": "Design review",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/09.txt",
+   "subject": "Book club",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Book club 2026-05-07T14:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 7,
+   "thread": "threads/10.txt",
+   "subject": "Design review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Design review 2026-05-11T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-11T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/01.txt",
+   "subject": "Design review",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "a calendar event fits this and another thread equally; not resolved by guessing",
+   "calendar_says": [
+    "follow_up",
+    "2026-05-06T12:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/02.txt",
+   "subject": "Budget review",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": "a calendar event fits this and another thread equally; not resolved by guessing",
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/03.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-11T13:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-11T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/04.txt",
+   "subject": "Quarterly planning",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Quarterly planning 2026-05-07T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-07T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/05.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-15T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-15T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/07.txt",
+   "subject": "Quarterly planning",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/08.txt",
+   "subject": "Quarterly planning",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Quarterly planning 2026-05-18T14:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-18T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/09.txt",
+   "subject": "1:1",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: 1:1 2026-05-10T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-10T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 8,
+   "thread": "threads/10.txt",
+   "subject": "Dentist check-up",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-06T11:30, your calendar says 2026-05-06T12:30 (Dentist check-up)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-06T12:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/01.txt",
+   "subject": "Lunch",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-07T13:00, your calendar says 2026-05-07T14:00 (Lunch)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-07T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/03.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-14T14:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-14T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/04.txt",
+   "subject": "Lunch",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-12T10:00, your calendar says 2026-05-12T11:00 (Lunch)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-12T11:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/05.txt",
+   "subject": "Project kickoff",
+   "before": "follow_up",
+   "after": "calendar",
+   "receipt": "accepted in your calendar: Project kickoff 2026-05-05T14:00",
+   "calendar_says": [
+    "calendar",
+    "2026-05-05T14:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/06.txt",
+   "subject": "Budget review",
+   "before": "follow_up",
+   "after": "follow_up",
+   "receipt": "needs-action in your calendar: Budget review 2026-05-13T10:00",
+   "calendar_says": [
+    "follow_up",
+    "2026-05-13T10:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/07.txt",
+   "subject": "Car service",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/08.txt",
+   "subject": "Budget review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Budget review 2026-05-08T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-08T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 9,
+   "thread": "threads/09.txt",
+   "subject": "Coffee",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Coffee 2026-05-11T09:00",
+   "calendar_says": [
+    "verified",
+    "2026-05-11T09:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/01.txt",
+   "subject": "Quarterly planning",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Quarterly planning 2026-05-06T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-06T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/03.txt",
+   "subject": "1:1",
+   "before": "finalize",
+   "after": "finalize",
+   "receipt": null,
+   "calendar_says": null,
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/04.txt",
+   "subject": "Project kickoff",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Project kickoff 2026-05-13T15:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-13T15:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/07.txt",
+   "subject": "Car service",
+   "before": "follow_up",
+   "after": "filed",
+   "receipt": "declined in your calendar: Car service 2026-05-05T16:00",
+   "calendar_says": [
+    "filed",
+    "2026-05-05T16:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/08.txt",
+   "subject": "Budget review",
+   "before": "follow_up",
+   "after": "filed",
+   "receipt": "declined in your calendar: Budget review 2026-05-13T13:00",
+   "calendar_says": [
+    "filed",
+    "2026-05-13T13:00"
+   ],
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/09.txt",
+   "subject": "Design review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "matches your calendar: Design review 2026-05-10T11:30",
+   "calendar_says": [
+    "verified",
+    "2026-05-10T11:30"
+   ],
+   "right": true
+  },
+  {
+   "seed": 10,
+   "thread": "threads/10.txt",
+   "subject": "Design review",
+   "before": "calendar",
+   "after": "calendar",
+   "receipt": "CONFLICT: the email says 2026-05-12T12:00, your calendar says 2026-05-12T13:00 (Design review)",
+   "calendar_says": [
+    "conflict",
+    "2026-05-12T13:00"
+   ],
+   "right": true
+  }
+ ],
+ "receipt": "C:\\Projectsfolder\\OhmOS\\Axiom1\\docs\\measurements\\2026-10-04_real_inbox_nebius_v4.json",
+ "calendars": "C:\\Projectsfolder\\OhmOS\\Axiom1\\docs\\measurements\\calendar_demo"
+}

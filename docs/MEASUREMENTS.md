@@ -724,3 +724,34 @@ subject lines rarely repeat word for word.
 **The page now shows the Nemotron runs** (`web/timeline`, data from `docs/measurements/mailboxes_nebius/`): each
 person's header names the deciding models, and the description says how many decisions waited for a person
 because the two models disagreed. The Bee runs stay in `docs/measurements/mailboxes/` for comparison.
+
+## The calendar connector (2026-10-04)
+
+`axiom1/calendar_sync.py` reads a calendar as iCalendar (.ics) - Google Calendar and Outlook both export it, and
+their APIs return the same fields - and reconciles the harness's output against it, with no model:
+- an invitation never answered in email but **accepted in the calendar** goes on the calendar; **declined** is filed;
+  tentative or no response stays open and says which
+- every calendar entry the harness made is **checked against the calendar**: matched, or a **conflict** (the email
+  says one time, the calendar another), or "no matching event" - never silently trusted
+- a match is structural (shared topic words, a day the thread names, overlapping people), the whole inbox at once:
+  one event explains at most one thread, firm entries claim first, and an event two threads fit equally is given to
+  neither - "not resolved by guessing". Tests 11/11; forcing every response to "accepted" turns 2 red.
+
+Enron has no usable calendar (its "calendar" folders are Outlook-migration stubs: a title and a migration
+timestamp, no meeting time, attendees or responses), and a calendar must not be invented for real people. So it is
+shown on the generated inbox with a GENERATED calendar written as real .ics files (`docs/measurements/calendar_demo/`),
+reconciling the Nemotron outcomes (`2026-10-04_calendar_demo.json`):
+
+| | |
+|---|---|
+| follow-ups before / after reading the calendar | **23 / 13** |
+| unanswered invitations accepted in the calendar -> on the calendar | 4 |
+| unanswered invitations declined in the calendar -> filed | 6 |
+| still open, reason stated | 7 |
+| calendar entries confirmed by the calendar | **40** |
+| meetings later moved in the calendar, flagged as conflicts | **8 of 8** |
+| left open because two threads fit one event | 1 |
+| **changed to a wrong outcome** | **0** (of 80 checked) |
+
+Two bugs found by this run and fixed first: a title with no words ("1:1") could never match, and one calendar event
+was used to resolve two threads with the same title (7 wrong before the fixes).

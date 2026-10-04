@@ -2,8 +2,8 @@
  "threads": 2130,
  "folders": 2099,
  "outcomes": {
-  "filed": 1997,
-  "follow_up": 113,
+  "filed": 2009,
+  "follow_up": 101,
   "calendar": 12,
   "reminder:finalize": 8
  },
@@ -13,5 +13,6 @@
  "messages": 3274,
  "model_seconds": 6841.3,
  "zero_model_calls": 1033,
- "pipeline_errors": 0
+ "pipeline_errors": 0,
+ "announcements": 125
 }

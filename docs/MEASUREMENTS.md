@@ -651,3 +651,22 @@ topic of a thread ruled "nothing" in the 50-thread set; some follow-ups are comp
 `threads/*.txt` and refused, and every thread that should have become a calendar entry, reminder or follow-up fell
 back to "filed" (Heard 16, Giron 60), showing only as "890/890 filed". The 20-thread smoke run had passed because
 none of its threads reached the pipeline. Fixed; a pipeline failure now prints and stops the run.
+
+## Announcements are noise; the timeline per person (2026-10-03)
+
+Adrian's call: company-wide announcements are noise. Rule (structure, no model): a thread I never wrote in that was
+sent from a no-reply address (no.address@enron.com), with no visible recipients, or to 50 or more people is filed as
+an announcement. Working meetings in these mailboxes ran to about 40 recipients ("master netting group meeting",
+41) and stay. Applied to the four finished mailboxes without re-asking any model: 770 announcements filed, of which
+58 had been follow-ups ("all-employee meeting", "ice cream - november birthdays", a broker's call to 118 people).
+
+| employee | threads | filed only | follow-up | reminder | on calendar |
+|---|---|---|---|---|---|
+| Heard | 890 | 879 | 10 | 0 | 1 |
+| Giron | 1,373 | 1,323 | 48 | 0 | 2 |
+| Steffes | 2,130 | 2,009 | 101 | 8 | 12 |
+| Haedicke | 2,537 | 2,393 | 137 | 2 | 5 |
+
+The page (`web/timeline/`) now switches between people: the headline is the whole mailbox ("2,393 of 2,537 threads
+just need filing"), the lanes are what is left to do. Data: `python examples/timeline_sets.py`. three.js is bundled
+(MIT, `vendor/`), so the page makes no outside request. Measured at 360-1920 px: 0 lint findings.

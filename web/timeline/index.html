@@ -68,6 +68,14 @@
   .pill.cal b { color: var(--color-verified); }
   .pill.rem b { color: var(--color-pending); }
   .pill.fol b { color: var(--color-open); }
+  .pill.static { cursor: default; box-shadow: none; background: transparent; }
+  .people { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; pointer-events: auto; }
+  .person { font: 500 var(--fs-1)/1 var(--font-body); padding: 8px 12px; border-radius: var(--radius-base);
+            border: 1px solid var(--color-border); background: rgba(16,22,28,.8); color: var(--color-text-dim);
+            cursor: pointer; box-shadow: var(--elev-1); transition: color 160ms var(--ease), border-color 160ms var(--ease); }
+  .person small { display: block; margin-top: 4px; font: 400 var(--fs-1)/1 var(--font-data); color: var(--color-text-dim); }   /* faint failed AA on the pressed button */
+  .person:hover, .person:focus-visible { color: var(--color-text); border-color: var(--color-text-faint); outline: none; }
+  .person[aria-pressed="true"] { color: var(--color-text); border-color: var(--color-text-dim); background: var(--color-surface-3); }
 
   .legend { left: 24px; bottom: 64px; display: grid; gap: 4px; font-size: var(--fs-1); color: var(--color-text-dim);
             font-family: var(--font-data); pointer-events: none; }
@@ -132,6 +140,14 @@
     .legend { display: none; }
     .scrub { left: 16px; right: 16px; bottom: 16px; }
   }
+  /* phone / portrait: the header was taller than the river (switcher + hero + thesis + pills), so it shrinks */
+  @media (max-width: 899px), (orientation: portrait) {
+    .thesis { display: none; }
+    .people { flex-wrap: nowrap; overflow-x: auto; margin-bottom: 12px; scrollbar-width: none; }
+    .person { flex: none; }
+    .person small { display: none; }
+    .pill { padding: 4px 6px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; }
   }
@@ -143,17 +159,18 @@
 
   <header class="hud">
     <div class="title">
-      <div class="eyebrow">Axiom-1 · inbox timeline · nothing guessed across a phone call</div>
+      <nav class="people" id="people" aria-label="Whose mail"></nav>
+      <div class="eyebrow" id="who">Axiom-1 · inbox timeline · nothing guessed across a phone call</div>
       <div class="hero"><b id="heroNum">--</b><span id="heroText">of -- threads just need filing</span></div>
       <p class="thesis" id="thesis">Every thread is filed whole. A calendar entry or a reminder is something extra a thread may carry.</p>
     </div>
     <nav class="stats" aria-label="Filter threads">
-      <button class="pill" data-filter="all" aria-pressed="true">all <b id="sAll">--</b></button>
+      <button class="pill" data-filter="all" aria-pressed="true">short list <b id="sAll">--</b></button>
       <button class="pill cal" data-filter="calendar" aria-pressed="false">on calendar <b id="sCal">--</b></button>
       <button class="pill rem" data-filter="reminder" aria-pressed="false">reminders <b id="sRem">--</b></button>
       <button class="pill fol" data-filter="follow_up" aria-pressed="false">follow-up needed <b id="sFol">--</b></button>
       <button class="pill" data-filter="gap" aria-pressed="false">call gaps <b id="sGap">--</b></button>
-      <button class="pill" data-filter="filed" aria-pressed="false">filed only <b id="sFiled">--</b></button>
+      <span class="pill static" title="counted, not drawn: nothing to do but keep them">filed only <b id="sFiled">--</b></span>
     </nav>
   </header>
 
@@ -187,14 +204,14 @@
     <ol class="events" id="iEvents"></ol>
   </aside>
 
-<script src="timeline.data.js"></script>
+<script src="data/sets.js"></script>
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+{ "imports": { "three": "./vendor/three.module.js" } }
 </script>
 <script type="module">
 import * as THREE from "three";
 
-const DATA = window.AXIOM_TIMELINE;
+const SETS = window.AXIOM_SETS;
 const css = getComputedStyle(document.documentElement);
 const C = k => new THREE.Color(css.getPropertyValue(k).trim());
 const COL = { primary: C("--color-primary"), verified: C("--color-verified"), pending: C("--color-pending"), open: C("--color-open"),
@@ -205,9 +222,9 @@ const NARROW = innerWidth < 900 || innerHeight > innerWidth;   // phone or portr
 const $ = id => document.getElementById(id);
 const FAINT = css.getPropertyValue("--color-text-faint").trim();
 
-if (!DATA) {
+if (!SETS || !SETS.length) {
   document.body.insertAdjacentHTML("beforeend",
-    '<div class="empty">No timeline.data.js - run: python examples/inbox_timeline.py --rows &lt;eval receipt&gt; --js web/timeline/timeline.data.js</div>');
+    '<div class="empty">No data/sets.js - run: python examples/timeline_sets.py</div>');
   throw new Error("no data");
 }
 // lane labels are drawn into canvases once: the faces must be loaded first or they bake in the fallback font
@@ -216,32 +233,45 @@ await Promise.all([document.fonts.load('500 30px "Space Grotesk"'), document.fon
 // ---- data -> lanes ----------------------------------------------------------------------------------------
 // depth = when the thread started (scrolling travels through history); x = time elapsed inside the thread, on a
 // log scale (an hour, a day, a week all stay readable); each message a bead; the outcome at the lane's end.
-const threads = DATA.folders.flatMap(f => f.threads.map(t => ({ ...t, folder: f.folder })));
-threads.sort((a, b) => (a.span ? a.span[0] : "9999").localeCompare(b.span ? b.span[0] : "9999"));
 const LANE = 2.4, X0 = 0, K = 3.2;
 const hours = (a, b) => (new Date(b) - new Date(a)) / 3.6e6;
 const xOf = h => X0 + K * Math.log10(1 + Math.max(0, h));
 const kindOf = t => t.outcome.kind.startsWith("reminder") ? "reminder" : t.outcome.kind;
+const fmt = n => Number(n).toLocaleString("en-US");
 
-threads.forEach((t, i) => {
-  t.z = -i * LANE;
-  const start = t.span ? t.span[0] : null;
-  let lastX = X0;
-  t.events.forEach(e => {
-    e.x = (start && e.at) ? Math.max(xOf(hours(start, e.at)), lastX) : lastX + (e.message > 1 ? .45 : 0);
-    lastX = e.x;
+let threads = [], total = 0;
+function prepare(set) {
+  // one person: their lanes are the short list (whole mailbox) or every thread (the 50 scored); oldest first
+  const ts = set.folders.flatMap(f => f.threads.map(t => ({ ...t, folder: f.folder })));
+  ts.sort((a, b) => (a.span ? a.span[0] : "9999").localeCompare(b.span ? b.span[0] : "9999"));
+  ts.forEach((t, i) => {
+    t.z = -i * LANE;
+    const start = t.span ? t.span[0] : null;
+    let lastX = X0;
+    t.events.forEach(e => {
+      e.x = (start && e.at) ? Math.max(xOf(hours(start, e.at)), lastX) : lastX + (e.message > 1 ? .45 : 0);
+      lastX = e.x;
+    });
+    t.endX = lastX + 1.6;
+    t.hasGap = t.events.some(e => e.kind === "call");
   });
-  t.endX = lastX + 1.6;
-  t.hasGap = t.events.some(e => e.kind === "call");
-});
-
-const total = threads.length;
-const counts = { calendar: 0, reminder: 0, follow_up: 0, filed: 0, gap: 0 };
-threads.forEach(t => { counts[kindOf(t)]++; if (t.hasGap) counts.gap++; });
-$("heroNum").textContent = counts.filed;
-$("heroText").textContent = `of ${total} threads just need filing`;
-$("sAll").textContent = total; $("sCal").textContent = counts.calendar; $("sRem").textContent = counts.reminder;
-$("sGap").textContent = counts.gap; $("sFol").textContent = counts.follow_up; $("sFiled").textContent = counts.filed;
+  return ts;
+}
+function headline(set) {
+  // the numbers are the WHOLE mailbox; the lanes are what is left to do
+  const o = set.summary.outcomes, n = set.summary.threads;
+  const rem = Object.entries(o).filter(([k]) => k.startsWith("reminder")).reduce((a, [, v]) => a + v, 0);
+  $("heroNum").textContent = fmt(o.filed || 0);
+  $("heroText").textContent = `of ${fmt(n)} threads just need filing`;
+  $("who").textContent = `${set.name} · ${set.role}${set.note ? " · " + set.note : ""}`;
+  $("thesis").textContent = set.whole_mailbox
+    ? `A whole mailbox (${fmt(set.summary.messages)} messages). Every thread is filed whole; below is all that is left: ` +
+      `${fmt(threads.length)} threads. ${fmt(set.summary.announcements || 0)} announcements were filed without asking a model.`
+    : "Every thread is filed whole. A calendar entry or a reminder is something extra a thread may carry.";
+  $("sAll").textContent = fmt(threads.length); $("sCal").textContent = fmt(o.calendar || 0); $("sRem").textContent = fmt(rem);
+  $("sFol").textContent = fmt(o.follow_up || 0); $("sGap").textContent = fmt(threads.filter(t => t.hasGap).length);
+  $("sFiled").textContent = fmt(o.filed || 0);
+}
 
 // ---- scene ------------------------------------------------------------------------------------------------
 const host = $("gl");
@@ -281,7 +311,7 @@ function label(text, { size = 34, color = "#9AA7B4", weight = 500, family = "Spa
 const ticks = new THREE.Group(); scene.add(ticks);
 [["", 0], ["+1 hour", 1], ["+1 day", 24], ["+1 week", 168], ["+1 month", 720]].forEach(([txt, h]) => {
   const x = xOf(h);
-  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, -.02, 4), new THREE.Vector3(x, -.02, -total * LANE)]);
+  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, -.02, 4), new THREE.Vector3(x, -.02, -2000 * LANE)]);
   ticks.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color: COL.border, transparent: true, opacity: .55 })));
   if (!txt) return;
   const l = label(txt, { size: 20, color: FAINT, family: "JetBrains Mono", weight: 400 });
@@ -292,10 +322,10 @@ const beadGeo = new THREE.SphereGeometry(.13, 20, 14);
 const calGeo = new THREE.BoxGeometry(.42, .42, .42);
 const remGeo = new THREE.TorusGeometry(.24, .05, 10, 40);
 const filedGeo = new THREE.BoxGeometry(.34, .04, .22);
-const pickables = [];
-const lanes = [];
+let pickables = [];
+let lanes = [];
 
-threads.forEach((t, i) => {
+function buildLane(t, i) {
   const lane = new THREE.Group(); lane.position.z = t.z; scene.add(lane);
   const mats = [];
   const mat = (o) => { const m = o; m.transparent = true; mats.push(m); return m; };
@@ -364,17 +394,18 @@ threads.forEach((t, i) => {
   if (NARROW) nl.position.set(X0 - .1, .62, 0); else nl.position.set(X0 - .35, .12, 0); mats.push(nl.material); lane.add(nl);
 
   lanes.push({ t, lane, mats, i, shown: 1, target: 1 });
-});
+}
 
 // ---- camera: travels along depth (= history) ---------------------------------------------------------------
 const MIN_TRAVEL = -LANE * 2;                         // pulled back: the oldest lane sits mid-screen, not under the lens
 let travel = MIN_TRAVEL, travelTarget = MIN_TRAVEL;
-const maxTravel = Math.max(0, (total - 4) * LANE);
+let maxTravel = 0;
 function placeCamera() {
   const z = -travel;
   // phone: the names are what must not be cut; the far right (a month in) may crop instead
   camera.position.set(NARROW ? 2.2 : 3.9, NARROW ? 8.5 : 5.6, z + (NARROW ? 16 : 12.5));
-  camera.lookAt(NARROW ? 2.9 : 4.6, 0, z - 5);
+  // aimed above the lanes so the river sits below the header (the people switcher made it taller)
+  camera.lookAt(NARROW ? 2.9 : 4.6, NARROW ? 3.6 : 1.9, z - 5);
 }
 function setTravel(v) { travelTarget = Math.min(maxTravel, Math.max(MIN_TRAVEL, v)); }
 addEventListener("wheel", e => { if (!e.target.closest("aside")) { setTravel(travelTarget + e.deltaY * .012); } }, { passive: true });
@@ -395,9 +426,9 @@ addEventListener("keydown", e => {
 // ---- filters ------------------------------------------------------------------------------------------------
 let filter = "all";
 const matches = t => filter === "all" || (filter === "gap" ? t.hasGap : kindOf(t) === filter);
-document.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => {
+document.querySelectorAll(".pill[data-filter]").forEach(p => p.addEventListener("click", () => {
   filter = p.dataset.filter;
-  document.querySelectorAll(".pill").forEach(q => q.setAttribute("aria-pressed", String(q === p)));
+  document.querySelectorAll(".pill[data-filter]").forEach(q => q.setAttribute("aria-pressed", String(q === p)));
   lanes.forEach(L => { L.target = matches(L.t) ? 1 : .08; });
   const first = lanes.find(L => matches(L.t));
   if (first && filter !== "all") setTravel(first.i * LANE + MIN_TRAVEL);
@@ -476,8 +507,42 @@ $("close").addEventListener("click", closeInspector);
 
 // ---- loop: entrance (lanes rise in, staggered 70ms), travel easing, filter fades ---------------------------
 addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
-const t0 = performance.now();
+let t0 = performance.now();
 const dateOut = $("scrubDate");
+
+// ---- whose mail: switching people rebuilds the river ----------------------------------------------------
+function dispose(o) {
+  o.traverse(c => {
+    if (c.geometry && ![beadGeo, calGeo, remGeo, filedGeo].includes(c.geometry)) c.geometry.dispose();
+    if (c.material) { if (c.material.map) c.material.map.dispose(); c.material.dispose(); }
+  });
+}
+let current = null;
+function show(id) {
+  const set = SETS.find(s => s.id === id) || SETS[0];
+  current = set.id;
+  closeInspector();
+  lanes.forEach(L => { scene.remove(L.lane); dispose(L.lane); });
+  lanes = []; pickables = [];
+  threads = prepare(set); total = threads.length;
+  threads.forEach(buildLane);
+  headline(set);
+  maxTravel = Math.max(0, (total - 4) * LANE);
+  travel = travelTarget = MIN_TRAVEL;
+  filter = "all";
+  document.querySelectorAll(".pill[data-filter]").forEach(q => q.setAttribute("aria-pressed", String(q.dataset.filter === "all")));
+  document.querySelectorAll(".person").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === set.id)));
+  t0 = performance.now();
+  try { localStorage.setItem("axiom_timeline_person", set.id); } catch (e) { /* storage may be blocked */ }
+}
+const people = $("people");
+people.innerHTML = SETS.map(s => `<button class="person" data-id="${s.id}" aria-pressed="false">${esc(s.name)}`
+  + `<small>${esc(s.whole_mailbox ? fmt(s.summary.threads) + " threads" : "scored")}</small></button>`).join("");
+people.querySelectorAll(".person").forEach(b => b.addEventListener("click", () => show(b.dataset.id)));
+let first = SETS[0].id;
+try { first = localStorage.getItem("axiom_timeline_person") || first; } catch (e) { /* default */ }
+show(first);
+window.axiomTimeline.show = show;
 function frame(now) {
   travel += (travelTarget - travel) * (reduced ? 1 : .12);
   placeCamera();

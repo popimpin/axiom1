@@ -47,6 +47,7 @@
 {"thread": "threads/t00047.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "fax?"}
 {"thread": "threads/t00048.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.95, "topic": "clorox & nestle"}
 {"thread": "threads/t00049.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 15.26, "topic": "draft isda master agreements"}
+{"thread": "threads/t00050.txt", "tier": "structure: nobody answered", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "the arranging moved to a phone call, so the email cannot show what was decided", "tentative": {}, "missing": ["what was decided on the call"]}, "seconds": 3.71, "topic": "consolidated edison conference call"}
 {"thread": "threads/t00051.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.94, "topic": "timesheets due"}
 {"thread": "threads/t00052.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "enron corp. guaranty - inland paperboard and packing, inc."}
 {"thread": "threads/t00053.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "mexico deemed isda's"}
@@ -69,6 +70,7 @@
 {"thread": "threads/t00070.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "conagra energy services, inc."}
 {"thread": "threads/t00071.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "fersinsa gist brocades, s.a. de c.v."}
 {"thread": "threads/t00072.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "\"sample\" confirm"}
+{"thread": "threads/t00073.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.15, "topic": "garant?a"}
 {"thread": "threads/t00074.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "isda question"}
 {"thread": "threads/t00075.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.16, "topic": "neil diamond exclusive pre-sale"}
 {"thread": "threads/t00076.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.51, "topic": "comments to the isda master agreement"}
@@ -203,8 +205,10 @@
 {"thread": "threads/t00205.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "shell trading (us) company"}
 {"thread": "threads/t00206.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.77, "topic": "fabric"}
 {"thread": "threads/t00207.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "american air isda"}
+{"thread": "threads/t00208.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 22.8, "topic": "two new executing brokers"}
 {"thread": "threads/t00209.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "citibank/delta"}
 {"thread": "threads/t00210.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.48, "topic": "keefe, bruyette & woods"}
+{"thread": "threads/t00211.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 5.39, "topic": "csfb 2001 equity swap basket documentation"}
 {"thread": "threads/t00212.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.21, "topic": "new account paperwork"}
 {"thread": "threads/t00213.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.98, "topic": "eisl agency agreement, amendment proposal"}
 {"thread": "threads/t00214.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "cows"}
@@ -327,7 +331,7 @@
 {"thread": "threads/t00331.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.53, "topic": "abn amro deal"}
 {"thread": "threads/t00332.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.43, "topic": "isda master agreements required"}
 {"thread": "threads/t00333.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <28219560.1075854917567.JavaMail.evans@thyme>"}
-{"thread": "threads/t00334.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.22, "topic": "workstation upgrade"}
+{"thread": "threads/t00334.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.22, "topic": "workstation upgrade", "was": "is_meeting one model"}
 {"thread": "threads/t00335.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.12, "topic": "linpac inc."}
 {"thread": "threads/t00336.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.02, "topic": "master agreement with enron japan"}
 {"thread": "threads/t00337.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.81, "topic": "repo documents for nbc"}
@@ -339,7 +343,7 @@
 {"thread": "threads/t00343.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "morgan stanley futures"}
 {"thread": "threads/t00344.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.68, "topic": "paralegal luncheons"}
 {"thread": "threads/t00345.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.66, "topic": "timesheets due monday"}
-{"thread": "threads/t00346.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.37, "topic": "enron in action 10.15.01"}
+{"thread": "threads/t00346.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.37, "topic": "enron in action 10.15.01", "was": "is_meeting one model"}
 {"thread": "threads/t00347.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "dead river confidentiality agreement"}
 {"thread": "threads/t00348.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "cheryl nelson - 10/15/01"}
 {"thread": "threads/t00349.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "swap calendar as of 10/15/01"}
@@ -352,20 +356,21 @@
 {"thread": "threads/t00356.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "alberta newsprint company"}
 {"thread": "threads/t00357.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "grammar website"}
 {"thread": "threads/t00358.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 11.79, "topic": "president bush and prayer"}
+{"thread": "threads/t00359.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 5.1, "topic": "futures relationship and documentation deutsche bank-enron"}
 {"thread": "threads/t00360.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.22, "topic": "credit suisse first boston (\"csfb\") account with enron credit inc."}
 {"thread": "threads/t00361.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "comments needed-janet dougherty (101601) rozycki"}
-{"thread": "threads/t00362.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "questionable mail/suspicious packages"}
+{"thread": "threads/t00362.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "questionable mail/suspicious packages", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00363.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "corn products.xls"}
-{"thread": "threads/t00364.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.76, "topic": "to: all domestic employees who participate in the enron corp. savings plan"}
+{"thread": "threads/t00364.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.76, "topic": "to: all domestic employees who participate in the enron corp. savings plan", "was": "is_meeting one model"}
 {"thread": "threads/t00365.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.2, "topic": "united states filter corporation (usfc)- credit provision"}
 {"thread": "threads/t00366.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.01, "topic": "enron corp. guaranty in favor of alberta newsprint company"}
 {"thread": "threads/t00367.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "fx isda confirmation templates- isda and deemed isda"}
 {"thread": "threads/t00368.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.99, "topic": "the answer to number eleven"}
-{"thread": "threads/t00369.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.47, "topic": "arch coal, inc."}
+{"thread": "threads/t00369.txt", "tier": "structure: announcement: sent to 74 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.47, "topic": "arch coal, inc.", "was": "is_meeting one model"}
 {"thread": "threads/t00370.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "insert"}
 {"thread": "threads/t00371.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "csfb"}
 {"thread": "threads/t00372.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.01, "topic": "cheryl nelson - 10/18"}
-{"thread": "threads/t00373.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "new temp ids"}
+{"thread": "threads/t00373.txt", "tier": "structure: announcement: sent to 118 people", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "new temp ids", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00374.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "credit suisse first boston, london branch"}
 {"thread": "threads/t00375.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ski ... for free; hot airfare deals!"}
 {"thread": "threads/t00376.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "csfb agreement"}
@@ -376,13 +381,13 @@
 {"thread": "threads/t00381.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.58, "topic": "cheryl nelson - 10/18 & 10/19"}
 {"thread": "threads/t00382.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "god squad"}
 {"thread": "threads/t00383.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.03, "topic": "moriah properties, ltd. omnibus"}
-{"thread": "threads/t00384.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ice cream is here! - 38c2"}
+{"thread": "threads/t00384.txt", "tier": "structure: announcement: sent to 126 people", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ice cream is here! - 38c2", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00385.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "credit annexes"}
 {"thread": "threads/t00386.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "moriah properties, ltd."}
 {"thread": "threads/t00387.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "out of office autoreply: moriah properties, ltd."}
-{"thread": "threads/t00388.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 18.18, "topic": "weekend outage report for 10-19-01 through 10-21-01"}
+{"thread": "threads/t00388.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 18.18, "topic": "weekend outage report for 10-19-01 through 10-21-01", "was": "is_meeting one model"}
 {"thread": "threads/t00389.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.96, "topic": "romanian newspaper editorial (translated)"}
-{"thread": "threads/t00390.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.49, "topic": "update - supported internet email addresses"}
+{"thread": "threads/t00390.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.49, "topic": "update - supported internet email addresses", "was": "is_meeting one model"}
 {"thread": "threads/t00391.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "nylon de mexico, s.a. de c.v. deal number y61166.1"}
 {"thread": "threads/t00392.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.01, "topic": "cheryl nelson"}
 {"thread": "threads/t00393.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <2995261.1075854918210.JavaMail.evans@thyme>"}
@@ -400,11 +405,12 @@
 {"thread": "threads/t00405.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.94, "topic": "(no subject) <25484464.1075854918303.JavaMail.evans@thyme>"}
 {"thread": "threads/t00406.txt", "tier": "structure: nobody answered", "got": "off", "placed": null, "reminder": null, "seconds": 3.91, "topic": "(no subject) <28617124.1075854918325.JavaMail.evans@thyme>"}
 {"thread": "threads/t00407.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <27568973.1075854912176.JavaMail.evans@thyme>"}
-{"thread": "threads/t00408.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.63, "topic": "ppl energyplus, llc"}
-{"thread": "threads/t00409.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "maclaren energy inc."}
-{"thread": "threads/t00410.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 10.27, "topic": "supplemental weekend outage report for 10-19-01 through 10-21-01"}
+{"thread": "threads/t00408.txt", "tier": "structure: announcement: sent to 78 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.63, "topic": "ppl energyplus, llc", "was": "is_meeting one model"}
+{"thread": "threads/t00409.txt", "tier": "structure: announcement: sent to 77 people", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "maclaren energy inc.", "was": "structure: no day or time anywhere"}
+{"thread": "threads/t00410.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 10.27, "topic": "supplemental weekend outage report for 10-19-01 through 10-21-01", "was": "is_meeting one model"}
 {"thread": "threads/t00411.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.61, "topic": "aes eastern isda documentation"}
-{"thread": "threads/t00412.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.8, "topic": "enron in action 10.22.01"}
+{"thread": "threads/t00412.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.8, "topic": "enron in action 10.22.01", "was": "is_meeting one model"}
+{"thread": "threads/t00413.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.68, "topic": "all-employee meeting", "was": "invited: is_meeting one model"}
 {"thread": "threads/t00414.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 7.48, "topic": "we'll go forward"}
 {"thread": "threads/t00415.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 15.16, "topic": "delivery status notification (relay)"}
 {"thread": "threads/t00416.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.4, "topic": "delivered: draft isda master agreements"}
@@ -414,27 +420,28 @@
 {"thread": "threads/t00420.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "onyx oil ltd. deemed isda worksheet"}
 {"thread": "threads/t00421.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "aig confirmations"}
 {"thread": "threads/t00422.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "goldman sachs assignment and assumption of converible book from ena to ect investments"}
-{"thread": "threads/t00423.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.76, "topic": "energy partners, ltd."}
+{"thread": "threads/t00423.txt", "tier": "structure: announcement: sent to 77 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.76, "topic": "energy partners, ltd.", "was": "is_meeting one model"}
 {"thread": "threads/t00424.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.31, "topic": "undeliverable: fw: bin laden's special song"}
 {"thread": "threads/t00425.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 12.75, "topic": "bin laden's special song"}
-{"thread": "threads/t00426.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.91, "topic": "enron metall recycling gmbh & co. kg"}
+{"thread": "threads/t00426.txt", "tier": "structure: announcement: sent to 74 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.91, "topic": "enron metall recycling gmbh & co. kg", "was": "is_meeting one model"}
 {"thread": "threads/t00427.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.98, "topic": "out of office autoreply: brothers production company, inc."}
-{"thread": "threads/t00428.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.95, "topic": "tall tree lumber company"}
+{"thread": "threads/t00428.txt", "tier": "structure: announcement: sent to 76 people", "got": "off", "placed": null, "reminder": null, "seconds": 2.95, "topic": "tall tree lumber company", "was": "is_meeting one model"}
 {"thread": "threads/t00429.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.15, "topic": "assignment and assumption of convertible book from ena to ect investments"}
 {"thread": "threads/t00430.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.16, "topic": "our new house"}
-{"thread": "threads/t00431.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.83, "topic": "jdrf cyber auction & update information"}
-{"thread": "threads/t00432.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.24, "topic": "to: all domestic employees who participate in the enron corp savings plan"}
+{"thread": "threads/t00431.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 5.83, "topic": "jdrf cyber auction & update information", "was": "is_meeting one model"}
+{"thread": "threads/t00432.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.24, "topic": "to: all domestic employees who participate in the enron corp savings plan", "was": "is_meeting one model"}
 {"thread": "threads/t00433.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.14, "topic": "new link for all-employee meeting"}
 {"thread": "threads/t00434.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.71, "topic": "trading agreements with enron"}
 {"thread": "threads/t00435.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.59, "topic": "house"}
 {"thread": "threads/t00436.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.74, "topic": "executed master agreements (october version)"}
 {"thread": "threads/t00437.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "omnibus - boise casacde"}
 {"thread": "threads/t00438.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "janette elbertson says the consent is still down there to be signed"}
-{"thread": "threads/t00439.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.53, "topic": "vermont gas systems, inc."}
+{"thread": "threads/t00439.txt", "tier": "structure: announcement: sent to 76 people", "got": "off", "placed": null, "reminder": null, "seconds": 4.53, "topic": "vermont gas systems, inc.", "was": "is_meeting one model"}
 {"thread": "threads/t00440.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "morgan stanley"}
 {"thread": "threads/t00441.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.64, "topic": "paper and steel"}
 {"thread": "threads/t00442.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.08, "topic": "wednesday, october 24"}
-{"thread": "threads/t00444.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.39, "topic": "esource presents briefings with senior industry analysts - energy and telecom/broadband"}
+{"thread": "threads/t00443.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.59, "topic": "invitaton: an evening of hope and healing", "was": "invited: is_meeting one model"}
+{"thread": "threads/t00444.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.39, "topic": "esource presents briefings with senior industry analysts - energy and telecom/broadband", "was": "is_meeting one model"}
 {"thread": "threads/t00445.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "[fwd: isda master agreement & csa]"}
 {"thread": "threads/t00446.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.94, "topic": "thursday, october 25"}
 {"thread": "threads/t00447.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "c&w msa - redlined comparison you requested"}
@@ -442,17 +449,18 @@
 {"thread": "threads/t00449.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.36, "topic": "conv documents"}
 {"thread": "threads/t00450.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "pacifica papers inc."}
 {"thread": "threads/t00451.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.8, "topic": "give up agreement"}
+{"thread": "threads/t00452.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.08, "topic": "(no subject) <27181449.1075854927359.JavaMail.evans@thyme>"}
 {"thread": "threads/t00453.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <5897711.1075854918765.JavaMail.evans@thyme>"}
 {"thread": "threads/t00454.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <28589438.1075854927381.JavaMail.evans@thyme>"}
 {"thread": "threads/t00455.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 11.55, "topic": "investment companies"}
 {"thread": "threads/t00456.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "convertible book assignment"}
 {"thread": "threads/t00457.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.72, "topic": "cw for g6 energy retailing"}
-{"thread": "threads/t00458.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "jeff mcmahon named cfo"}
+{"thread": "threads/t00458.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "jeff mcmahon named cfo", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00459.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.74, "topic": "kerr-mcgee energy services corporation"}
 {"thread": "threads/t00460.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "gases y graneles liquidos s.a (gasmar s.a)"}
 {"thread": "threads/t00461.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ph glatfelter company isda worksheet"}
 {"thread": "threads/t00462.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "solvay paperboard llc isda worksheet"}
-{"thread": "threads/t00463.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "natural gas origination"}
+{"thread": "threads/t00463.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "natural gas origination", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00464.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ecc vs. ena deals"}
 {"thread": "threads/t00465.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "samantha boyd - out ill today"}
 {"thread": "threads/t00466.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.42, "topic": "carr futures, inc. (\"carr\") request for guaranty"}
@@ -468,21 +476,21 @@
 {"thread": "threads/t00476.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.47, "topic": "ummmmmm"}
 {"thread": "threads/t00477.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.4, "topic": "(no subject) <18009491.1075854918983.JavaMail.evans@thyme>"}
 {"thread": "threads/t00478.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <27466839.1075854927955.JavaMail.evans@thyme>"}
-{"thread": "threads/t00479.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 10.75, "topic": "weekend outage report for 10-26-01 through 10-28-01"}
+{"thread": "threads/t00479.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 10.75, "topic": "weekend outage report for 10-26-01 through 10-28-01", "was": "is_meeting one model"}
 {"thread": "threads/t00480.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.8, "topic": "grupo petrotemex, s.a. de c.v. - deal no. yd9296.1"}
 {"thread": "threads/t00481.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 33.42, "topic": "texas monthly (november 2001): how enron blew it"}
-{"thread": "threads/t00482.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.64, "topic": "enron net works and enron global strategic sourcing announce new procedure for using 800-97-enron telephone number"}
-{"thread": "threads/t00483.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.83, "topic": "upcoming wellness activities"}
-{"thread": "threads/t00484.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.48, "topic": "important-to all domestic employees who participate in the enron corp savings plan"}
-{"thread": "threads/t00485.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "important announcement regarding document preservation"}
+{"thread": "threads/t00482.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 6.64, "topic": "enron net works and enron global strategic sourcing announce new procedure for using 800-97-enron telephone number", "was": "is_meeting one model"}
+{"thread": "threads/t00483.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.83, "topic": "upcoming wellness activities", "was": "is_meeting one model"}
+{"thread": "threads/t00484.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.48, "topic": "important-to all domestic employees who participate in the enron corp savings plan", "was": "is_meeting one model"}
+{"thread": "threads/t00485.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "important announcement regarding document preservation", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00486.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.43, "topic": "enron north america"}
-{"thread": "threads/t00487.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.01, "topic": "increased security at enron center"}
+{"thread": "threads/t00487.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.01, "topic": "increased security at enron center", "was": "is_meeting one model"}
 {"thread": "threads/t00488.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.68, "topic": "assignment of convertible book"}
 {"thread": "threads/t00489.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 7.93, "topic": "return receipt"}
 {"thread": "threads/t00490.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.41, "topic": "fimat - account opening documentation"}
 {"thread": "threads/t00491.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 10.68, "topic": "undeliverable mail"}
-{"thread": "threads/t00492.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.7, "topic": "public utility district no. 1 of benton county"}
-{"thread": "threads/t00493.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.01, "topic": "public utility district no. 1 of franklin county"}
+{"thread": "threads/t00492.txt", "tier": "structure: announcement: sent to 81 people", "got": "off", "placed": null, "reminder": null, "seconds": 4.7, "topic": "public utility district no. 1 of benton county", "was": "is_meeting one model"}
+{"thread": "threads/t00493.txt", "tier": "structure: announcement: sent to 81 people", "got": "off", "placed": null, "reminder": null, "seconds": 4.01, "topic": "public utility district no. 1 of franklin county", "was": "is_meeting one model"}
 {"thread": "threads/t00494.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "confidentiality agreement - 84 lumber co."}
 {"thread": "threads/t00495.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "3tec energy corporation"}
 {"thread": "threads/t00496.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "chase - ready to execute asap!"}
@@ -493,20 +501,22 @@
 {"thread": "threads/t00501.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "morgan stanley capital group, et al"}
 {"thread": "threads/t00502.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "corp res auth indiv doc"}
 {"thread": "threads/t00503.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "template deemed isda"}
-{"thread": "threads/t00504.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 10.69, "topic": "supplemental weekend outage report for 10-26-01 through 10-28-01"}
+{"thread": "threads/t00504.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 10.69, "topic": "supplemental weekend outage report for 10-26-01 through 10-28-01", "was": "is_meeting one model"}
 {"thread": "threads/t00505.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <21919171.1075854919183.JavaMail.evans@thyme>"}
-{"thread": "threads/t00506.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.73, "topic": "eol - deutsche bank ag, acting through its new york branch"}
-{"thread": "threads/t00507.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "solicitation calls"}
-{"thread": "threads/t00508.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.33, "topic": "enron in action 10.29.01"}
+{"thread": "threads/t00506.txt", "tier": "structure: announcement: sent to 51 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.73, "topic": "eol - deutsche bank ag, acting through its new york branch", "was": "is_meeting one model"}
+{"thread": "threads/t00507.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "solicitation calls", "was": "structure: no day or time anywhere"}
+{"thread": "threads/t00508.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.33, "topic": "enron in action 10.29.01", "was": "is_meeting one model"}
 {"thread": "threads/t00509.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "goldman sachs, et al"}
 {"thread": "threads/t00510.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.12, "topic": "outstanding counterparties"}
 {"thread": "threads/t00511.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "redistribution agreement"}
 {"thread": "threads/t00512.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.04, "topic": "(no subject) <1765319.1075854929065.JavaMail.evans@thyme>"}
 {"thread": "threads/t00513.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ineos acrylics"}
+{"thread": "threads/t00514.txt", "tier": "one model + one model", "got": "on", "placed": ["2001-10-30", "10:00", ""], "reminder": null, "seconds": 33.47, "topic": "meeting regarding master netting agreements"}
 {"thread": "threads/t00515.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.28, "topic": "hess relationship"}
 {"thread": "threads/t00516.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "eligible contract participant"}
 {"thread": "threads/t00517.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.38, "topic": "enron corp. guaranty in favor of amerada hess, et al"}
 {"thread": "threads/t00518.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.79, "topic": "final version of proposed enron corp. resolutions"}
+{"thread": "threads/t00519.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 5.59, "topic": "lexis-nexis training: houston & worldwide / dow jones training", "was": "invited: is_meeting one model"}
 {"thread": "threads/t00520.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 24.23, "topic": "bp master netting agreement"}
 {"thread": "threads/t00521.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 16.22, "topic": "master netting agreement"}
 {"thread": "threads/t00522.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 12.69, "topic": "master netting"}
@@ -576,7 +586,7 @@
 {"thread": "threads/t00586.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.65, "topic": "netting agreements"}
 {"thread": "threads/t00587.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.88, "topic": "cross affiliate netting agreement - rwe"}
 {"thread": "threads/t00588.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.13, "topic": "agreements for reliant, engage and coral"}
-{"thread": "threads/t00589.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "you're invited!"}
+{"thread": "threads/t00589.txt", "tier": "structure: announcement: sent to 89 people", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "you're invited!", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00590.txt", "tier": "structure: nobody answered", "got": "off", "placed": null, "reminder": null, "seconds": 2.97, "topic": "your birthday"}
 {"thread": "threads/t00591.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "ees"}
 {"thread": "threads/t00592.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "master netting agreement form"}
@@ -587,6 +597,7 @@
 {"thread": "threads/t00597.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 8.58, "topic": "master netting agmt.: aep"}
 {"thread": "threads/t00598.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <15082896.1075861928335.JavaMail.evans@thyme>"}
 {"thread": "threads/t00599.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "master netting lien searches"}
+{"thread": "threads/t00600.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 6.0, "topic": "(no subject) <11983137.1075861928381.JavaMail.evans@thyme>"}
 {"thread": "threads/t00601.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 7.73, "topic": "original signature exchange"}
 {"thread": "threads/t00602.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "master netting counterparties"}
 {"thread": "threads/t00603.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <28219129.1075861916121.JavaMail.evans@thyme>"}
@@ -667,7 +678,7 @@
 {"thread": "threads/t00678.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.35, "topic": "aig weather trades"}
 {"thread": "threads/t00679.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.48, "topic": "progress energy"}
 {"thread": "threads/t00680.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "revised dynegy master netting agreement"}
-{"thread": "threads/t00681.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "revised dynegy-enron master netting agreement"}
+{"thread": "threads/t00681.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "revised dynegy-enron master netting agreement", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00682.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "important video announcement"}
 {"thread": "threads/t00683.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.87, "topic": "the us one dollar bill"}
 {"thread": "threads/t00684.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.95, "topic": "hi"}
@@ -697,12 +708,12 @@
 {"thread": "threads/t00708.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "e-mail update"}
 {"thread": "threads/t00709.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <12758729.1075861921531.JavaMail.evans@thyme>"}
 {"thread": "threads/t00710.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.34, "topic": "grant's mailing address - nih"}
-{"thread": "threads/t00711.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "correction on grant's address"}
+{"thread": "threads/t00711.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "correction on grant's address", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00712.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.93, "topic": "bin jokin"}
 {"thread": "threads/t00713.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <4313283.1075861921694.JavaMail.evans@thyme>"}
 {"thread": "threads/t00714.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.77, "topic": "master netting priorities"}
 {"thread": "threads/t00715.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <5074503.1075861918567.JavaMail.evans@thyme>"}
-{"thread": "threads/t00716.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.34, "topic": "no subject"}
+{"thread": "threads/t00716.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 5.34, "topic": "no subject", "was": "is_meeting one model"}
 {"thread": "threads/t00717.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.94, "topic": "enron credit inc - new account documents request"}
 {"thread": "threads/t00718.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <12877611.1075859384927.JavaMail.evans@thyme>"}
 {"thread": "threads/t00719.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "snl"}
@@ -711,16 +722,18 @@
 {"thread": "threads/t00722.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 11.57, "topic": "bnpp/enron master netting, setoff, and security agreement"}
 {"thread": "threads/t00723.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "northern natural gas and transwestern pipeline"}
 {"thread": "threads/t00724.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "mna"}
+{"thread": "threads/t00725.txt", "tier": "structure: announcement: sent to 124 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.27, "topic": "ice cream - november birthdays", "was": "invited: is_meeting one model"}
 {"thread": "threads/t00726.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.31, "topic": "(ms-76) member firm privileges"}
-{"thread": "threads/t00727.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 7.61, "topic": "paul harvey"}
+{"thread": "threads/t00727.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 7.61, "topic": "paul harvey", "was": "is_meeting one model"}
 {"thread": "threads/t00728.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "cheryl nelson - update"}
-{"thread": "threads/t00729.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.52, "topic": "move to enron center south"}
+{"thread": "threads/t00729.txt", "tier": "structure: announcement: sent to 148 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.52, "topic": "move to enron center south", "was": "is_meeting one model"}
 {"thread": "threads/t00730.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 5.7, "topic": "bnp master netting agreement"}
 {"thread": "threads/t00731.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "bp amoco - master netting agreement"}
 {"thread": "threads/t00732.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.63, "topic": "master netting - tractebel"}
 {"thread": "threads/t00733.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <8852346.1075861922345.JavaMail.evans@thyme>"}
 {"thread": "threads/t00734.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <4235487.1075861918834.JavaMail.evans@thyme>"}
 {"thread": "threads/t00735.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.36, "topic": "delivered:"}
+{"thread": "threads/t00736.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 2.69, "topic": "(no subject) <2815264.1075861922436.JavaMail.evans@thyme>"}
 {"thread": "threads/t00737.txt", "tier": "structure: nobody answered", "got": "off", "placed": null, "reminder": null, "seconds": 2.62, "topic": "(no subject) <26470055.1075861918878.JavaMail.evans@thyme>"}
 {"thread": "threads/t00738.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.39, "topic": "master p/s netting agreement for ngl's"}
 {"thread": "threads/t00739.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "(no subject) <8945899.1075861922484.JavaMail.evans@thyme>"}
@@ -748,7 +761,7 @@
 {"thread": "threads/t00761.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "misc"}
 {"thread": "threads/t00762.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "message from carol st. clair"}
 {"thread": "threads/t00763.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "add nora dobin to master netting agreement contacts"}
-{"thread": "threads/t00764.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 9.61, "topic": "weekend outage report for 11-16-01 through 11-18-01"}
+{"thread": "threads/t00764.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 9.61, "topic": "weekend outage report for 11-16-01 through 11-18-01", "was": "is_meeting one model"}
 {"thread": "threads/t00765.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "new master netting: louis dreyfus"}
 {"thread": "threads/t00766.txt", "tier": "one model", "got": "off", "placed": null, "reminder": null, "seconds": 8.18, "topic": "robert allen"}
 {"thread": "threads/t00767.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "copies of confirms"}
@@ -761,8 +774,8 @@
 {"thread": "threads/t00774.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "deliver of the originals"}
 {"thread": "threads/t00775.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "enorn-ahc isda master agreement"}
 {"thread": "threads/t00776.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.39, "topic": "legal\\credit meeting -- tuesday, november 20th"}
-{"thread": "threads/t00777.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 13.24, "topic": "supplemental weekend outage report for 11-16-01 through 11-18-01"}
-{"thread": "threads/t00778.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.95, "topic": "enron in action 11.19.01"}
+{"thread": "threads/t00777.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 13.24, "topic": "supplemental weekend outage report for 11-16-01 through 11-18-01", "was": "is_meeting one model"}
+{"thread": "threads/t00778.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.95, "topic": "enron in action 11.19.01", "was": "is_meeting one model"}
 {"thread": "threads/t00779.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.16, "topic": "j.crew invites you to take 20% off"}
 {"thread": "threads/t00780.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.09, "topic": "cheryl nelson - in around 11:30 am today"}
 {"thread": "threads/t00781.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "master netting: western resources"}
@@ -780,13 +793,15 @@
 {"thread": "threads/t00793.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "the shed"}
 {"thread": "threads/t00794.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.86, "topic": "**high priority** altagas services inc. cw for isda"}
 {"thread": "threads/t00795.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.43, "topic": "forest and noble gas"}
-{"thread": "threads/t00796.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.36, "topic": "holiday party - canceled"}
+{"thread": "threads/t00796.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.36, "topic": "holiday party - canceled", "was": "is_meeting one model"}
 {"thread": "threads/t00797.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 7.22, "topic": "enron-bnpp master netting, setoff and security agreement"}
 {"thread": "threads/t00798.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "altagas cw"}
 {"thread": "threads/t00799.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.23, "topic": "out of office autoreply: master netting agreement assignments"}
 {"thread": "threads/t00800.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "delivery of one original enron-ahc isda"}
 {"thread": "threads/t00801.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "richardson"}
 {"thread": "threads/t00802.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "panaco, inc."}
+{"thread": "threads/t00803.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 4.66, "topic": "thursday"}
+{"thread": "threads/t00804.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.6, "topic": "master netting group meeting"}
 {"thread": "threads/t00805.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.36, "topic": "the chase manhattan bank"}
 {"thread": "threads/t00806.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.07, "topic": "out of office autoreply: the chase manhattan bank"}
 {"thread": "threads/t00807.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "on behalf of mark taylor and barbara gray"}
@@ -798,18 +813,18 @@
 {"thread": "threads/t00813.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 8.8, "topic": "undeliverable: bank of america, n.a."}
 {"thread": "threads/t00814.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.29, "topic": "morgan stanley capital group inc."}
 {"thread": "threads/t00815.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 8.83, "topic": "undeliverable: morgan stanley capital group inc."}
-{"thread": "threads/t00816.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.99, "topic": "program changes"}
+{"thread": "threads/t00816.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.99, "topic": "program changes", "was": "is_meeting one model"}
 {"thread": "threads/t00817.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "here is the letter"}
 {"thread": "threads/t00818.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "certificate"}
-{"thread": "threads/t00819.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.34, "topic": "encore energy solutions, l.p."}
+{"thread": "threads/t00819.txt", "tier": "structure: announcement: sent to 74 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.34, "topic": "encore energy solutions, l.p.", "was": "is_meeting one model"}
 {"thread": "threads/t00820.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.11, "topic": "executed agreement"}
 {"thread": "threads/t00821.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.21, "topic": "francisco pinto-leite"}
 {"thread": "threads/t00822.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "el paso amendment"}
-{"thread": "threads/t00823.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 12.07, "topic": "weekend outage report for 11-21-01 through 11-25-01"}
+{"thread": "threads/t00823.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 12.07, "topic": "weekend outage report for 11-21-01 through 11-25-01", "was": "is_meeting one model"}
 {"thread": "threads/t00824.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.82, "topic": "ontario energy savings corp"}
 {"thread": "threads/t00825.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "update to merger q&a"}
 {"thread": "threads/t00826.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 6.42, "topic": "reliant ucc filing"}
-{"thread": "threads/t00827.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.16, "topic": "adopt a kid - reminder"}
+{"thread": "threads/t00827.txt", "tier": "structure: announcement: sent to 124 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.16, "topic": "adopt a kid - reminder", "was": "is_meeting one model"}
 {"thread": "threads/t00828.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.66, "topic": "e prime omnibus"}
 {"thread": "threads/t00829.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.8, "topic": "tractebel - cross commodity, cross affiliate netting agreement"}
 {"thread": "threads/t00830.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.53, "topic": "sap system outage notification - spr5db00 - bbp 2.0 production, pr2 - hr production, pr1 - apollo production"}
@@ -821,7 +836,7 @@
 {"thread": "threads/t00836.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "bnp paribas agreement"}
 {"thread": "threads/t00837.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.88, "topic": "bnp paribas master netting agreement"}
 {"thread": "threads/t00838.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.06, "topic": "out of office autoreply: bnp paribas master netting agreement"}
-{"thread": "threads/t00839.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.96, "topic": "enron in action 11.26.01"}
+{"thread": "threads/t00839.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 2.96, "topic": "enron in action 11.26.01", "was": "is_meeting one model"}
 {"thread": "threads/t00840.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.41, "topic": "amerada hess corporation"}
 {"thread": "threads/t00841.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 9.29, "topic": "undeliverable: amerada hess corporation"}
 {"thread": "threads/t00842.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.13, "topic": "out of office autoreply: amerada hess corporation"}
@@ -832,9 +847,9 @@
 {"thread": "threads/t00847.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "bnp mna"}
 {"thread": "threads/t00848.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "updated: cancellation of system outage notification"}
 {"thread": "threads/t00849.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "bnp"}
-{"thread": "threads/t00850.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.13, "topic": "energyusa-tpc"}
+{"thread": "threads/t00850.txt", "tier": "structure: announcement: sent to 73 people", "got": "off", "placed": null, "reminder": null, "seconds": 3.13, "topic": "energyusa-tpc", "was": "is_meeting one model"}
 {"thread": "threads/t00851.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.06, "topic": "master netting: midamerican energy company"}
-{"thread": "threads/t00852.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "noble gas marketing, inc."}
+{"thread": "threads/t00852.txt", "tier": "structure: announcement: sent to 73 people", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "noble gas marketing, inc.", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00853.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "meeting wednesday 28 at 10 (cdt) ecn 791"}
 {"thread": "threads/t00854.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "enron metals limited"}
 {"thread": "threads/t00855.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.96, "topic": "out of office autoreply: enron metals limited"}
@@ -843,48 +858,33 @@
 {"thread": "threads/t00858.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.76, "topic": "oz (truer than we know!!)"}
 {"thread": "threads/t00859.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "bnp paribas confirm"}
 {"thread": "threads/t00860.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.05, "topic": "another sample"}
-{"thread": "threads/t00862.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "enron/dynegy merger; antitrust issues"}
+{"thread": "threads/t00861.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.42, "topic": "read! change of time for meeting: master netting"}
+{"thread": "threads/t00862.txt", "tier": "structure: announcement: sent from announcements.enron@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "enron/dynegy merger; antitrust issues", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00863.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "job"}
-{"thread": "threads/t00864.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "contact info"}
+{"thread": "threads/t00864.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "contact info", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00865.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "confirms"}
-{"thread": "threads/t00866.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.39, "topic": "please read - important information for participants in the enron savings plan"}
+{"thread": "threads/t00866.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.39, "topic": "please read - important information for participants in the enron savings plan", "was": "is_meeting one model"}
 {"thread": "threads/t00867.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "vacation & contacts"}
-{"thread": "threads/t00868.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "please stay in touch!"}
+{"thread": "threads/t00868.txt", "tier": "structure: announcement: no visible recipients", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "please stay in touch!", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00869.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "global contracts contact"}
 {"thread": "threads/t00870.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "i have booked ecn3824 thru 12/31 and called anyone who had a conflict to reschedule."}
-{"thread": "threads/t00871.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.0, "topic": "reduced hours - the resolution center"}
+{"thread": "threads/t00871.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.0, "topic": "reduced hours - the resolution center", "was": "is_meeting one model"}
 {"thread": "threads/t00872.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.04, "topic": "isda's for london"}
 {"thread": "threads/t00873.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.05, "topic": "out of the office tomorrow"}
-{"thread": "threads/t00874.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "attention: changes in remote access"}
-{"thread": "threads/t00875.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "office supplies"}
-{"thread": "threads/t00876.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "urgent! urgent! virus alert!"}
+{"thread": "threads/t00874.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "attention: changes in remote access", "was": "structure: no day or time anywhere"}
+{"thread": "threads/t00875.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "office supplies", "was": "structure: no day or time anywhere"}
+{"thread": "threads/t00876.txt", "tier": "structure: announcement: sent from announcements.enron@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "urgent! urgent! virus alert!", "was": "structure: no day or time anywhere"}
 {"thread": "threads/t00877.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "gs assignment from ena to enron credit"}
 {"thread": "threads/t00878.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.74, "topic": "bidder rooms"}
-{"thread": "threads/t00879.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.75, "topic": "fire drill scheduled"}
+{"thread": "threads/t00879.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.75, "topic": "fire drill scheduled", "was": "is_meeting one model"}
 {"thread": "threads/t00880.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "payback"}
-{"thread": "threads/t00881.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 4.12, "topic": "from cindy olson, community relations: discount tickets to the nutcracker"}
+{"thread": "threads/t00881.txt", "tier": "structure: announcement: sent from announcements.enron@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 4.12, "topic": "from cindy olson, community relations: discount tickets to the nutcracker", "was": "is_meeting one model"}
 {"thread": "threads/t00882.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "vacations"}
 {"thread": "threads/t00883.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "holiday one-liners"}
 {"thread": "threads/t00884.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.09, "topic": "calvin and hobbes"}
 {"thread": "threads/t00885.txt", "tier": "structure: no day or time anywhere", "got": "off", "placed": null, "reminder": null, "seconds": 0.0, "topic": "data rooms"}
-{"thread": "threads/t00886.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.41, "topic": "please read: resolution center to disconnect toll free number"}
-{"thread": "threads/t00887.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.71, "topic": "metro bus passes and woodlands express passes available effective friday, december 28, 2001"}
+{"thread": "threads/t00886.txt", "tier": "structure: announcement: sent from no.address@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.41, "topic": "please read: resolution center to disconnect toll free number", "was": "is_meeting one model"}
+{"thread": "threads/t00887.txt", "tier": "structure: announcement: sent from announcements.enron@enron.com", "got": "off", "placed": null, "reminder": null, "seconds": 3.71, "topic": "metro bus passes and woodlands express passes available effective friday, december 28, 2001", "was": "is_meeting one model"}
 {"thread": "threads/t00888.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.75, "topic": "susan elledge will be here for a while but is planning to leave about 3 unless you have stuff for her to do."}
 {"thread": "threads/t00889.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 3.06, "topic": "notification: outlook outage - friday, december 28, 2001"}
 {"thread": "threads/t00890.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 2.67, "topic": "correction: outlook outage - friday, december 28, 2001"}
-{"thread": "threads/t00050.txt", "tier": "structure: nobody answered", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "the arranging moved to a phone call, so the email cannot show what was decided", "tentative": {}, "missing": ["what was decided on the call"]}, "seconds": 3.71, "topic": "consolidated edison conference call"}
-{"thread": "threads/t00073.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.15, "topic": "garant?a"}
-{"thread": "threads/t00208.txt", "tier": "is_meeting one model", "got": "off", "placed": null, "reminder": null, "seconds": 22.8, "topic": "two new executing brokers"}
-{"thread": "threads/t00211.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 5.39, "topic": "csfb 2001 equity swap basket documentation"}
-{"thread": "threads/t00359.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 5.1, "topic": "futures relationship and documentation deutsche bank-enron"}
-{"thread": "threads/t00413.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 4.68, "topic": "all-employee meeting"}
-{"thread": "threads/t00443.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.59, "topic": "invitaton: an evening of hope and healing"}
-{"thread": "threads/t00452.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.08, "topic": "(no subject) <27181449.1075854927359.JavaMail.evans@thyme>"}
-{"thread": "threads/t00514.txt", "tier": "one model + one model", "got": "on", "placed": ["2001-10-30", "10:00", ""], "reminder": null, "seconds": 33.47, "topic": "meeting regarding master netting agreements"}
-{"thread": "threads/t00519.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 5.59, "topic": "lexis-nexis training: houston & worldwide / dow jones training"}
-{"thread": "threads/t00600.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 6.0, "topic": "(no subject) <11983137.1075861928381.JavaMail.evans@thyme>"}
-{"thread": "threads/t00725.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.27, "topic": "ice cream - november birthdays"}
-{"thread": "threads/t00736.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 2.69, "topic": "(no subject) <2815264.1075861922436.JavaMail.evans@thyme>"}
-{"thread": "threads/t00803.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 4.66, "topic": "thursday"}
-{"thread": "threads/t00804.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.6, "topic": "master netting group meeting"}
-{"thread": "threads/t00861.txt", "tier": "invited: is_meeting one model", "got": "ask", "placed": null, "reminder": {"kind": "follow_up", "why": "invited, no reply in email - probably answered on a call or by a calendar click", "tentative": {}, "missing": ["whether I am going"]}, "seconds": 3.42, "topic": "read! change of time for meeting: master netting"}

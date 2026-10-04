@@ -108,6 +108,27 @@ def threads(msgs):
     return dict(out)
 
 
+BROADCAST_FROM = re.compile(r"no\.?address@|no-?reply|announce|all[._-]?employees|everyone@", re.I)
+BROADCAST_AT = 50     # recipients; working meetings in these mailboxes ran to ~40 ("master netting group meeting" 41)
+
+
+def announcement(ms, owner):
+    """Why this thread is an announcement (noise, Adrian 2026-10-03), or None. Only a thread I never wrote in: if I
+    replied, it is a conversation. Seen as follow-ups before this rule: "all-employee meeting" (no.address@enron.com,
+    no visible recipients), "ice cream - november birthdays" (124 recipients), a broker's call (118)."""
+    import mailex_eval as X
+    is_owner = X.owner_matcher(owner)
+    if any(m["from"] == owner or is_owner(m["from"]) for m in ms):
+        return None
+    first = ms[0]
+    if BROADCAST_FROM.search(first["from"] or ""):
+        return f"announcement: sent from {first['from']}"
+    if not first["to"] and not first["cc"]:
+        return "announcement: no visible recipients"
+    n = len(first["to"]) + len(first["cc"])
+    return f"announcement: sent to {n} people" if n >= BROADCAST_AT else None
+
+
 def thread_text(ms, owner):
     """A thread in the harness's format: the owner as Me, dates in Houston time."""
     import mailex_eval as X

@@ -2,8 +2,8 @@
  "threads": 890,
  "folders": 857,
  "outcomes": {
-  "filed": 875,
-  "follow_up": 14,
+  "filed": 879,
+  "follow_up": 10,
   "calendar": 1
  },
  "call_gaps": 75,
@@ -12,5 +12,6 @@
  "messages": 1613,
  "model_seconds": 2431.0,
  "zero_model_calls": 468,
- "pipeline_errors": 0
+ "pipeline_errors": 0,
+ "announcements": 67
 }

@@ -84,7 +84,13 @@ def main():
             texts[name] = MB.thread_text(ts[k], owner)
             if name in done:
                 continue
-            row = run_thread(name, texts[name], router, model)
+            why = MB.announcement(ts[k], owner)
+            if why:
+                # announcements are noise (Adrian): filed by structure, no model asked
+                row = {"thread": name, "tier": f"structure: {why}", "got": "off", "placed": None, "reminder": None,
+                       "seconds": 0.0}
+            else:
+                row = run_thread(name, texts[name], router, model)
             row["topic"] = k
             fh.write(json.dumps(row) + "\n")
             fh.flush()

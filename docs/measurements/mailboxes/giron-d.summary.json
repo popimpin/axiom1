@@ -1,0 +1,16 @@
+{
+ "threads": 1373,
+ "folders": 1313,
+ "outcomes": {
+  "filed": 1314,
+  "calendar": 2,
+  "follow_up": 57
+ },
+ "call_gaps": 51,
+ "box": "giron-d",
+ "owner": "darron.giron@enron.com",
+ "messages": 1929,
+ "model_seconds": 3727.7,
+ "zero_model_calls": 667,
+ "pipeline_errors": 0
+}

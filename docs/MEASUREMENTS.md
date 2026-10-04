@@ -627,3 +627,27 @@ wait!" misses; every unanswered and group-invite scenario lands in follow-up.
 CEO's sent mail is written by his assistant. Two loader fixes the numbers depended on: Enron files one email in
 `all_documents` and `sent` under different message ids (1,345 duplicate pairs in Haedicke alone), and keeping only
 one copy flipped the owner to another alias (his own threads 343 -> 49) - every folder a copy was filed in is kept.
+
+## Four whole mailboxes (2026-10-03)
+
+The harness over four Enron employees' entire mailboxes, as it would run for them: no answer key, no stand-in
+person (`examples/mailbox_run.py`, Bee: qwen3:1.7b slots, ornith:9b decisions). Every thread filed; the rest:
+
+| employee | threads | filed only | follow-up needed | reminder | on calendar | call gaps |
+|---|---|---|---|---|---|---|
+| Heard | 890 | 875 | 14 | 0 | 1 | 75 |
+| Giron (trading) | 1,373 | 1,314 | 57 | 0 | 2 | 51 |
+| Steffes (regulatory) | 2,130 | 1,997 | 113 | 8 | 12 | 96 |
+| Haedicke (general counsel) | 2,537 | 2,360 | 170 | 2 | 5 | 120 |
+| **all four** | **6,930** | **6,546 (94%)** | **354** | **10** | **20** | **342** |
+
+0 pipeline errors. Per thread: `docs/measurements/mailboxes/<box>.jsonl`; the timeline (folders, events, call gaps,
+outcomes with receipts) in `<box>.timeline.json`. No key exists for whole mailboxes, so these are counts, not
+scores: correctness is the 50-thread set above (0 wrong on the calendar); here the claim is what one person is
+left with. Open for review: one of Heard's calendar entries ("meeting regarding master netting agreements") is the
+topic of a thread ruled "nothing" in the 50-thread set; some follow-ups are company-wide announcements.
+
+**A bug of mine, caught before anything was committed:** the runner named threads `t00001`, the pipeline reads only
+`threads/*.txt` and refused, and every thread that should have become a calendar entry, reminder or follow-up fell
+back to "filed" (Heard 16, Giron 60), showing only as "890/890 filed". The 20-thread smoke run had passed because
+none of its threads reached the pipeline. Fixed; a pipeline failure now prints and stops the run.

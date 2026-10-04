@@ -48,6 +48,7 @@ def run_thread(name, text, router, model):
                 row.update(got="ask", reminder={k: rem[0].get(k) for k in ("kind", "why", "tentative", "missing")})
         else:
             row["pipeline_error"] = msg[:300]
+            print(f"PIPELINE ERROR {name}: {msg[:200]}", flush=True)     # loud: a silent fallback hid this for 76 threads
     row["seconds"] = round(_time.time() - t0, 2)
     return row
 
@@ -76,7 +77,10 @@ def main():
     texts = {}
     with log.open("a", encoding="utf-8") as fh:
         for i, k in enumerate(names, 1):
-            name = f"t{i:05d}"
+            # the pipeline reads threads/*.txt and refuses answers that do not cover exactly those files: named
+            # "t00001", every thread that reached it failed ("the answers must cover every thread") and fell back
+            # to "filed" - 16 in Heard, 60 in Giron, while the 20-thread smoke run never reached the pipeline at all
+            name = f"threads/t{i:05d}.txt"
             texts[name] = MB.thread_text(ts[k], owner)
             if name in done:
                 continue

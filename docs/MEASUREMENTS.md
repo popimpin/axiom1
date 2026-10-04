@@ -670,3 +670,16 @@ an announcement. Working meetings in these mailboxes ran to about 40 recipients 
 The page (`web/timeline/`) now switches between people: the headline is the whole mailbox ("2,393 of 2,537 threads
 just need filing"), the lanes are what is left to do. Data: `python examples/timeline_sets.py`. three.js is bundled
 (MIT, `vendor/`), so the page makes no outside request. Measured at 360-1920 px: 0 lint findings.
+
+## Calendar view and thread summaries (2026-10-03)
+
+- **Calendar view** (the page's toggle): firm entries solid, tentative holds dashed (held: one piece missing), and
+  the follow-ups beside it, since they have no date to put anywhere. Every entry opens its thread.
+- **"What happened"**: at most six lines per thread, each lifted from a message and naming its source (who, when):
+  the first message, every day or time named, every hand-off to a call, the last message. No model writes it, so it
+  cannot say anything the thread does not. Checked across all 376 threads on the page: 117 quoted lines, **0 quote a
+  sentence without the day or time it says was named** (two bugs found by this check and fixed first: a quote taken
+  from a different sentence when the right one was past the stored excerpt, and a long sentence trimmed before its
+  date).
+- **Serve it with `node web/serve.js`**. Python's `http.server` stalled on the page's two large files in 9 of 20 loads
+  on Windows (Node: 20/20, ready in 0.36 s). That was every "the page did not load" seen earlier in this session.

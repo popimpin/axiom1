@@ -135,6 +135,23 @@
                 transition: color 160ms var(--ease), border-color 160ms var(--ease); }
   .viewtoggle:hover, .viewtoggle:focus-visible { color: var(--color-text); border-color: var(--color-text-faint); outline: none; }
   .viewtoggle[aria-pressed="true"] { color: var(--color-text); border-color: var(--color-text-dim); background: var(--color-surface-3); }
+  .viewtoggle.proj { right: 168px; }
+  .projview { position: fixed; z-index: 2; inset: 116px 24px 72px 24px; background: var(--color-surface); overflow-y: auto; }
+  .projview[hidden], .projfilter[hidden] { display: none; }
+  .proj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 16px; }
+  .projcard { text-align: left; padding: 16px; border-radius: var(--radius-base); border: 1px solid var(--color-border);
+          background: var(--color-surface-2); color: var(--color-text); cursor: pointer; box-shadow: var(--elev-1);
+          transition: border-color 160ms var(--ease), transform 160ms var(--ease); font: inherit; }
+  .projcard:hover, .projcard:focus-visible { border-color: var(--color-text-faint); transform: translateY(-2px); outline: none; }
+  .projcard b { display: block; font-size: var(--fs-3); font-weight: 600; text-transform: capitalize; }
+  .projcard span { display: block; margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-dim); }
+  .projcard span.open { color: var(--color-open); }
+  .projcard span.done { color: var(--color-verified); }
+  .projfilter { position: fixed; z-index: 3; left: 50%; transform: translateX(-50%); top: 72px; padding: 8px 12px;
+                border-radius: var(--radius-base); border: 1px solid var(--color-text-dim); background: var(--color-surface-3);
+                font: 500 var(--fs-1)/1.4 var(--font-data); color: var(--color-text); box-shadow: var(--elev-2); }
+  .projfilter button { margin-left: 8px; background: transparent; border: 0; color: var(--color-text-dim); cursor: pointer; font: inherit; }
+  .projfilter button:hover, .projfilter button:focus-visible { color: var(--color-text); outline: none; }
   .calview { position: fixed; z-index: 2; inset: 116px 24px 72px 24px; display: grid; grid-template-columns: 1fr 320px;
              gap: 24px; background: var(--color-surface); overflow: hidden; }
   .calview[hidden] { display: none; }
@@ -232,6 +249,12 @@
   </div>
 
   <button class="viewtoggle" id="viewToggle" aria-pressed="false">calendar view</button>
+  <button class="viewtoggle proj" id="projToggle" aria-pressed="false">projects</button>
+  <section class="projview" id="projView" aria-label="Projects" hidden>
+    <div class="eyebrow">projects · threads grouped by what they are about, across different subject lines · no model</div>
+    <div class="proj-grid" id="projGrid"></div>
+  </section>
+  <div class="projfilter" id="projFilter" hidden></div>
   <section class="calview" id="calView" aria-label="Calendar" hidden>
     <div class="cal-months" id="calMonths"></div>
     <aside class="cal-open">
@@ -475,7 +498,8 @@ addEventListener("keydown", e => {
 
 // ---- filters ------------------------------------------------------------------------------------------------
 let filter = "all";
-const matches = t => filter === "all" || (filter === "gap" ? t.hasGap : kindOf(t) === filter);
+const matches = t => filter === "all" || (filter === "gap" ? t.hasGap
+  : filter.startsWith("project:") ? t.project === filter.slice(8) : kindOf(t) === filter);
 document.querySelectorAll(".pill[data-filter]").forEach(p => p.addEventListener("click", () => {
   filter = p.dataset.filter;
   document.querySelectorAll(".pill[data-filter]").forEach(q => q.setAttribute("aria-pressed", String(q === p)));
@@ -521,7 +545,7 @@ renderer.domElement.addEventListener("click", e => { const h = hit(e); if (h) op
 
 const insp = $("insp");
 function openInspector(t) {
-  $("iFolder").textContent = `folder · ${t.folder}`;
+  $("iFolder").textContent = `folder · ${t.folder}` + (t.project ? ` · project · ${t.project}` : "");
   $("iSubject").textContent = t.subject || "(no subject)";
   $("iSpan").textContent = t.span ? `${t.span[0].replace("T", " ")} → ${t.span[1].replace("T", " ")} · ${t.messages} messages` : `${t.messages} messages · no dates`;
   const k = kindOf(t), o = t.outcome;
@@ -610,6 +634,40 @@ function renderCalendar() {
     const t = threads.find(x => x.thread === b.dataset.thread); if (t) openInspector(t);
   }));
 }
+// ---- projects: whole-mailbox groups; picking one filters the river to what is still open in it -----------
+const projToggle = $("projToggle"), projView = $("projView"), projFilter = $("projFilter");
+function renderProjects(set) {
+  const ps = set.projects || [];
+  projToggle.hidden = !ps.length;
+  $("projGrid").innerHTML = ps.map(p => `<button class="projcard" data-project="${esc(p.name)}"><b>${esc(p.name)}</b>`
+    + `<span>${fmt(p.threads)} threads</span>`
+    + (p.open ? `<span class="open">${fmt(p.open)} still need something</span>` : `<span class="done">all filed - nothing to do</span>`)
+    + `</button>`).join("");
+  document.querySelectorAll(".projcard").forEach(b => b.addEventListener("click", () => pickProject(b.dataset.project)));   // ".proj" also matched the toggle button
+}
+function pickProject(name) {
+  const p = (SETS.find(s => s.id === current).projects || []).find(x => x.name === name);
+  projView.hidden = true; projToggle.setAttribute("aria-pressed", "false");
+  filter = "project:" + name;
+  document.querySelectorAll(".pill[data-filter]").forEach(q => q.setAttribute("aria-pressed", "false"));
+  lanes.forEach(L => { L.target = matches(L.t) ? 1 : .08; });
+  const first = lanes.find(L => matches(L.t));
+  if (first) setTravel(first.i * LANE + MIN_TRAVEL);
+  projFilter.hidden = false;
+  projFilter.innerHTML = `project: ${esc(name)} · ${fmt(p ? p.threads : 0)} threads · `
+    + (p && p.open ? `${fmt(p.open)} open` : "all filed, nothing to do") + `<button id="projClear" aria-label="Clear project">✕</button>`;
+  $("projClear").addEventListener("click", clearProject);
+}
+function clearProject() {
+  projFilter.hidden = true; filter = "all";
+  document.querySelectorAll(".pill[data-filter]").forEach(q => q.setAttribute("aria-pressed", String(q.dataset.filter === "all")));
+  lanes.forEach(L => { L.target = 1; });
+}
+projToggle.addEventListener("click", () => {
+  const on = projView.hidden;
+  projView.hidden = !on; projToggle.setAttribute("aria-pressed", String(on));
+  if (on && !calView.hidden) $("viewToggle").click();
+});
 const viewToggle = $("viewToggle"), calView = $("calView");
 viewToggle.addEventListener("click", () => {
   const on = calView.hidden;
@@ -662,6 +720,8 @@ function show(id) {
   document.querySelectorAll(".person").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === set.id)));
   t0 = performance.now();
   if (!calView.hidden) renderCalendar();
+  renderProjects(set);
+  projFilter.hidden = true; projView.hidden = true; projToggle.setAttribute("aria-pressed", "false");
   try { localStorage.setItem("axiom_timeline_person", set.id); } catch (e) { /* storage may be blocked */ }
 }
 const people = $("people");

@@ -45,7 +45,18 @@ def main():
             continue
         s = json.loads(summ.read_text(encoding="utf-8"))
         tl = json.loads(tlf.read_text(encoding="utf-8"))
-        sets.append({"id": box, "name": name, "role": role, "note": note, "whole_mailbox": True,
+        # project folders over the WHOLE mailbox (structure, no model); the short list carries each thread's project
+        import projects as P
+        everything = [t for f in tl["folders"] for t in f["threads"]]
+        assign, sizes = P.find_projects({t["thread"]: t["subject"] for t in everything})
+        for t in everything:
+            t["project"] = assign.get(t["thread"])
+        open_by = {}
+        for t in everything:
+            if t["project"] and t["outcome"]["kind"] != "filed":
+                open_by[t["project"]] = open_by.get(t["project"], 0) + 1
+        projects = [{"name": n, "threads": c, "open": open_by.get(n, 0)} for n, c in sizes.most_common(24)]
+        sets.append({"id": box, "name": name, "role": role, "note": note, "whole_mailbox": True, "projects": projects,
                      "summary": {"threads": s["threads"], "messages": s["messages"], "outcomes": s["outcomes"],
                                  "call_gaps": s["call_gaps"], "announcements": s.get("announcements", 0),
                                  "zero_model_calls": s["zero_model_calls"]},

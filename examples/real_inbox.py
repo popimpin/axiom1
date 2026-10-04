@@ -203,13 +203,34 @@ print("PUBLIC: the calendar is exactly what was agreed, and it asked about exact
 '''
 
 
-def render(messages):
-    """The thread as the models see it: who said what, with each message's day."""
+SHOWN_BUDGET = 24000     # characters (~6k tokens) a model is shown of one thread
+
+
+def render(messages, budget=SHOWN_BUDGET):
+    """The thread as the models see it: who said what, with each message's day.
+
+    A thread longer than the budget shows its first message and the most recent ones that fit, with a line saying
+    how many were left out - never a silent cut. Seen 2026-10-04: one thread in Lay's mailbox is a public campaign of
+    1,124 messages (~380k tokens), over Nemotron's 262k limit (HTTP 400), and Bee's Ollama (32k context) had silently
+    truncated 5 prompts. Message numbers stay the thread's own, so "message 7" still means message 7."""
     out = []
     for k, m in enumerate(messages, 1):
         who = "Me" if M.mine([m], ME) else m["from"].split("<")[0].strip()
-        out.append(f"[message {k}] {who}, {m['date']}:\n{m['body']}")
-    return "\n\n".join(out)
+        body = m["body"]
+        if budget and len(body) > budget // 3:                         # one huge message (a newsletter) is cut, said so
+            body = body[: budget // 3] + "\n[... the rest of this message is not shown ...]"
+        out.append(f"[message {k}] {who}, {m['date']}:\n{body}")
+    if not budget or sum(len(x) + 2 for x in out) <= budget:
+        return "\n\n".join(out)
+    keep, used = [], len(out[0])
+    for x in reversed(out[1:]):
+        if used + len(x) + 2 > budget - 80:
+            break
+        keep.insert(0, x)
+        used += len(x) + 2
+    left_out = len(out) - 1 - len(keep)
+    note = f"[... {left_out} earlier message{'s' if left_out != 1 else ''} not shown ...]"
+    return "\n\n".join([out[0], note] + keep)
 
 
 TIME_RE = r"\b\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)(?![a-z])|\b\d{1,2}:\d{2}\b|\bnoon\b"

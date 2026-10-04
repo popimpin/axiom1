@@ -90,7 +90,18 @@ def main():
                 row = {"thread": name, "tier": f"structure: {why}", "got": "off", "placed": None, "reminder": None,
                        "seconds": 0.0}
             else:
-                row = run_thread(name, texts[name], router, model)
+                # a dropped connection is not a verdict: retry the thread (seen 2026-10-04 on Nebius at Lay 1,290/2,194:
+                # "ConnectionResetError 10054: connection forcibly closed by the remote host" ended the whole run)
+                for attempt in range(4):
+                    try:
+                        row = run_thread(name, texts[name], router, model)
+                        break
+                    except (ConnectionError, TimeoutError, OSError) as e:
+                        if attempt == 3:
+                            raise
+                        wait = 15 * (attempt + 1)
+                        print(f"RETRY {name} after {type(e).__name__}: {str(e)[:80]} (waiting {wait}s)", flush=True)
+                        _time.sleep(wait)
             row["topic"] = k
             fh.write(json.dumps(row) + "\n")
             fh.flush()

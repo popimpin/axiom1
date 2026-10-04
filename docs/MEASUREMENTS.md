@@ -683,3 +683,40 @@ just need filing"), the lanes are what is left to do. Data: `python examples/tim
   date).
 - **Serve it with `node web/serve.js`**. Python's `http.server` stalled on the page's two large files in 9 of 20 loads
   on Windows (Node: 20/20, ready in 0.36 s). That was every "the page did not load" seen earlier in this session.
+
+## Nemotron on Nebius: the scored set, the generated inbox, and five whole mailboxes (2026-10-04)
+
+Nano (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`) fills forms; every decision is asked of Nano AND Super
+(`nvidia/nemotron-3-super-120b-a12b`); they must agree, and a disagreement goes to the person (scored runs) or
+becomes a "confirm" item (mailboxes, where there is no person to ask) - never a guess.
+
+| scored runs | Bee (9B alone) | **Nemotron** |
+|---|---|---|
+| 50 real threads (answer key) | 43/50 | **46/50, 0 wrong on the calendar** (23 taps: the two disagreed often) |
+| generated inbox, 10 inboxes | 7/10 | **10/10**, 2 taps, **335 decisions answered by the frozen table** |
+
+The frozen table is off for a single model (one model agreeing with itself proves nothing); two agreeing models
+freeze their answer, so repeated wordings cost nothing. On real mail it barely fires (2-12 hits per mailbox): real
+subject lines rarely repeat word for word.
+
+| whole mailbox | threads | calendar Bee / Nemotron | reminders | follow-up | confirm | disagreed | model time Bee / Nemotron |
+|---|---|---|---|---|---|---|---|
+| Lay (CEO) | 2,194 | 1 / 2 | 1 / 1 | 188 / 300 | - / 1 | 163 | 6,300 s / 2,504 s |
+| Haedicke (general counsel) | 2,537 | 5 / 0 | 2 / 3 | 137 / 219 | - / 3 | 105 | 7,811 s / 5,564 s |
+| Steffes (regulatory) | 2,130 | 12 / 3 | 8 / 20 | 101 / 151 | - / 4 | 100 | 6,841 s / 2,314 s |
+| Giron (trading) | 1,373 | 2 / 0 | 0 / 0 | 48 / 85 | - / 0 | 47 | 3,728 s / 1,214 s |
+| Heard (legal) | 890 | 1 / 0 | 0 / 2 | 10 / 20 | - / 0 | 10 | 2,431 s / 938 s |
+| **all five** | **9,124** | **21 / 5** | 11 / 26 | 484 / 775 | - / 8 | **425** | 7.5 h / **3.5 h** |
+
+- **Nemotron is far more cautious.** Bee's 21 calendar entries were each one model's call; two models agreeing let
+  5 through, and sent 425 disagreements to "confirm" instead. Where right answers are known (the 50 scored threads)
+  Nemotron was more accurate; at mailbox scale there is no key, so these counts measure caution, not correctness.
+  The calendar connector (accepted / declined) is what turns most of the 425 into lookups.
+- **2.2x faster** in total on Nebius than on the Bee iGPU, at an estimated $1-2 for everything.
+- **Two robustness bugs, both fixed:** (1) one dropped connection (`ConnectionResetError 10054`) ended the Lay run at
+  1,290/2,194 - each thread now retries with backoff, and the run resumed where it stopped; (2) a public campaign
+  thread in Lay's mailbox of 1,124 messages (~380k tokens) exceeded Nemotron's 262k context (HTTP 400). Bee had
+  never complained because Ollama silently truncates (its log: "truncating input prompt" 5 times vs 8,871 prompts
+  that fit). Now every prompt is budgeted (24,000 characters): the first message and the most recent that fit, with
+  "[... N earlier messages not shown ...]" - never a silent cut. Every scored and generated thread renders
+  byte-identically, so no earlier result changes.

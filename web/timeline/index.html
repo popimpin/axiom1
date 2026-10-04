@@ -336,10 +336,12 @@ function headline(set) {
   const rem = Object.entries(o).filter(([k]) => k.startsWith("reminder")).reduce((a, [, v]) => a + v, 0);
   $("heroNum").textContent = fmt(o.filed || 0);
   $("heroText").textContent = `of ${fmt(n)} threads just need filing`;
-  $("who").textContent = `${set.name} · ${set.role}${set.note ? " · " + set.note : ""}`;
+  $("who").textContent = `${set.name} · ${set.role}${set.note ? " · " + set.note : ""}`
+    + (set.summary.models ? ` · decided by ${set.summary.models}` : "");
   $("thesis").textContent = set.whole_mailbox
-    ? `A whole mailbox (${fmt(set.summary.messages)} messages). Every thread is filed whole; below is all that is left: ` +
-      `${fmt(threads.length)} threads. ${fmt(set.summary.announcements || 0)} announcements were filed without asking a model.`
+    ? `A whole mailbox, ${fmt(set.summary.messages)} messages: ${fmt(threads.length)} threads left to look at. `
+      + `${fmt(set.summary.announcements || 0)} announcements filed with no model`
+      + (set.summary.confirm_items ? `; ${fmt(set.summary.confirm_items)} disagreements wait for you, none guessed.` : ".")
     : "Every thread is filed whole. A calendar entry or a reminder is something extra a thread may carry.";
   $("sAll").textContent = fmt(threads.length); $("sCal").textContent = fmt(o.calendar || 0); $("sRem").textContent = fmt(rem);
   $("sFol").textContent = fmt(o.follow_up || 0); $("sGap").textContent = fmt(threads.filter(t => t.hasGap).length);

@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "examples"))
 
-BOXES = ROOT / "docs" / "measurements" / "mailboxes"
+# the page shows the Nemotron runs (Nano + Super must agree) - the entry runs on Nemotron; Bee stays in MEASUREMENTS
+BOXES = ROOT / "docs" / "measurements" / "mailboxes_nebius"
+MODELS = "Nemotron 3 Nano + Super on Nebius"
 OUT = ROOT / "web" / "timeline" / "data" / "sets.js"
 # who each mailbox belongs to. Roles only where the corpus record is clear; otherwise the department.
 PEOPLE = [
@@ -44,6 +46,9 @@ def main():
             print(f"skip {box}: not run yet")
             continue
         s = json.loads(summ.read_text(encoding="utf-8"))
+        rows = [json.loads(l) for l in (BOXES / f"{box}.jsonl").read_text(encoding="utf-8").splitlines()]
+        s.setdefault("announcements", sum(1 for r in rows if (r["tier"] or "").startswith("structure: announcement")))
+        s["confirm_items"] = sum((r["tier"] or "").count("needs you") for r in rows)
         tl = json.loads(tlf.read_text(encoding="utf-8"))
         # project folders over the WHOLE mailbox (structure, no model); the short list carries each thread's project
         import projects as P
@@ -59,12 +64,13 @@ def main():
         sets.append({"id": box, "name": name, "role": role, "note": note, "whole_mailbox": True, "projects": projects,
                      "summary": {"threads": s["threads"], "messages": s["messages"], "outcomes": s["outcomes"],
                                  "call_gaps": s["call_gaps"], "announcements": s.get("announcements", 0),
-                                 "zero_model_calls": s["zero_model_calls"]},
+                                 "zero_model_calls": s["zero_model_calls"], "confirm_items": s["confirm_items"],
+                                 "models": MODELS},
                      "folders": short_list(tl)})
     # the 50 scored threads, from the newest scored receipt
     import inbox_timeline as TL
     import mailex_eval as X
-    receipt = sorted((ROOT / "docs" / "measurements").glob("*_mailex_bee_v*.json"),
+    receipt = sorted((ROOT / "docs" / "measurements").glob("*_mailex_nebius_v*.json"),
                      key=lambda p: int(p.stem.rsplit("_v", 1)[1]))[-1]
     key = json.load(open(X.KEY, encoding="utf-8"))["threads"]
     owners = json.load(open(X.OWNERS, encoding="utf-8"))
@@ -77,7 +83,7 @@ def main():
     s = TL.summary(tl)
     sets.append({"id": "mailex-50", "name": "50 scored threads", "role": f"MailEx, answer key ({receipt.stem})",
                  "note": "0 wrong on the calendar", "whole_mailbox": False,
-                 "summary": {"threads": s["threads"], "outcomes": s["outcomes"], "call_gaps": s["call_gaps"]},
+                 "summary": {"threads": s["threads"], "outcomes": s["outcomes"], "call_gaps": s["call_gaps"], "models": MODELS},
                  "folders": tl["folders"]})
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("window.AXIOM_SETS = " + json.dumps(sets, ensure_ascii=False) + ";\n", encoding="utf-8")

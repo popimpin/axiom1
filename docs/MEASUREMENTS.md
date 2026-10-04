@@ -720,3 +720,7 @@ subject lines rarely repeat word for word.
   that fit). Now every prompt is budgeted (24,000 characters): the first message and the most recent that fit, with
   "[... N earlier messages not shown ...]" - never a silent cut. Every scored and generated thread renders
   byte-identically, so no earlier result changes.
+
+**The page now shows the Nemotron runs** (`web/timeline`, data from `docs/measurements/mailboxes_nebius/`): each
+person's header names the deciding models, and the description says how many decisions waited for a person
+because the two models disagreed. The Bee runs stay in `docs/measurements/mailboxes/` for comparison.

@@ -69,6 +69,8 @@
   .pill.rem b { color: var(--color-pending); }
   .pill.fol b { color: var(--color-open); }
   .pill.over b { color: var(--color-pending); }
+  .pill.out b { color: var(--color-pending); }
+  .receipt .out { margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-pending); }
   .receipt .sandbox { display: inline-block; margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1);
                       color: var(--color-text); border: 1px solid var(--color-pending); border-radius: var(--radius-base); padding: 4px 8px;
                       text-decoration: none; transition: background 160ms var(--ease); }
@@ -122,7 +124,7 @@
              background: var(--color-surface-3); box-shadow: var(--elev-1); }
   .receipt .kind { font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .12em; text-transform: uppercase; }
   .receipt .what { margin-top: 4px; font-size: var(--fs-3); font-weight: 600; }
-  .receipt .by { margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-faint); }
+  .receipt .by { margin-top: 8px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--color-text-dim); }   /* faint was 4.44:1 on the receipt background */
   .receipt.calendar .kind { color: var(--color-verified); }
   .receipt.reminder .kind { color: var(--color-pending); }
   .receipt.filed .kind { color: var(--color-text-dim); }
@@ -233,6 +235,7 @@
       <button class="pill rem" data-filter="reminder" aria-pressed="false">reminders <b id="sRem">--</b></button>
       <button class="pill fol" data-filter="follow_up" aria-pressed="false">follow-up needed <b id="sFol">--</b></button>
       <button class="pill" data-filter="gap" aria-pressed="false">call gaps <b id="sGap">--</b></button>
+      <button class="pill out" data-filter="outside" aria-pressed="false" title="invitations from outside the organisation, from someone never written to: flagged, not dropped">from outside <b id="sOut">--</b></button>
       <button class="pill over" data-filter="oversight" aria-pressed="false" title="code, commands or instructions sent in mail: never acted on, a person looks">needs oversight <b id="sOver">--</b></button>
       <span class="pill static" title="counted, not drawn: nothing to do but keep them">filed only <b id="sFiled">--</b></span>
     </nav>
@@ -354,6 +357,7 @@ function headline(set) {
   $("sFol").textContent = fmt(o.follow_up || 0); $("sGap").textContent = fmt(threads.filter(t => t.hasGap).length);
   $("sFiled").textContent = fmt(o.filed || 0);
   $("sOver").textContent = fmt(threads.filter(t => (t.oversight || []).length).length);
+  $("sOut").textContent = fmt(threads.filter(t => t.outside).length);
 }
 
 // ---- scene ------------------------------------------------------------------------------------------------
@@ -510,6 +514,7 @@ addEventListener("keydown", e => {
 let filter = "all";
 const matches = t => filter === "all" || (filter === "gap" ? t.hasGap
   : filter === "oversight" ? (t.oversight || []).length > 0
+  : filter === "outside" ? !!t.outside
   : filter.startsWith("project:") ? t.project === filter.slice(8) : kindOf(t) === filter);
 document.querySelectorAll(".pill[data-filter]").forEach(p => p.addEventListener("click", () => {
   filter = p.dataset.filter;
@@ -565,6 +570,7 @@ function openInspector(t) {
   receipt.innerHTML = `<div class="kind">${esc(k === "reminder" ? o.kind.replace(":", " · ") : k === "follow_up" ? "follow-up needed" : k)}</div>`
     + `<div class="what">${esc(outcomeLine(t))}</div>`
     + `<div class="by">decided by: ${esc(o.decided_by || "structure (no decision needed)")}</div>`
+    + (t.outside ? `<div class="out">flagged: invitation ${esc(t.outside)} - check it is real before acting</div>` : "")
     + ((t.oversight || []).length ? `<div class="over">needs human oversight: ${esc(t.oversight.join(", "))} - nothing in it is run or acted on</div>`
       + `<a class="sandbox" href="inspect.html?box=${encodeURIComponent(current)}&thread=${encodeURIComponent(t.thread)}" target="_blank" rel="noopener noreferrer">open in the review sandbox (read only, no network)</a>` : "");
   $("iSummary").innerHTML = summarize(t).map(s => `<li class="${s.kind}">${esc(s.text)}`

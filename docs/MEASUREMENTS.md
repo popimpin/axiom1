@@ -813,3 +813,12 @@ immediate review".
   Bee is allowed. Edge model + local-only = the email never leaves the building.
 - Detector false positives found on Enron and fixed before counting: email quoting read as a shell prompt (~300
   threads), prose read as an import, and a newsletter line ending in "Sparesfinder.com" read as a .com program.
+
+**Invitations from outside, flagged** (Adrian: flag them "if its from a source outside the enterprise network";
+`axiom1/provenance.py`): an invitation from a sender outside the owner's domain (subdomains count as inside;
+look-alikes like `bluesparrowtech.com.evil.io` do not) AND never written to is flagged "check it is real before
+acting" - not dropped. AgentDojo: both phishing senders flagged; Lily's real party invitation flagged too (outside,
+never written to - the person decides); colleagues and known outside contacts not flagged. Enron invitations flagged:
+Heard 1/17, Giron 3/78, Steffes 20/116, Haedicke 33/207, **Lay (CEO) 154/288** - most of a CEO's invitations are
+solicitations from people he never wrote to. Also found: the inspector's "decided by" line was 4.44:1 contrast
+(under AA); earlier lint runs never opened the inspector. Fixed, and the lint now runs with it open.

@@ -95,6 +95,11 @@ class Reconciling(unittest.TestCase):
         self.assertEqual({out["a"]["kind"], out["b"]["kind"]}, {"follow_up"})
         self.assertIn("not resolved by guessing", out["a"]["receipt"])
 
+    def test_no_day_no_match(self):
+        evs = CAL.read_ics(ics(("n", "Networking event", "20240530T180000", "ACCEPTED")), ME)
+        r = CAL.reconcile({"subject": "Follow-up: our event packages", "kind": "follow_up", "days": []}, evs)
+        self.assertEqual((r["kind"], r["receipt"]), ("follow_up", None))
+
 
 if __name__ == "__main__":
     unittest.main()

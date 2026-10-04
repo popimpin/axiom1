@@ -85,12 +85,16 @@ def match(thread, events):
     """Events that fit this thread: a shared topic word, and a day the thread names or holds. Returns a list."""
     words = topic_words(thread.get("subject", ""))
     days = set(thread.get("days", []))
+    if not days:
+        # no day, no match (seen 2026-10-04: a day-less ad "...our event packages" matched an accepted "Networking
+        # event" on the shared word alone and was put on the calendar)
+        return []
     people = {p.lower() for p in thread.get("people", [])}
     fits = []
     for e in events:
         if not (words & topic_words(e.title)):
             continue
-        if days and e.start[:10] not in days:
+        if e.start[:10] not in days:
             continue
         score = len(words & topic_words(e.title)) + (2 if people & set(e.attendees) else 0)
         fits.append((score, e))

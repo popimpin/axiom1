@@ -306,9 +306,19 @@ NOTICE_RE = (r"\b(?:has|have) been (?:re)?scheduled\b|\b(?:is|are) (?:re)?schedu
              r"|\bbridge (?:number|line)\b")
 # an RSVP form asks too, without a question mark (Enron, 2026-10-05: "Please indicate if you plan to attend this
 # meeting ... Please return your response via e-mail by Friday")
+# An offer to go in my place waits on my answer (Adrian's calendar check, 2026-10-05, steffes-j t00315: "A meeting is
+# scheduled for August 21st at 10am ... I will attend the meeting if you wish" - "that individual was expecting a
+# response"). Not my meeting, and not settled: a follow-up with its own reason.
+OFFER_RE = (r"\bif you (?:wish|want|would like|'d like)\b|\b(?:do|would) you (?:want|like) me to\b|\bshall i (?:attend|go)\b"
+            r"|\bshould i (?:attend|go|join)\b")
 ASKS_RE = (r"\?|\brsvp\b|\blet (?:me|us) know\b|\bplease (?:confirm|reply|respond|advise|indicate)\b"
            r"|\bcan you (?:make|attend|join)\b|\bare you (?:available|free)\b|\bwill you (?:be able|attend|join)\b"
-           r"|\bplan to attend\b|\byour response\b|\b(?:reply|respond) by\b")
+           r"|\bplan to attend\b|\byour response\b|\b(?:reply|respond) by\b|" + OFFER_RE)
+
+
+def offers(msgs):
+    """Someone offers to go or act in my place and is waiting on my answer."""
+    return any(re.search(OFFER_RE, m["body"], re.I) for m in msgs)
 
 
 def scheduled_notice(msgs):
@@ -409,6 +419,11 @@ for t in entry["threads"]:
             # nothing agreed in writing, and the thread went to a call: open-ended, so it goes in "follow-up needed"
             asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
                          "kind": "follow_up", "why": CALL, "missing": ["what was decided on the call"], "tentative": {}})
+        elif t.get("invited") and t.get("offer"):
+            # someone offered to go in my place: they are waiting on my answer
+            asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
+                         "kind": "follow_up", "why": "they offered to go for you and are waiting on your answer",
+                         "missing": ["whether you want them to go"], "tentative": {}})
         elif t.get("invited"):
             # invited, and I never answered in email: probably answered by a calendar click or a call
             asks.append({"thread": t["file"], "subject": re.sub(r"^(?:(?:re|fwd?):\s*)+", "", msgs[0]["subject"], flags=re.I),
@@ -537,7 +552,8 @@ def decide_thread(name, text, router, model, person, teach):
         # I never wrote, and it is a meeting for me: an invitation I never answered in email. Not agreed (seen live:
         # a 9B read someone ELSE's "Works for me!" as my agreement), so never on the calendar: follow-up instead,
         # because the answer was probably a calendar click or a call
-        return {**blank, "invited": True, "tier": f"invited: is_meeting {mtg_tier}", "confirm": confirm}, corrections
+        return {**blank, "invited": True, "offer": offers(msgs), "tier": f"invited: is_meeting {mtg_tier}",
+                "confirm": confirm}, corrections
     else:
         # the agreement, split into its two smallest decisions (seen live: Nano answered the one big question
         # "yes" for 9 cancellations and 3 declines; Super answered "no")

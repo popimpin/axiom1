@@ -1,6 +1,7 @@
 """Score a person's sampled-audit marks (from web/timeline/audit.html "Download marks").
 
     python examples/audit_score.py axiom_audit_marks_20261005.json   # writes docs/measurements/final/audit.json
+    python examples/audit_score.py marks.json --set notices            # another set: data/audit_<set>.js -> audit_<set>.json
 
 Per stratum (what Axiom-1 decided): how often the person, deciding BLIND, picked the same thing, with a 95% Wilson
 interval. Overall accuracy is weighted by each stratum's share of all 9,124 threads, because the sample over-draws the
@@ -33,7 +34,13 @@ def wilson(k, n, z=1.96):
 
 
 def main():
-    sample = json.loads(SAMPLE.read_text(encoding="utf-8").split("=", 1)[1].rstrip().rstrip(";"))
+    global OUT
+    sample_path = SAMPLE
+    if "--set" in sys.argv:
+        name = sys.argv[sys.argv.index("--set") + 1]
+        sample_path = SAMPLE.with_name(f"audit_{name}.js")
+        OUT = OUT.with_name(f"audit_{name}.json")
+    sample = json.loads(sample_path.read_text(encoding="utf-8").split("=", 1)[1].rstrip().rstrip(";"))
     marks = json.load(open(sys.argv[1], encoding="utf-8"))
     if marks.get("seed") != sample["seed"]:
         sys.exit(f"marks are for seed {marks.get('seed')}, sample is seed {sample['seed']}")
@@ -68,7 +75,7 @@ def main():
            "HEADLINE_estimated_missed_items": round(sum((1 - per[k]["rate"]) * pop[k] for k in filed)),
            "of_filed_threads": sum(pop[k] for k in filed),
            "weighted_agreement_all_threads": round(weighted, 3) if weighted is not None else None,
-           "baseline_file_everything": round(sum(pop[k] for k in ("filed_model", "filed_structure")) / sum(pop.values()), 3),
+           "baseline_file_everything": round(sum(pop.get(k, 0) for k in ("filed_model", "filed_structure")) / sum(pop.values()), 3),
            "population_covered": covered, "per_stratum": per,
            "confusion_axiom_vs_person": {f"{a} -> {b}": n for (a, b), n in sorted(confusion.items())},
            "details_on_agreed_items": {f"{a}: {b}": n for (a, b), n in sorted(details.items())},

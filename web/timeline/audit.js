@@ -1,6 +1,15 @@
 // The sampled audit's only script. The person answers first; Axiom-1's decision is revealed after. Marks live in
 // localStorage (wrapped: it can be unavailable) and leave this browser only through "Download marks".
+// ?set=<name> loads data/audit_<name>.js instead of the main sample (same origin only, letters/digits/_ only).
 (function () {
+  const want = new URLSearchParams(location.search).get("set") || "sample";
+  const s = document.createElement("script");
+  s.src = "data/audit_" + (/^[A-Za-z0-9_]+$/.test(want) ? want : "sample") + ".js";
+  s.onload = start;
+  document.body.append(s);
+})();
+
+function start() {
   const data = window.AXIOM_AUDIT;
   const KEY = "axiom_audit_marks_" + data.seed;
   const CATEGORY = { calendar: "calendar", follow_up: "follow_up", filed: "nothing" };
@@ -99,4 +108,4 @@
     if (e.key === "ArrowLeft") $("prev").click();
   });
   render();
-})();
+}

@@ -37,6 +37,14 @@ class ScheduledNotice(unittest.TestCase):
                      "Join our free webinar Thursday at 2pm! Spaces are limited.\n\nUnsubscribe | View in browser"):
             self.assertFalse(notice(body), body)
 
+    def test_an_offer_to_go_in_my_place_is_not_settled(self):
+        # steffes-j t00315: the meeting is scheduled, but the sender offers to go "if you wish" and waits on an answer
+        body = ("At yesterday's meeting stakeholders were heard. A meeting is scheduled for August 21st at 10am in "
+                "Cincinnati. I will attend the meeting if you wish.")
+        self.assertFalse(notice(body))
+        self.assertTrue(RI.offers([{"body": body}]))
+        self.assertFalse(RI.offers([{"body": "A meeting has been scheduled for Monday at 9:00. Dial-in 800-555-0100."}]))
+
     def test_a_notice_needs_a_day_or_time(self):
         self.assertFalse(notice("The board meeting has been scheduled. Details to follow."))
 

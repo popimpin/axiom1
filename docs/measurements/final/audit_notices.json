@@ -1,0 +1,31 @@
+{
+ "seed": "notices-20261005",
+ "marked": 20,
+ "sample": 20,
+ "HEADLINE_short_list_precision": null,
+ "HEADLINE_estimated_missed_items": 0,
+ "of_filed_threads": 0,
+ "weighted_agreement_all_threads": 0.95,
+ "baseline_file_everything": 0.0,
+ "population_covered": 20,
+ "per_stratum": {
+  "calendar_new": {
+   "n": 20,
+   "agree": 19,
+   "rate": 0.95,
+   "ci95": [
+    0.764,
+    0.991
+   ],
+   "population": 20
+  }
+ },
+ "confusion_axiom_vs_person": {
+  "calendar -> calendar": 19,
+  "calendar -> nothing": 1
+ },
+ "details_on_agreed_items": {
+  "calendar: right": 1
+ },
+ "method": "blind: the person picks what the thread needs before seeing Axiom-1's decision"
+}

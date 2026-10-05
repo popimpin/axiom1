@@ -1,0 +1,17 @@
+{
+ "threads": 2537,
+ "folders": 2471,
+ "outcomes": {
+  "filed": 2325,
+  "follow_up": 206,
+  "reminder:finalize": 5,
+  "reminder:confirm": 1
+ },
+ "call_gaps": 120,
+ "box": "haedicke-m",
+ "owner": "mark.haedicke@enron.com",
+ "messages": 3189,
+ "model_seconds": 1784.4,
+ "zero_model_calls": 2355,
+ "pipeline_errors": 0
+}

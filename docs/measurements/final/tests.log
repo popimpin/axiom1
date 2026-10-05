@@ -1,0 +1,72 @@
+.............................................................................................................................................................................................C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\websockets\legacy\__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+  warnings.warn(  # deprecated in 14.0 - 2024-11-09
+C:\Users\adria\AppData\Roaming\Python\Python313\site-packages\uvicorn\protocols\websockets\websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+  from websockets.server import WebSocketServerProtocol
+[10/04/26 15:24:00] WARNING  Session termination failed: streamable_http.py:433
+                             peer closed connection                            
+                             without sending complete                          
+                             message body (incomplete                          
+                             chunked read)                                     
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036c650>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036d550>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036db50>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036e390>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036ea50>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036cc50>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036c0b0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e03f0410>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036e090>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[10/04/26 15:24:06] WARNING  Session termination failed: streamable_http.py:433
+                             peer closed connection                            
+                             without sending complete                          
+                             message body (incomplete                          
+                             chunked read)                                     
+[10/04/26 15:24:11] WARNING  Session termination failed: streamable_http.py:433
+                             peer closed connection                            
+                             without sending complete                          
+                             message body (incomplete                          
+                             chunked read)                                     
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e03f2570>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e0450f50>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036e2d0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e03f3a70>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e036d550>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e0313ef0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 188e0451190>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.............................................................................................
+----------------------------------------------------------------------
+Ran 284 tests in 240.414s
+
+OK

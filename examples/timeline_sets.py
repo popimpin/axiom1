@@ -7,6 +7,7 @@ short list - what is on the calendar, the reminders, the follow-ups - and the fi
     python examples/timeline_sets.py          # writes web/timeline/data/sets.js
 """
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -15,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "examples"))
 
 # the page shows the Nemotron runs (Nano + Super must agree) - the entry runs on Nemotron; Bee stays in MEASUREMENTS
-BOXES = ROOT / "docs" / "measurements" / "mailboxes_nebius"
+BOXES = Path(os.environ["AXIOM_BOXES_DIR"]) if os.environ.get("AXIOM_BOXES_DIR") else ROOT / "docs" / "measurements" / "mailboxes_nebius"
 MODELS = "Nemotron 3 Nano + Super on Nebius"
 OUT = ROOT / "web" / "timeline" / "data" / "sets.js"
 # who each mailbox belongs to. Roles only where the corpus record is clear; otherwise the department.
@@ -102,7 +103,7 @@ def main():
     # the 50 scored threads, from the newest scored receipt
     import inbox_timeline as TL
     import mailex_eval as X
-    receipt = sorted((ROOT / "docs" / "measurements").glob("*_mailex_nebius_v*.json"),
+    receipt = Path(os.environ["AXIOM_MAILEX_RECEIPT"]) if os.environ.get("AXIOM_MAILEX_RECEIPT") else sorted((ROOT / "docs" / "measurements").glob("*_mailex_nebius_v*.json"),
                      key=lambda p: int(p.stem.rsplit("_v", 1)[1]))[-1]
     key = json.load(open(X.KEY, encoding="utf-8"))["threads"]
     owners = json.load(open(X.OWNERS, encoding="utf-8"))

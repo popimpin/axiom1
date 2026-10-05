@@ -14,6 +14,7 @@ Token Factory, configured from the environment:
     NEBIUS_BASE_URL   default https://api.tokenfactory.nebius.com/v1
     AXIOM_MODEL       default nvidia/Nemotron-3_5-Lightning
 """
+import http.client
 import json
 import os
 import subprocess
@@ -278,8 +279,10 @@ class ChatModel:
                 if e.code < 500 and e.code != 429 or attempt == 4:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
                                        f"{e.read()[:300].decode(errors='replace')}") from None
-            except (TimeoutError, urllib.error.URLError) as e:
-                # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes)
+            except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException) as e:
+                # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes; seen on
+                # Nebius 2026-10-04: "ConnectionResetError 10054" while READING the reply, which is not a URLError,
+                # ended a mailbox run - ConnectionError and http.client errors are retried too)
                 if attempt == 4:
                     raise RuntimeError(f"model endpoint did not answer: {e}") from None
             time.sleep(2 ** attempt * 2)     # 2, 4, 8, 16 s: rides out a brief network drop (seen on Bee)

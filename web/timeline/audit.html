@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- The sampled audit. Same rules as the review sandbox: this page loads only its own script and data file; no images,
+     no network requests, no frames, no forms. Email text is placed with textContent and never rendered as HTML.
+     Marks stay in this browser (localStorage) until "Download marks" saves them as a file. -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'none';
+               connect-src 'none'; frame-src 'none'; object-src 'none'; media-src 'none'; form-action 'none'; base-uri 'none'" />
+<meta name="referrer" content="no-referrer" />
+<title>Sampled Audit</title>
+<style>
+  @font-face { font-family: "Space Grotesk"; src: url("fonts/space-grotesk-var.woff2") format("woff2"); font-weight: 300 700; }
+  @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono-var.woff2") format("woff2"); font-weight: 400 800; }
+  :root {
+    --color-surface: #0A0E12; --color-surface-2: #10161C; --color-surface-3: #18212A;
+    --color-text: #E6EDF3; --color-text-dim: #9AA7B4; --color-text-faint: #7A8794; --color-border: #22303B;
+    --color-primary: #5CCFE6; --color-ok: #7FD962; --color-pending: #FFB454; --color-danger: #FF7B72;
+    --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-data: "JetBrains Mono", ui-monospace, Consolas, monospace; --radius-base: 3px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--color-surface); color: var(--color-text); font: 15px/24px var(--font-heading); padding: 24px 16px; }
+  main { max-width: 920px; margin: 0 auto; }
+  h1 { font-size: 23px; font-weight: 600; margin-bottom: 4px; }
+  .dim { color: var(--color-text-dim); }
+  .mono { font-family: var(--font-data); font-size: 12px; letter-spacing: .04em; }
+  .bar { height: 4px; background: var(--color-surface-3); border-radius: 2px; margin: 16px 0 8px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--color-primary); width: 0; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .spread { justify-content: space-between; }
+  .card { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-base);
+          padding: 16px; margin-top: 16px; }
+  .subject { font-size: 18.75px; font-weight: 600; margin: 4px 0 12px; overflow-wrap: anywhere; }
+  .msg { border-top: 1px solid var(--color-border); padding: 12px 0; }
+  .msg .meta { font-family: var(--font-data); font-size: 12px; color: var(--color-text-dim); overflow-wrap: anywhere; }
+  .msg pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/22px var(--font-heading); margin-top: 6px;
+             max-height: 420px; overflow: auto; }
+  button { font: 600 14px/20px var(--font-heading); color: var(--color-text); background: var(--color-surface-3);
+           border: 1px solid var(--color-border); border-radius: var(--radius-base); padding: 10px 14px; cursor: pointer; }
+  button:hover { border-color: var(--color-primary); }
+  button.on { background: var(--color-primary); color: #071015; border-color: var(--color-primary); }
+  button:disabled { opacity: .4; cursor: default; }
+  .q { font-weight: 600; margin-bottom: 8px; }
+  .help { font-size: 13px; color: var(--color-text-dim); margin-top: 8px; }
+  .reveal { border-left: 3px solid var(--color-border); padding-left: 12px; margin-top: 16px; }
+  .agree { border-left-color: var(--color-ok); } .disagree { border-left-color: var(--color-danger); }
+  textarea { width: 100%; min-height: 56px; margin-top: 8px; background: var(--color-surface); color: var(--color-text);
+             border: 1px solid var(--color-border); border-radius: var(--radius-base); font: 14px/20px var(--font-heading); padding: 8px; }
+  .hidden { display: none; }
+  table { border-collapse: collapse; width: 100%; font-family: var(--font-data); font-size: 12px; margin-top: 8px; }
+  td, th { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--color-border); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sampled audit, five whole mailboxes</h1>
+  <p class="dim">Read the email, then say what it needs. Axiom-1's decision is shown only after you answer.</p>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="row spread">
+    <span class="mono dim" id="progress"></span>
+    <span class="row">
+      <button id="prev">Previous</button><button id="next">Next</button><button id="jump">Next unmarked</button>
+      <button id="download">Download marks</button>
+    </span>
+  </div>
+
+  <section class="card" id="item">
+    <div class="mono dim" id="where"></div>
+    <div class="subject" id="subject"></div>
+    <div id="messages"></div>
+  </section>
+
+  <section class="card">
+    <div class="q">What does this thread need from the mailbox owner?</div>
+    <div class="row" id="picks">
+      <button data-pick="calendar">Calendar: a meeting was agreed</button>
+      <button data-pick="reminder">Reminder: being arranged, something unsettled</button>
+      <button data-pick="follow_up">Follow-up: something left open for them</button>
+      <button data-pick="nothing">Nothing: just file it</button>
+    </div>
+    <p class="help">Reminder = a meeting is being set up but the day or time isn't settled, or it needs confirming.
+      Follow-up = an unanswered question or invitation, or the arranging moved to a phone call.</p>
+
+    <div class="reveal hidden" id="reveal">
+      <div class="mono dim">AXIOM-1 DECIDED</div>
+      <div id="axiom" style="font-weight:600;margin:4px 0"></div>
+      <div class="dim" id="axiomwhy"></div>
+      <div class="hidden" id="detailsq" style="margin-top:12px">
+        <div class="q">Are its details right (day, time, what's missing)?</div>
+        <div class="row" id="details">
+          <button data-details="right">Details right</button><button data-details="wrong">Details wrong</button>
+        </div>
+      </div>
+      <textarea id="note" placeholder="Optional note"></textarea>
+    </div>
+  </section>
+
+  <section class="card hidden" id="summary">
+    <div class="q">Your marks so far</div>
+    <div id="summarybody"></div>
+  </section>
+</main>
+<script src="data/audit_sample.js"></script>
+<script src="audit.js"></script>
+</body>
+</html>

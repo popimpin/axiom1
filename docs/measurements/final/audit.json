@@ -1,0 +1,83 @@
+{
+ "seed": 20261005,
+ "marked": 117,
+ "sample": 117,
+ "HEADLINE_short_list_precision": 0.576,
+ "HEADLINE_estimated_missed_items": 813,
+ "of_filed_threads": 8411,
+ "weighted_agreement_all_threads": 0.878,
+ "baseline_file_everything": 0.922,
+ "population_covered": 9124,
+ "per_stratum": {
+  "reminder": {
+   "n": 33,
+   "agree": 19,
+   "rate": 0.576,
+   "ci95": [
+    0.408,
+    0.728
+   ],
+   "population": 33
+  },
+  "filed_model": {
+   "n": 20,
+   "agree": 16,
+   "rate": 0.8,
+   "ci95": [
+    0.584,
+    0.919
+   ],
+   "population": 2619
+  },
+  "filed_structure": {
+   "n": 20,
+   "agree": 19,
+   "rate": 0.95,
+   "ci95": [
+    0.764,
+    0.991
+   ],
+   "population": 5792
+  },
+  "follow_up": {
+   "n": 40,
+   "agree": 23,
+   "rate": 0.575,
+   "ci95": [
+    0.422,
+    0.715
+   ],
+   "population": 676
+  },
+  "calendar": {
+   "n": 4,
+   "agree": 3,
+   "rate": 0.75,
+   "ci95": [
+    0.301,
+    0.954
+   ],
+   "population": 4
+  }
+ },
+ "confusion_axiom_vs_person": {
+  "calendar -> calendar": 3,
+  "calendar -> reminder": 1,
+  "follow_up -> calendar": 2,
+  "follow_up -> follow_up": 23,
+  "follow_up -> nothing": 15,
+  "nothing -> follow_up": 4,
+  "nothing -> nothing": 35,
+  "nothing -> reminder": 1,
+  "reminder -> calendar": 5,
+  "reminder -> follow_up": 4,
+  "reminder -> nothing": 5,
+  "reminder -> reminder": 19
+ },
+ "details_on_agreed_items": {
+  "calendar: right": 3,
+  "reminder: right": 16,
+  "reminder: wrong": 1
+ },
+ "method": "blind: the person picks what the thread needs before seeing Axiom-1's decision"
+}

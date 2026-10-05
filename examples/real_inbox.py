@@ -297,6 +297,26 @@ def hands_off(m):
         re.search(p, m["body"], re.I) for p in (SCHED_RE, DATE_RE, TIME_RE))
 
 
+# A scheduled call IS the meeting (Adrian's blind audit, 2026-10-05: "conference call is the meeting"; "this wasn't an
+# invite but instructions to join via phone"). A notice that a meeting or call has been set, with joining details, and
+# that asks me nothing, needs no reply - it is not "invited, no reply". Only a notice that asks NOTHING: the generated
+# invitations ("Would Tuesday at 3 work?") and real ones ("can you make this?") ask, and stay follow-ups.
+NOTICE_RE = (r"\b(?:has|have) been (?:re)?scheduled\b|\b(?:is|are) (?:re)?scheduled (?:for|on)\b|\bdial[- ]?in\b"
+             r"|\bcall[- ]in (?:number|#|no)|\bpass ?code\b|\bparticipant (?:code|pin)\b|\bconference (?:bridge|line)\b"
+             r"|\bbridge (?:number|line)\b")
+# an RSVP form asks too, without a question mark (Enron, 2026-10-05: "Please indicate if you plan to attend this
+# meeting ... Please return your response via e-mail by Friday")
+ASKS_RE = (r"\?|\brsvp\b|\blet (?:me|us) know\b|\bplease (?:confirm|reply|respond|advise|indicate)\b"
+           r"|\bcan you (?:make|attend|join)\b|\bare you (?:available|free)\b|\bwill you (?:be able|attend|join)\b"
+           r"|\bplan to attend\b|\byour response\b|\b(?:reply|respond) by\b")
+
+
+def scheduled_notice(msgs):
+    """Some message announces a meeting or call already set, with a day or time, and asks nothing."""
+    return any(re.search(NOTICE_RE, m["body"], re.I) and not re.search(ASKS_RE, m["body"], re.I)
+               and any(re.search(p, m["body"], re.I) for p in (DATE_RE, TIME_RE)) for m in msgs)
+
+
 def email_date(phrase):
     """'Nov. 13' -> 'Nov 13': the date engine reads a month without its abbreviation dot."""
     return re.sub(r"^([A-Za-z]{3,4})\.\s", r"\1 ", phrase or "")
@@ -509,7 +529,11 @@ def decide_thread(name, text, router, model, person, teach):
         confirm.append("whether this thread is arranging a meeting for me")
     elif is_mtg != "yes":
         return {**blank, "tier": f"is_meeting {mtg_tier}"}, corrections
-    if not M.mine(msgs, ME):
+    if not M.mine(msgs, ME) and scheduled_notice(msgs):
+        # a notice that the meeting or call is set, asking nothing: nothing to answer, so it is settled - the day and
+        # time still go through the same menus below, and anything unsettled becomes a reminder, never a guess
+        agreed, tier = "yes", f"scheduled notice: is_meeting {mtg_tier}"
+    elif not M.mine(msgs, ME):
         # I never wrote, and it is a meeting for me: an invitation I never answered in email. Not agreed (seen live:
         # a 9B read someone ELSE's "Works for me!" as my agreement), so never on the calendar: follow-up instead,
         # because the answer was probably a calendar click or a call

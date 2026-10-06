@@ -57,11 +57,29 @@ written as prose: a "scheduled" note outranked the live work; a handoff lagged t
 from one agent never reached another. A ledger built from checked state, with a small model selecting from it,
 removes each of those failure modes.
 
+## Setup: done together with the mail client
+
+Axiom-1 reads the inbox a person's mail setup leaves, and the two are set up together. On raw Enron mailboxes,
+which nobody had curated, a blind audit put 57.6% of the short list right; most of the rest was junk the setup is
+meant to handle. Setup is three things:
+
+1. **Folders and filters in the mail client** route newsletters, marketing, and company-wide notices away from the
+   inbox. Axiom-1 does not try to recognise junk; in the audit, junk read as an invitation was the largest error.
+2. **The address book.** Mail from outside the organisation, from someone the owner has never written to, is
+   filed and flagged before any model reads it - a stranger cannot put anything on the owner's lists. Today the
+   address book is the owner's sent mail, and that misses people the owner deals with through an assistant or by
+   phone: on the audited mailboxes it filed 5 correct calendar entries from outside counsel and board contacts.
+   Setup has to add those contacts and partner domains. (Not wired yet: the rule reads sent mail only.)
+3. **Who "me" is.** An executive's mail is often sent by an assistant; the assistant's address belongs to the
+   owner, or replies they sent read as unanswered invitations.
+
 ## Honest limits
 
-- The inboxes are generated, with known answers; real mail has a longer tail of wordings.
+- The audits are on raw, uncurated Enron mail; a configured setup is designed, not yet measured.
 - Each job needs its own decisions and pipeline written once (seven exist besides email).
-- What reaches a user unchecked is the case where two different models agree on a wrong answer: not seen yet.
+- Two models agreeing on a wrong answer **has been seen**: on 2026-10-05 Nano and Super both called a generated
+  newsletter a meeting, and the stored answer was replayed on eight inboxes. A stored answer should be replayed
+  only after a check, not because two models agreed - the next fix.
 - The handoff ledger is designed, not built.
 
 Every number above is reproducible from `docs/MEASUREMENTS.md` and the files in `docs/measurements/`.

@@ -1,0 +1,1044 @@
+{
+ "form_model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+ "agree": [
+  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+  "nvidia/nemotron-3-super-120b-a12b"
+ ],
+ "score": {
+  "right": 47,
+  "WRONG_ON_CALENDAR": 0,
+  "missed": 3,
+  "needless_ask": 0,
+  "wrong_time": 0,
+  "wrong_section": 0,
+  "remind_follow_up": 5,
+  "remind_finalize": 1
+ },
+ "taps": [
+  {
+   "text": "them: Shelley will only be available <when> from <when> until <when>.\nThanks, Ricki",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "no",
+    "nvidia/nemotron-3-super-120b-a12b": "yes"
+   }
+  },
+  {
+   "text": "agreed day? me: Sorry we were unable to have a staff meeting this morning.  I would like to have a brief (1 hr) staff me",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "tomorrow [message 1]",
+    "nvidia/nemotron-3-super-120b-a12b": "Friday [message 1]"
+   }
+  },
+  {
+   "text": "agreed time? me: Sorry we were unable to have a staff meeting this morning.  I would like to have a brief (1 hr) staff m",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "3:00",
+    "nvidia/nemotron-3-super-120b-a12b": "not settled"
+   }
+  },
+  {
+   "text": "meeting? them: We are looking to lock in some gas for May, June and July of 2002.\nWould\nyou check with the traders on th",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "meeting? them: Marie,\nI just spoke to <meeting> and they are going to send you a retun slip so that the 7 yards can be s",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "no",
+    "nvidia/nemotron-3-super-120b-a12b": "yes"
+   }
+  },
+  {
+   "text": "which proposal? me: John,\nLet's meet at the <meeting> at  <when> We can have dinner across the street from Galleria - I ",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "the latest proposal",
+    "nvidia/nemotron-3-super-120b-a12b": "the first proposal"
+   }
+  },
+  {
+   "text": "meeting? them: Margaret,\nTom is planning to go on <when> morning <when>.  He said he will plan to leave in time for us t",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "meeting? me: Will you be in the office on <when>, <when>? I'd like to catch up. Sara\n\n\nSara Shackleton",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "no",
+    "nvidia/nemotron-3-super-120b-a12b": "yes"
+   }
+  },
+  {
+   "text": "agreed day? me: Will you be in the office on Friday, 2/7? I'd like to catch up. Sara\n\n\nSara Shackleton / them: Absolutel",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "Friday",
+    "nvidia/nemotron-3-super-120b-a12b": "not settled"
+   }
+  },
+  {
+   "text": "meeting? them: Hi Jeff.\nI am Mike's brother, Ronnie, living in San Diego and a member of the San\nDiego Chapter of YPO.  ",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "me: How about <when> EST - <when> CST?\nJim",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "no",
+    "nvidia/nemotron-3-super-120b-a12b": "yes"
+   }
+  },
+  {
+   "text": "them: We have another EPSA call scheduled at 2--  how does 3 or <when> EST look?",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "agreed time? them: Jim,\nJulie wants to hold a <meeting>, October 30th to\ndiscuss the possibility of designing and undert",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "3:30",
+    "nvidia/nemotron-3-super-120b-a12b": "not settled"
+   }
+  },
+  {
+   "text": "meeting? me: Randy --\nLast minute, I'm coming to DC today through <when> afternoon.  Any\nchance to grab dinner or a beer",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "agreed day? them: I am out til wednesday. I would be happy to answer any qustions they have if they could send them over",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "Thursday [message 3]",
+    "nvidia/nemotron-3-super-120b-a12b": "Thursday [message 2]"
+   }
+  },
+  {
+   "text": "meeting? me: Jeff, Just looking at teeing my a schedule.. any feedback from either/ both.\nBT",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "meeting? me: Can you send me (or tell me what directory) the spreadsheet provided to you by Michael for ERCOT Imbalances",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  },
+  {
+   "text": "meeting? me: All,\nThis email is directed to my peeps at Enform who may be interested in a\nnight at the Alley,\nto see the",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "no",
+    "nvidia/nemotron-3-super-120b-a12b": "yes"
+   }
+  },
+  {
+   "text": "meeting? them: I think I would rather not do a game night tonight....\nBeth Cherry\n**************************************",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  }
+ ],
+ "rows": [
+  {
+   "thread": "beck-s_inbox451",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "role mapping; 'I'll set up the discussions' with no time"
+  },
+  {
+   "thread": "blair-l_inbox216",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.8,
+   "why_expected": "drafting an agreement on Wednesday is a task, not a meeting"
+  },
+  {
+   "thread": "blair-l_inbox288",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 2.1,
+   "why_expected": "a call that happened yesterday"
+  },
+  {
+   "thread": "blair-l_inbox_187",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "another person mentions an existing 9-10 meeting with the owner; nothing agreed in this thread"
+  },
+  {
+   "thread": "blair-l_inbox_66",
+   "expect": "follow_up",
+   "got": "ask",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": {
+    "kind": "follow_up",
+    "why": "the arranging moved to a phone call, so the email cannot show what was decided",
+    "tentative": {},
+    "wrong": []
+   },
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 4.3,
+   "why_expected": "owner offers three slots; no answer | Adrian 2026-10-03: open-ended, likely settled on a call -> follow-up needed"
+  },
+  {
+   "thread": "cash-m_inbox160",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.9,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "corman-s_inbox_archives142",
+   "expect": "ask",
+   "got": "ask",
+   "verdict": "right",
+   "placed": null,
+   "tier": "you + agreed",
+   "reminder": {
+    "kind": "follow_up",
+    "why": "the thread does not say which day, what time",
+    "tentative": {},
+    "wrong": []
+   },
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 9.2,
+   "why_expected": "owner wants a 1-hour staff meeting tomorrow or Friday; availability given, never settled"
+  },
+  {
+   "thread": "dasovich-j_inbox657",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 4.0,
+   "why_expected": "someone else's meeting on the 22nd"
+  },
+  {
+   "thread": "donoho-l_inbox_junk_file418",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "a meeting that already happened"
+  },
+  {
+   "thread": "geaccone-t_inbox465",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "germany-c_inbox81",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "giron-d_inbox136",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "giron-d_inbox187",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "'call me' is not a meeting"
+  },
+  {
+   "thread": "giron-d_inbox393",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.7,
+   "why_expected": "'I'll call you later this morning' is not a meeting"
+  },
+  {
+   "thread": "haedicke-m_inbox287",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "a meeting that already happened; 'I'll give you a call'"
+  },
+  {
+   "thread": "heard-m_inbox249",
+   "expect": "invite",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 4.0,
+   "why_expected": "'How about 11:30 downstairs' after the owner's last message; never answered"
+  },
+  {
+   "thread": "heard-m_inbox_118",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "owner sends a meeting notice for someone else; the invitee declines | Adrian 2026-10-03: nothing to do"
+  },
+  {
+   "thread": "kaminski-v_inbox21",
+   "expect": "on",
+   "got": "on",
+   "verdict": "right",
+   "placed": [
+    "2002-01-30",
+    "18:00",
+    ""
+   ],
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "tomorrow",
+    "6:00 p.m.",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 9.3,
+   "why_expected": "owner: 'Let's meet at the hotel at 6:00 p.m.'; reply 'seeing you ... tomorrow evening', sent 2002-01-29 21:17 Central"
+  },
+  {
+   "thread": "lay-k_inbox269",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "announcement"
+  },
+  {
+   "thread": "lokey-t_inbox703",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "'We should discuss' with no time"
+  },
+  {
+   "thread": "mann-k_inbox100",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "martin-t_inbox177",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "'Let's talk' with no time"
+  },
+  {
+   "thread": "martin-t_inbox211",
+   "expect": "invite",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 13.1,
+   "why_expected": "interviews Wed May 30 1-4 pm, 'please reserve this time'; owner never confirmed"
+  },
+  {
+   "thread": "martin-t_inbox_485",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.9,
+   "why_expected": "family plans the owner did not write in"
+  },
+  {
+   "thread": "mims-thurston-p_inbox_203",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "'call once you have reviewed'"
+  },
+  {
+   "thread": "nemec-g_inbox1040",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "no meeting for the owner"
+  },
+  {
+   "thread": "nemec-g_inbox113",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "'Let's discuss' with no time"
+  },
+  {
+   "thread": "nemec-g_inbox_56",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "parks-j_inbox43",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.2,
+   "why_expected": "fishing or golf never settled; the owner did not agree"
+  },
+  {
+   "thread": "rapp-b_inbox201",
+   "expect": "on",
+   "got": "on",
+   "verdict": "right",
+   "placed": [
+    "2001-12-11",
+    "09:30",
+    ""
+   ],
+   "tier": "agreed + agreed",
+   "reminder": null,
+   "slot": [
+    "Tuesday",
+    "9:30",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 7.5,
+   "why_expected": "'Tuesday' (sent Mon 2001-12-10); 'How about 9:30' - owner: 'That's fine with me'"
+  },
+  {
+   "thread": "rapp-b_inbox_323",
+   "expect": "on",
+   "got": "off",
+   "verdict": "missed",
+   "placed": null,
+   "tier": "structure: needs human oversight (no model read it)",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "call 'tomorrow a.m.' (sent 2001-11-19 Central); owner asks for a time; 'Let's plan on 10:00'"
+  },
+  {
+   "thread": "reitmeyer-j_inbox76",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.9,
+   "why_expected": "weather question"
+  },
+  {
+   "thread": "reitmeyer-j_inbox_52",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 4.3,
+   "why_expected": "owner calls off today's meeting | Adrian 2026-10-03: nothing to do"
+  },
+  {
+   "thread": "scott-s_inbox_15",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "shackleton-s_inbox677",
+   "expect": "follow_up",
+   "got": "ask",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": {
+    "kind": "follow_up",
+    "why": "the thread does not say which day, what time",
+    "tentative": {},
+    "wrong": []
+   },
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 6.4,
+   "why_expected": "owner: 'Friday, 2/7'? (2/7/2002 is a Thursday); reply 'Absolutely - when do you want to meet?' - no time, and the day contradicts itself | Adrian 2026-10-03: open-ended, likely settled on a call -> follow-up needed"
+  },
+  {
+   "thread": "skilling-j_inbox231",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 2.2,
+   "why_expected": "invitation declined on the owner's behalf"
+  },
+  {
+   "thread": "smith-m_inbox425",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.9,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "steffes-j_inbox58",
+   "expect": "ask",
+   "got": "ask",
+   "verdict": "right",
+   "placed": null,
+   "tier": "you + you",
+   "reminder": {
+    "kind": "finalize",
+    "why": "the thread does not say what time",
+    "tentative": {
+     "date": "2001-10-30"
+    },
+    "wrong": []
+   },
+   "slot": [
+    "Tuesday",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 10.3,
+   "why_expected": "call on Tue Oct 30 agreed; owner proposes 2pm EST, they counter 3 or 3:30 EST; never settled"
+  },
+  {
+   "thread": "steffes-j_inbox6",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 2.0,
+   "why_expected": "dinner proposed; 'won't know my schedule until tomorrow'"
+  },
+  {
+   "thread": "steffes-j_inbox99",
+   "expect": "ask",
+   "got": "ask",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed + agreed",
+   "reminder": {
+    "kind": "follow_up",
+    "why": "the thread does not say which day, what time",
+    "tentative": {},
+    "wrong": []
+   },
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 7.7,
+   "why_expected": "owner: 'Let's sit down on Thursday am'; 'Thursday works for me' - day settled (2001-12-20), no time"
+  },
+  {
+   "thread": "tycholiz-b_inbox368",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 2.3,
+   "why_expected": "meetings being arranged by others | Adrian 2026-10-03: nothing to do"
+  },
+  {
+   "thread": "ward-k_inbox_82",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "a call mentioned, no agreement in thread"
+  },
+  {
+   "thread": "watson-k_inbox219",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.7,
+   "why_expected": "status report"
+  },
+  {
+   "thread": "watson-k_inbox33",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "structure: no day or time anywhere",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 0.1,
+   "why_expected": "no meeting"
+  },
+  {
+   "thread": "watson-k_inbox471",
+   "expect": "follow_up",
+   "got": "off",
+   "verdict": "missed",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 4.2,
+   "why_expected": "cat show not settled | Adrian 2026-10-03: open-ended, likely settled on a call -> follow-up needed"
+  },
+  {
+   "thread": "watson-k_inbox504",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 2.1,
+   "why_expected": "party probably skipped"
+  },
+  {
+   "thread": "white-s_inbox389",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.7,
+   "why_expected": "owner mentions an existing Friday meeting; nothing agreed in thread"
+  },
+  {
+   "thread": "wolfe-j_inbox237",
+   "expect": "off",
+   "got": "off",
+   "verdict": "right",
+   "placed": null,
+   "tier": "is_meeting you",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 1.8,
+   "why_expected": "theatre invitation from the owner; the reply declines"
+  },
+  {
+   "thread": "wolfe-j_inbox436",
+   "expect": "follow_up",
+   "got": "off",
+   "verdict": "missed",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": null,
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 4.1,
+   "why_expected": "game night declined for tonight; owner: 'how about tomorrow?'; reply: 'sometime this week' | Adrian 2026-10-03: open-ended, likely settled on a call -> follow-up needed"
+  },
+  {
+   "thread": "ybarbo-p_inbox214",
+   "expect": "follow_up",
+   "got": "ask",
+   "verdict": "right",
+   "placed": null,
+   "tier": "agreed",
+   "reminder": {
+    "kind": "follow_up",
+    "why": "the arranging moved to a phone call, so the email cannot show what was decided",
+    "tentative": {},
+    "wrong": []
+   },
+   "slot": [
+    "",
+    "",
+    ""
+   ],
+   "corrections": [],
+   "seconds": 3.9,
+   "why_expected": "a June meeting agreed in principle; dates to be proposed | Adrian 2026-10-03: open-ended, likely settled on a call -> follow-up needed"
+  }
+ ]
+}

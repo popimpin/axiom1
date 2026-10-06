@@ -1,0 +1,17 @@
+{
+ "threads": 890,
+ "folders": 857,
+ "outcomes": {
+  "filed": 873,
+  "follow_up": 15,
+  "reminder:finalize": 1,
+  "calendar": 1
+ },
+ "call_gaps": 75,
+ "box": "heard-m",
+ "owner": "marie.heard@enron.com",
+ "messages": 1613,
+ "model_seconds": 721.6,
+ "zero_model_calls": 829,
+ "pipeline_errors": 0
+}

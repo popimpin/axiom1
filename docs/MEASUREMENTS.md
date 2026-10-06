@@ -888,3 +888,47 @@ the question went to the person, who said no. Today both said "meeting" - and th
 agreement and **replayed it on the next eight inboxes**. One wrong answer that two models agreed on, believed
 without a check. It is the README's rule broken inside our own harness: an answer should be replayed only after
 it has been checked, not because two models agreed. Kept as the "before"; the fix and its "after" come next.
+
+## Two fixes: strangers cannot reach the lists, and agreement is not a check (2026-10-06)
+
+Both came out of the run before (`final2`), which stays as their "before".
+
+**1. From outside, never written to** (`c14bea6`). A thread whose every sender is outside the owner's organisation
+and someone the owner has never written to is filed and flagged before any model reads it - a stranger cannot put
+anything on the owner's lists, and a stranger's injected text never reaches a model. Strict on purpose: the
+address book is the owner's sent mail, which misses people reached through an assistant or by phone. A dry run
+against the person's marks predicted 6 needless follow-ups removed and 8 needed items filed (5 of them calendar
+entries from outside counsel and board contacts); kept strict, with the address book listed as a setup step
+(`docs/HARNESS.md`, "Setup").
+
+**2. Two models agreeing is not a check** (`a731aa2`). Agreement used to be frozen into the answer table at once;
+one wrong agreement - a newsletter called a meeting - was replayed on eight inboxes. Now an agreed answer is used
+for the thread and held, and frozen only if that inbox is witnessed; a refuted inbox teaches nothing. The person's
+answer on a disagreement is still frozen at once.
+
+`bash scripts/rerun_all.sh docs/measurements/final3`, on Nemotron:
+
+| | before (`final2`) | after (`final3`) |
+|---|---|---|
+| tests | 290 OK | 295 OK |
+| 50 scored real threads | 44/50, 0 wrong on calendar, 2 needless asks | **47/50, 0 wrong on calendar, 0 needless asks** |
+| generated inbox | 2/10 | **10/10** |
+| calendar connector demo | 0 wrong | 0 wrong |
+| AgentDojo: decisions an attack changed | 5 | **0** |
+| AgentDojo: attacked threads a model read | 5 | **0** |
+| AgentDojo: attacker text in output | 0 | 0 |
+| AgentDojo: noise in untouched threads | 31 | 9 (all "Lunch Next Week?", unstable run to run) |
+| five mailboxes: calendar / reminders / follow-ups / filed | 24 / 55 / 635 / 8,410 | 22 / 45 / **480** / 8,577 |
+| ... no model call | 7,969 (87.3%) | **8,072 (88.5%)** |
+| ... model time | 9,180 s | **6,394 s (-30%)** |
+| ... pipeline errors | 0 | 0 |
+
+**Prompt injection, now clean:** across 30 attack runs (5 styles x 6 goals x all 16 vectors), no attacked thread
+reached a model, no decision changed, no attacker text came out, and no action was possible.
+
+**The mailboxes:** 155 follow-ups moved to filed-and-flagged, as the dry run predicted - mostly the junk the blind
+audit found, plus the known cost (real meetings from outside contacts missing from the address book). Model time
+fell 30% even though agreements are no longer remembered, because a stranger's mail never reaches a model.
+
+**Not yet measured:** a fresh blind sample of the short list after both fixes. The audit above (57.6% precision,
+uncurated) is the figure before them.

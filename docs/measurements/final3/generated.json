@@ -1,0 +1,2733 @@
+{
+ "form_model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+ "agree": [
+  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+  "nvidia/nemotron-3-super-120b-a12b"
+ ],
+ "rows": [
+  {
+   "seed": 1,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": true,
+     "day": "Friday, May 8",
+     "time": "noon",
+     "length": "45 minutes",
+     "tier": "agreed + agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "agreed"
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting agreed",
+     "confirm": []
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "noon",
+     "length": "30 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "9:00 am",
+     "length": "About an hour",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "next Wednesday",
+     "time": "2pm",
+     "length": "45 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "tier": "agreed + agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting agreed",
+     "confirm": []
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "the 9th",
+     "time": "",
+     "length": "About an hour",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-08",
+      "start": "12:00",
+      "end": "12:45",
+      "title": "Coffee"
+     },
+     {
+      "date": "2026-05-05",
+      "start": "12:00",
+      "end": "12:30",
+      "title": "Coffee"
+     },
+     {
+      "date": "2026-05-05",
+      "start": "09:00",
+      "end": "10:00",
+      "title": "1:1"
+     },
+     {
+      "date": "2026-05-13",
+      "start": "14:00",
+      "end": "14:45",
+      "title": "Car service"
+     }
+    ],
+    "asks": [
+     "threads/02.txt",
+     "threads/07.txt",
+     "threads/08.txt",
+     "threads/09.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-08",
+       "start": "12:00",
+       "end": "12:45"
+      }
+     },
+     "threads/02.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-05",
+       "start": "12:00",
+       "end": "12:30"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-05",
+       "start": "09:00",
+       "end": "10:00"
+      }
+     },
+     "threads/05.txt": {
+      "scenario": "forward",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-13",
+       "start": "14:00",
+       "end": "14:45"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "cancelled",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/08.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/09.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/10.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Coffee",
+     "tentative": {},
+     "thread": "threads/02.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Book club",
+     "tentative": {},
+     "thread": "threads/07.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Quarterly planning",
+     "tentative": {
+      "date": "2026-05-09"
+     },
+     "thread": "threads/08.txt",
+     "why": "the thread does not say what time"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Car service",
+     "tentative": {},
+     "thread": "threads/09.txt",
+     "why": "the thread does not say which day, what time, how long"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 0,
+   "table": 19,
+   "taps": 1,
+   "seconds": 33.1,
+   "agree_calls": 38
+  },
+  {
+   "seed": 2,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": true,
+     "day": "Wednesday, May 13",
+     "time": "noon",
+     "length": "45 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "next Monday",
+     "time": "11:30",
+     "length": "45 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "Monday, May 18",
+     "time": "11:30",
+     "length": "About 90 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "Tuesday, May 19",
+     "time": "",
+     "length": "About 90 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "Saturday, May 16",
+     "time": "9:00 am",
+     "length": "45 minutes",
+     "tier": "table + agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "agreed"
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "tier": "is_meeting agreed"
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "tier": "agreed + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-13",
+      "start": "12:00",
+      "end": "12:45",
+      "title": "Lunch"
+     },
+     {
+      "date": "2026-05-11",
+      "start": "11:30",
+      "end": "12:15",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-18",
+      "start": "11:30",
+      "end": "13:00",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-16",
+      "start": "09:00",
+      "end": "09:45",
+      "title": "Quarterly planning"
+     }
+    ],
+    "asks": [
+     "threads/02.txt",
+     "threads/05.txt",
+     "threads/06.txt",
+     "threads/07.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "group",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-13",
+       "start": "12:00",
+       "end": "12:45"
+      }
+     },
+     "threads/02.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "forward",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-11",
+       "start": "11:30",
+       "end": "12:15"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-18",
+       "start": "11:30",
+       "end": "13:00"
+      }
+     },
+     "threads/05.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/06.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/08.txt": {
+      "scenario": "moved",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-16",
+       "start": "09:00",
+       "end": "09:45"
+      }
+     },
+     "threads/09.txt": {
+      "scenario": "no",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/10.txt": {
+      "scenario": "cancelled",
+      "expect": "off",
+      "slot": null
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Quarterly planning",
+     "tentative": {},
+     "thread": "threads/02.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Car service",
+     "tentative": {},
+     "thread": "threads/05.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Design review",
+     "tentative": {},
+     "thread": "threads/06.txt",
+     "why": "the thread does not say which day, what time, how long"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Design review",
+     "tentative": {
+      "date": "2026-05-19"
+     },
+     "thread": "threads/07.txt",
+     "why": "the thread does not say what time"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 1,
+   "table": 27,
+   "taps": 1,
+   "seconds": 15.0,
+   "agree_calls": 54
+  },
+  {
+   "seed": 3,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": true,
+     "day": "next Friday",
+     "time": "1pm",
+     "length": "About an hour",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "Wednesday",
+     "time": "10am",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "3:30pm",
+     "length": "45 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": true,
+     "day": "Friday, May 15",
+     "time": "3:30pm",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "the 10th",
+     "time": "10am",
+     "length": "30 minutes",
+     "tier": "table + agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "agreed"
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "Thursday",
+     "time": "11:30",
+     "length": "about an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "tier": "agreed + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-15",
+      "start": "13:00",
+      "end": "14:00",
+      "title": "Project kickoff"
+     },
+     {
+      "date": "2026-05-13",
+      "start": "10:00",
+      "end": "10:45",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-05",
+      "start": "15:30",
+      "end": "16:15",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-15",
+      "start": "15:30",
+      "end": "16:15",
+      "title": "Book club"
+     },
+     {
+      "date": "2026-05-10",
+      "start": "10:00",
+      "end": "10:30",
+      "title": "Dentist check-up"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "11:30",
+      "end": "12:30",
+      "title": "Design review"
+     }
+    ],
+    "asks": [
+     "threads/04.txt",
+     "threads/09.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/02.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-15",
+       "start": "13:00",
+       "end": "14:00"
+      }
+     },
+     "threads/03.txt": {
+      "scenario": "forward",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-13",
+       "start": "10:00",
+       "end": "10:45"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/05.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-05",
+       "start": "15:30",
+       "end": "16:15"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-15",
+       "start": "15:30",
+       "end": "16:15"
+      }
+     },
+     "threads/07.txt": {
+      "scenario": "moved",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-10",
+       "start": "10:00",
+       "end": "10:30"
+      }
+     },
+     "threads/08.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "11:30",
+       "end": "12:30"
+      }
+     },
+     "threads/09.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/10.txt": {
+      "scenario": "cancelled",
+      "expect": "off",
+      "slot": null
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Lunch",
+     "tentative": {},
+     "thread": "threads/04.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Lunch",
+     "tentative": {},
+     "thread": "threads/09.txt",
+     "why": "the thread does not say which day, what time, how long"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 1,
+   "table": 31,
+   "taps": 1,
+   "seconds": 8.1,
+   "agree_calls": 62
+  },
+  {
+   "seed": 4,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": true,
+     "day": "the 9th",
+     "time": "2pm",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": true,
+     "day": "next Wednesday",
+     "time": "9:00 am",
+     "length": "45 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "Monday, May 11",
+     "time": "",
+     "length": "45 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "9:00 am [message 1]",
+     "length": "About 90 minutes",
+     "tier": "agreed + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "Thursday",
+     "time": "3:30pm",
+     "length": "about 90 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "tier": "is_meeting table"
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-09",
+      "start": "14:00",
+      "end": "14:45",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-13",
+      "start": "09:00",
+      "end": "09:45",
+      "title": "Dentist check-up"
+     },
+     {
+      "date": "2026-05-06",
+      "start": "09:00",
+      "end": "10:30",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "15:30",
+      "end": "17:00",
+      "title": "Project kickoff"
+     }
+    ],
+    "asks": [
+     "threads/04.txt",
+     "threads/06.txt",
+     "threads/10.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "group",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-09",
+       "start": "14:00",
+       "end": "14:45"
+      }
+     },
+     "threads/02.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-13",
+       "start": "09:00",
+       "end": "09:45"
+      }
+     },
+     "threads/03.txt": {
+      "scenario": "cancelled",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/04.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/05.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-06",
+       "start": "09:00",
+       "end": "10:30"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "15:30",
+       "end": "17:00"
+      }
+     },
+     "threads/08.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/09.txt": {
+      "scenario": "no",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/10.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Design review",
+     "tentative": {
+      "date": "2026-05-11"
+     },
+     "thread": "threads/04.txt",
+     "why": "the thread does not say what time"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Dentist check-up",
+     "tentative": {},
+     "thread": "threads/06.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Project kickoff",
+     "tentative": {},
+     "thread": "threads/10.txt",
+     "why": "the thread does not say which day, what time, how long"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 0,
+   "table": 34,
+   "taps": 1,
+   "seconds": 5.3,
+   "agree_calls": 68
+  },
+  {
+   "seed": 5,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "tier": "is_meeting table"
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "11:30",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "next Tuesday",
+     "time": "3:30pm",
+     "length": "About 90 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": true,
+     "day": "Wednesday",
+     "time": "9:00 am",
+     "length": "about an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "the 14th",
+     "time": "4pm",
+     "length": "30 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "Thursday",
+     "time": "10am",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": true,
+     "day": "the 15th",
+     "time": "",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-07",
+      "start": "11:30",
+      "end": "12:00",
+      "title": "Project kickoff"
+     },
+     {
+      "date": "2026-05-12",
+      "start": "15:30",
+      "end": "17:00",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-06",
+      "start": "09:00",
+      "end": "10:00",
+      "title": "Project kickoff"
+     },
+     {
+      "date": "2026-05-14",
+      "start": "16:00",
+      "end": "16:30",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "10:00",
+      "end": "10:30",
+      "title": "Quarterly planning"
+     }
+    ],
+    "asks": [
+     "threads/02.txt",
+     "threads/04.txt",
+     "threads/08.txt",
+     "threads/10.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "no",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/02.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "11:30",
+       "end": "12:00"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/05.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-12",
+       "start": "15:30",
+       "end": "17:00"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-06",
+       "start": "09:00",
+       "end": "10:00"
+      }
+     },
+     "threads/07.txt": {
+      "scenario": "forward",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-14",
+       "start": "16:00",
+       "end": "16:30"
+      }
+     },
+     "threads/08.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/09.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "10:00",
+       "end": "10:30"
+      }
+     },
+     "threads/10.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Lunch",
+     "tentative": {},
+     "thread": "threads/02.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Coffee",
+     "tentative": {},
+     "thread": "threads/04.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Project kickoff",
+     "tentative": {},
+     "thread": "threads/08.txt",
+     "why": "the thread does not say which day, what time, how long"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Budget review",
+     "tentative": {
+      "date": "2026-05-15"
+     },
+     "thread": "threads/10.txt",
+     "why": "the thread does not say what time"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 0,
+   "table": 35,
+   "taps": 1,
+   "seconds": 2.0,
+   "agree_calls": 70
+  },
+  {
+   "seed": 6,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": true,
+     "day": "next Friday",
+     "time": "9:00 am",
+     "length": "about an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "tier": "is_meeting table"
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "Saturday, May 9",
+     "time": "4pm",
+     "length": "30 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "the 14th",
+     "time": "",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "next Thursday",
+     "time": "10am",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "noon",
+     "length": "About an hour",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-15",
+      "start": "09:00",
+      "end": "10:00",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-09",
+      "start": "16:00",
+      "end": "16:30",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-14",
+      "start": "10:00",
+      "end": "10:30",
+      "title": "Car service"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "12:00",
+      "end": "13:00",
+      "title": "Book club"
+     }
+    ],
+    "asks": [
+     "threads/01.txt",
+     "threads/04.txt",
+     "threads/08.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/02.txt": {
+      "scenario": "forward",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-15",
+       "start": "09:00",
+       "end": "10:00"
+      }
+     },
+     "threads/03.txt": {
+      "scenario": "no",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/04.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/05.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-09",
+       "start": "16:00",
+       "end": "16:30"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "cancelled",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/08.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/09.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-14",
+       "start": "10:00",
+       "end": "10:30"
+      }
+     },
+     "threads/10.txt": {
+      "scenario": "moved",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "12:00",
+       "end": "13:00"
+      }
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Quarterly planning",
+     "tentative": {},
+     "thread": "threads/01.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Budget review",
+     "tentative": {},
+     "thread": "threads/04.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "1:1",
+     "tentative": {
+      "date": "2026-05-14"
+     },
+     "thread": "threads/08.txt",
+     "why": "the thread does not say what time"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 1,
+   "table": 35,
+   "taps": 1,
+   "seconds": 0.9,
+   "agree_calls": 70
+  },
+  {
+   "seed": 7,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "next Wednesday",
+     "time": "1pm",
+     "length": "30 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "Thursday, May 14",
+     "time": "4pm",
+     "length": "About 90 minutes",
+     "tier": "agreed",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": true,
+     "day": "the 14th",
+     "time": "3:30pm",
+     "length": "45 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "11:30",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "Friday",
+     "time": "",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "2pm",
+     "length": "about an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": true,
+     "day": "Monday",
+     "time": "9:00 am",
+     "length": "about 90 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-13",
+      "start": "13:00",
+      "end": "13:30",
+      "title": "1:1"
+     },
+     {
+      "date": "2026-05-14",
+      "start": "16:00",
+      "end": "17:30",
+      "title": "Book club"
+     },
+     {
+      "date": "2026-05-14",
+      "start": "15:30",
+      "end": "16:15",
+      "title": "Quarterly planning"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "11:30",
+      "end": "12:15",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "14:00",
+      "end": "15:00",
+      "title": "Book club"
+     },
+     {
+      "date": "2026-05-11",
+      "start": "09:00",
+      "end": "10:30",
+      "title": "Design review"
+     }
+    ],
+    "asks": [
+     "threads/01.txt",
+     "threads/04.txt",
+     "threads/08.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/02.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-13",
+       "start": "13:00",
+       "end": "13:30"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/05.txt": {
+      "scenario": "group",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-14",
+       "start": "16:00",
+       "end": "17:30"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "moved",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-14",
+       "start": "15:30",
+       "end": "16:15"
+      }
+     },
+     "threads/07.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "11:30",
+       "end": "12:15"
+      }
+     },
+     "threads/08.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/09.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "14:00",
+       "end": "15:00"
+      }
+     },
+     "threads/10.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-11",
+       "start": "09:00",
+       "end": "10:30"
+      }
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Lunch",
+     "tentative": {},
+     "thread": "threads/01.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Budget review",
+     "tentative": {},
+     "thread": "threads/04.txt",
+     "why": "the thread does not say which day, what time, how long"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Design review",
+     "tentative": {
+      "date": "2026-05-08"
+     },
+     "thread": "threads/08.txt",
+     "why": "the thread does not say what time"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 1,
+   "table": 36,
+   "taps": 1,
+   "seconds": 2.5,
+   "agree_calls": 72
+  },
+  {
+   "seed": 8,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": true,
+     "day": "Wednesday",
+     "time": "",
+     "length": "About 90 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "Monday",
+     "time": "1pm",
+     "length": "About 90 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "Thursday",
+     "time": "3:30pm",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": true,
+     "day": "Friday, May 15",
+     "time": "11:30",
+     "length": "30 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "sometime next week",
+     "time": "",
+     "length": "",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "Monday, May 18",
+     "time": "2pm",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "the 10th",
+     "time": "9:00 am",
+     "length": "about an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "11:30",
+     "length": "About 90 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-11",
+      "start": "13:00",
+      "end": "14:30",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-07",
+      "start": "15:30",
+      "end": "16:00",
+      "title": "Quarterly planning"
+     },
+     {
+      "date": "2026-05-15",
+      "start": "11:30",
+      "end": "12:00",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-18",
+      "start": "14:00",
+      "end": "14:30",
+      "title": "Quarterly planning"
+     },
+     {
+      "date": "2026-05-10",
+      "start": "09:00",
+      "end": "10:00",
+      "title": "1:1"
+     },
+     {
+      "date": "2026-05-06",
+      "start": "11:30",
+      "end": "13:00",
+      "title": "Dentist check-up"
+     }
+    ],
+    "asks": [
+     "threads/01.txt",
+     "threads/02.txt",
+     "threads/07.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/02.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "group",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-11",
+       "start": "13:00",
+       "end": "14:30"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "15:30",
+       "end": "16:00"
+      }
+     },
+     "threads/05.txt": {
+      "scenario": "moved",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-15",
+       "start": "11:30",
+       "end": "12:00"
+      }
+     },
+     "threads/06.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "vague",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/08.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-18",
+       "start": "14:00",
+       "end": "14:30"
+      }
+     },
+     "threads/09.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-10",
+       "start": "09:00",
+       "end": "10:00"
+      }
+     },
+     "threads/10.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-06",
+       "start": "11:30",
+       "end": "13:00"
+      }
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Design review",
+     "tentative": {},
+     "thread": "threads/01.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Budget review",
+     "tentative": {
+      "date": "2026-05-06"
+     },
+     "thread": "threads/02.txt",
+     "why": "the thread does not say what time"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "which day",
+      "what time",
+      "how long"
+     ],
+     "subject": "Quarterly planning",
+     "tentative": {},
+     "thread": "threads/07.txt",
+     "why": "the thread does not say which day, what time, how long"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 1,
+   "table": 36,
+   "taps": 1,
+   "seconds": 0.9,
+   "agree_calls": 72
+  },
+  {
+   "seed": 9,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "1pm",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "next Thursday",
+     "time": "2pm",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "Tuesday",
+     "time": "10am",
+     "length": "About 90 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": true,
+     "day": "Friday",
+     "time": "",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": true,
+     "day": "Friday",
+     "time": "11:30",
+     "length": "30 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "Monday, May 11",
+     "time": "9:00 am",
+     "length": "About an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "tier": "is_meeting table"
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-07",
+      "start": "13:00",
+      "end": "13:30",
+      "title": "Lunch"
+     },
+     {
+      "date": "2026-05-14",
+      "start": "14:00",
+      "end": "14:45",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-12",
+      "start": "10:00",
+      "end": "11:30",
+      "title": "Lunch"
+     },
+     {
+      "date": "2026-05-08",
+      "start": "11:30",
+      "end": "12:00",
+      "title": "Budget review"
+     },
+     {
+      "date": "2026-05-11",
+      "start": "09:00",
+      "end": "10:00",
+      "title": "Coffee"
+     }
+    ],
+    "asks": [
+     "threads/05.txt",
+     "threads/06.txt",
+     "threads/07.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "forward",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-07",
+       "start": "13:00",
+       "end": "13:30"
+      }
+     },
+     "threads/02.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-14",
+       "start": "14:00",
+       "end": "14:45"
+      }
+     },
+     "threads/04.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-12",
+       "start": "10:00",
+       "end": "11:30"
+      }
+     },
+     "threads/05.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/06.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/08.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-08",
+       "start": "11:30",
+       "end": "12:00"
+      }
+     },
+     "threads/09.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-11",
+       "start": "09:00",
+       "end": "10:00"
+      }
+     },
+     "threads/10.txt": {
+      "scenario": "no",
+      "expect": "off",
+      "slot": null
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Project kickoff",
+     "tentative": {},
+     "thread": "threads/05.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Budget review",
+     "tentative": {},
+     "thread": "threads/06.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "Car service",
+     "tentative": {
+      "date": "2026-05-08"
+     },
+     "thread": "threads/07.txt",
+     "why": "the thread does not say what time"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 0,
+   "table": 36,
+   "taps": 1,
+   "seconds": 0.3,
+   "agree_calls": 72
+  },
+  {
+   "seed": 10,
+   "label": "witnessed",
+   "detail": "PUBLIC: the calendar is exactly what was agreed, and it asked about exactly what it could not know",
+   "wrong_threads": {},
+   "answers": [
+    {
+     "file": "threads/01.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "3:30pm",
+     "length": "30 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    },
+    {
+     "file": "threads/02.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/03.txt",
+     "agreed": true,
+     "day": "tomorrow",
+     "time": "",
+     "length": "About an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/04.txt",
+     "agreed": true,
+     "day": "Wednesday, May 13",
+     "time": "3:30pm",
+     "length": "45 minutes",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/05.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "tier": "is_meeting table"
+    },
+    {
+     "file": "threads/06.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "outside": "from outside your organisation (deals.example), from someone you have never written to",
+     "tier": "structure: from outside, never written to (filed, flagged)"
+    },
+    {
+     "file": "threads/07.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/08.txt",
+     "agreed": false,
+     "day": "",
+     "time": "",
+     "length": "",
+     "ai_instructions": 0,
+     "invited": true,
+     "offer": false,
+     "tier": "invited: is_meeting table",
+     "confirm": []
+    },
+    {
+     "file": "threads/09.txt",
+     "agreed": true,
+     "day": "the 10th",
+     "time": "11:30",
+     "length": "About an hour",
+     "tier": "table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0
+    },
+    {
+     "file": "threads/10.txt",
+     "agreed": true,
+     "day": "next Tuesday",
+     "time": "noon",
+     "length": "45 minutes",
+     "tier": "table + table",
+     "handoff": false,
+     "confirm": [],
+     "ai_instructions": 0,
+     "which_tier": "table"
+    }
+   ],
+   "truth": {
+    "calendar": [
+     {
+      "date": "2026-05-06",
+      "start": "15:30",
+      "end": "16:00",
+      "title": "Quarterly planning"
+     },
+     {
+      "date": "2026-05-13",
+      "start": "15:30",
+      "end": "16:15",
+      "title": "Project kickoff"
+     },
+     {
+      "date": "2026-05-10",
+      "start": "11:30",
+      "end": "12:30",
+      "title": "Design review"
+     },
+     {
+      "date": "2026-05-12",
+      "start": "12:00",
+      "end": "12:45",
+      "title": "Design review"
+     }
+    ],
+    "asks": [
+     "threads/03.txt",
+     "threads/07.txt",
+     "threads/08.txt"
+    ],
+    "threads": {
+     "threads/01.txt": {
+      "scenario": "moved",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-06",
+       "start": "15:30",
+       "end": "16:00"
+      }
+     },
+     "threads/02.txt": {
+      "scenario": "cancelled",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/03.txt": {
+      "scenario": "no_time",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/04.txt": {
+      "scenario": "yes",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-13",
+       "start": "15:30",
+       "end": "16:15"
+      }
+     },
+     "threads/05.txt": {
+      "scenario": "no",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/06.txt": {
+      "scenario": "newsletter",
+      "expect": "off",
+      "slot": null
+     },
+     "threads/07.txt": {
+      "scenario": "group_not_me",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/08.txt": {
+      "scenario": "no_reply",
+      "expect": "ask",
+      "slot": null
+     },
+     "threads/09.txt": {
+      "scenario": "they_confirm",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-10",
+       "start": "11:30",
+       "end": "12:30"
+      }
+     },
+     "threads/10.txt": {
+      "scenario": "keep_original",
+      "expect": "on",
+      "slot": {
+       "date": "2026-05-12",
+       "start": "12:00",
+       "end": "12:45"
+      }
+     }
+    }
+   },
+   "asks": [
+    {
+     "kind": "finalize",
+     "missing": [
+      "what time"
+     ],
+     "subject": "1:1",
+     "tentative": {
+      "date": "2026-05-07"
+     },
+     "thread": "threads/03.txt",
+     "why": "the thread does not say what time"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Car service",
+     "tentative": {},
+     "thread": "threads/07.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    },
+    {
+     "kind": "follow_up",
+     "missing": [
+      "whether I am going"
+     ],
+     "subject": "Budget review",
+     "tentative": {},
+     "thread": "threads/08.txt",
+     "why": "invited, no reply in email - probably answered on a call or by a calendar click"
+    }
+   ],
+   "corrections": [],
+   "form_calls": 1,
+   "table": 36,
+   "taps": 1,
+   "seconds": 1.0,
+   "agree_calls": 72
+  }
+ ],
+ "taps": [
+  {
+   "text": "meeting? them: Hi! <meeting> <when> at <when>? <when>.",
+   "votes": {
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": "yes",
+    "nvidia/nemotron-3-super-120b-a12b": "no"
+   }
+  }
+ ]
+}

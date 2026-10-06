@@ -1,0 +1,18 @@
+heard-m: 50/890
+heard-m: 100/890
+heard-m: 150/890
+heard-m: 200/890
+heard-m: 250/890
+heard-m: 300/890
+heard-m: 350/890
+heard-m: 400/890
+heard-m: 450/890
+heard-m: 500/890
+heard-m: 550/890
+heard-m: 600/890
+heard-m: 650/890
+heard-m: 700/890
+heard-m: 750/890
+heard-m: 800/890
+heard-m: 850/890
+SUMMARY {"threads": 890, "folders": 857, "outcomes": {"filed": 870, "follow_up": 19, "calendar": 1}, "call_gaps": 75, "box": "heard-m", "owner": "marie.heard@enron.com", "messages": 1613, "model_seconds": 917.3, "zero_model_calls": 827, "pipeline_errors": 0}

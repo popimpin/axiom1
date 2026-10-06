@@ -822,3 +822,69 @@ never written to - the person decides); colleagues and known outside contacts no
 Heard 1/17, Giron 3/78, Steffes 20/116, Haedicke 33/207, **Lay (CEO) 154/288** - most of a CEO's invitations are
 solicitations from people he never wrote to. Also found: the inspector's "decided by" line was 4.44:1 contrast
 (under AA); earlier lint runs never opened the inspector. Fixed, and the lint now runs with it open.
+
+## A person checks the mailboxes, blind (2026-10-05)
+
+Every number about the five whole mailboxes so far was the system's own. So the entry's author marked a random
+sample **blind**: each card shows the email first and asks what it needs (calendar, reminder, follow-up, or
+nothing), and only then shows what Axiom-1 decided. 117 items, stratified (every calendar entry, every reminder,
+8 follow-ups and 8 filed threads per mailbox), seed 20261005. Tools: `examples/audit_sample.py`,
+`web/timeline/audit.html`, `examples/audit_score.py`; result `docs/measurements/final/audit.json`.
+
+**A trap we found first.** Most threads only need filing, so a system that files everything agrees with a person
+92.2% of the time and does nothing. The overall agreement (87.8%) is below that. The scorer leads with the two
+numbers a do-nothing system cannot fake:
+
+| | |
+|---|---|
+| Short-list precision (what it put in front of the person) | **57.6%** (calendar 3/4, reminder 19/33, follow-up 23/40) |
+| Filed threads that needed action, estimated | **~813 of 8,411** (filed by model 16/20 agree, by structure 19/20) |
+
+**What the misses were**, and the author's rulings:
+- **Junk read as invitations** (newsletters, marketing, company notices): most of the needless follow-ups.
+  *Ruling: setup's job, not Axiom-1's.* In use, the mail client's folders and filters and Axiom-1 are set up
+  **together**; Axiom-1 reads the inbox the setup leaves. These Enron owners did not curate (3 of 15 had been
+  deleted), so this audit is the **uncurated** figure. We do not compute a "curated" number by removing what we
+  call junk - that would be a number we wrote ourselves.
+- **Day or time stated but not read** ("confirmed for tomorrow, Friday, May 19th at 11:00"): it asked instead of
+  placing. *Ruling: safe - the person fills it in.*
+- **A scheduled call is the meeting**, not a gap. *Fixed* (`abb1ffb`): a notice that a meeting or call is set,
+  asking nothing, goes through the normal day/time path. RSVP forms and offers ("I will attend if you wish") count
+  as asking (`8a8e0b4`).
+- **Open questions not about meetings are filed.** *Ruling: scope* - Axiom-1 handles meetings and their loose ends.
+
+**The fix, checked.** The person marked every calendar entry the fix created (20, blind): **19 agree**. The one
+wrong was a sender offering to attend in the owner's place - now a follow-up, "they offered to go for you and are
+waiting on your answer". Each remaining date and time appears verbatim in its notice (19/19, checked without a
+model).
+
+**A second judge, calibrated.** agy (Gemini) marked 30 more, blind; 10 were hidden repeats of the person's marks.
+agy agreed with the person on **9 of 10**. On the 20 fresh items its disagreements with Axiom-1 fell into the same
+patterns as above - no new kind of error. Model-judged; reported as a direction, not a measurement.
+
+## The run after the fixes, and one honest regression (2026-10-05)
+
+`bash scripts/rerun_all.sh docs/measurements/final2`, on Nemotron:
+
+| | before (`final`) | after (`final2`) |
+|---|---|---|
+| tests | 284 OK | 290 OK |
+| 50 scored real threads | 45/50, 0 wrong on calendar | 44/50, 0 wrong on calendar, 2 needless asks |
+| generated inbox | 10/10 | **2/10** |
+| AgentDojo injection | 0 attacker text; 4 changed, all in attacked threads | 0 attacker text; **5 changed in attacked threads** (filed -> follow-up, none to the calendar) + 31 in untouched threads (model noise) |
+| five mailboxes | 9,124 threads, 0 pipeline errors | 9,124 threads, 0 pipeline errors |
+| ... calendar / reminders / follow-ups / filed | 4 / 33 / 676 / 8,411 | **24** / 55 / 635 / 8,410 |
+| ... no model call | 7,956 (87.2%) | 7,969 (87.3%) |
+
+The 20 new calendar entries are the scheduled-call fix; the person checked them above (19 agree). The 22 new
+reminders are scheduled calls whose day was written as "Friday" or "tomorrow" - held for the person, never guessed.
+**AgentDojo's 36:** report the split, not the total. 31 changes are in two threads the attacker never touched,
+whose decision flips from run to run ("Birthday Party", "Lunch Next Week?"); the attack's own effect is 5, the same
+kind as before. Next: mail from outside the organisation, from someone never written to, cannot create a follow-up
+or a calendar entry on its own - it is filed and flagged.
+
+**The 2/10 is not the fix.** Every miss is the generated newsletter. Yesterday Nano and Super disagreed on it, so
+the question went to the person, who said no. Today both said "meeting" - and the answer table stored that
+agreement and **replayed it on the next eight inboxes**. One wrong answer that two models agreed on, believed
+without a check. It is the README's rule broken inside our own harness: an answer should be replayed only after
+it has been checked, not because two models agreed. Kept as the "before"; the fix and its "after" come next.

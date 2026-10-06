@@ -11,9 +11,14 @@ An answer is frozen only after the delivery it was part of is WITNESSED (the ser
 delivery freezes nothing, so a wrong answer never becomes a rule. That is the same law as OhmOS's voice routing:
 verification-gated freeze.
 
-In production there is no server check to witness against, so `consensus=True` changes what counts as proof: every
-model routed to the decision answers, an answer they all agree on is frozen, and a disagreement goes to the person
-(`ask_user`) instead of being guessed. The person's answer is frozen too: they are asked once per wording.
+With `consensus=True` every model routed to the decision answers. An answer they all agree on is USED for this
+thread but only HELD (pending): agreement is not a check, so it is frozen only if the delivery is witnessed, like any
+other answer. A disagreement goes to the person (`ask_user`) instead of being guessed; the person's answer IS the
+check, so it is frozen at once - they are asked once per wording.
+
+Agreement used to be frozen at once ("agreement is the proof in production"). On 2026-10-05 Nano and Super agreed a
+generated newsletter was a meeting; the frozen answer was replayed on the next eight inboxes, all refuted. Two models
+agreeing is two votes, not a check.
 """
 import json
 import re
@@ -57,7 +62,7 @@ class Router:
     def __init__(self, table, routes, consensus=False, ask_user=None):
         self.table = table
         self.routes = routes             # decision -> [model, ...], cheapest first
-        self.consensus = consensus       # all models must agree; agreement is the proof, and is frozen at once
+        self.consensus = consensus       # all models must agree; agreement is used, and held until a check
         self.ask_user = ask_user         # (decision, text, question, options, answers) -> answer; asked on disagreement
         self.pending = []
         self.log = []                    # (decision, text, answer, tier) for this delivery
@@ -89,7 +94,9 @@ class Router:
         if len(answers) == 1 and None not in answers:
             answer = answers.pop()
             if len(votes) >= 2:
-                self.table.freeze([(decision, text, answer)])      # agreement is the proof in production
+                # used now, held until the delivery is witnessed - never frozen on agreement alone (a newsletter both
+                # models called a meeting was replayed on eight inboxes when it was)
+                self.pending.append((decision, text, answer))
                 self.log.append((decision, text, answer, "agreed"))
                 return answer, "agreed"
             # one model agreeing with itself proves nothing: use the answer, never freeze it (seen live on Bee: a 9B's

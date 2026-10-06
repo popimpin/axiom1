@@ -66,12 +66,26 @@ class Routing(unittest.TestCase):
         self.assertEqual(r.decide("reply_is_yes", "Deal.", "reply: Deal.", ["yes", "no"]), ("yes", "large"))
         self.assertEqual((small.calls, large.calls), (1, 1))
 
-    def test_consensus_freezes_what_the_models_agree_on(self):
+    def test_agreement_is_used_but_frozen_only_after_a_witnessed_delivery(self):
         a, b = Model({"Deal": "yes"}, "a"), Model({"Deal": "yes"}, "b")
         r = Router(Table(), {"reply_is_yes": [a, b]}, consensus=True)
         self.assertEqual(r.decide("reply_is_yes", "Deal.", "reply: Deal.", ["yes", "no"]), ("yes", "agreed"))
-        self.assertEqual(r.decide("reply_is_yes", "deal", "reply: deal", ["yes", "no"]), ("yes", "table"))
-        self.assertEqual((a.calls, b.calls), (1, 1))
+        self.assertEqual(len(r.table), 0, "two models agreeing is not a check: nothing is frozen yet")
+        # still not frozen, so the next thread with this wording asks the models again
+        self.assertEqual(r.decide("reply_is_yes", "deal", "reply: Deal", ["yes", "no"]), ("yes", "agreed"))
+        self.assertEqual((a.calls, b.calls), (2, 2))
+        r.freeze()                                 # the delivery was witnessed
+        self.assertEqual(r.decide("reply_is_yes", "Deal", "reply: Deal", ["yes", "no"]), ("yes", "table"))
+        self.assertEqual((a.calls, b.calls), (2, 2))
+
+    def test_a_refuted_delivery_forgets_what_the_models_agreed_on(self):
+        # 2026-10-05: Nano and Super agreed a newsletter was a meeting; frozen at once, it was replayed on 8 inboxes
+        a, b = Model({"Webinar": "yes"}, "a"), Model({"Webinar": "yes"}, "b")
+        r = Router(Table(), {"is_meeting": [a, b]}, consensus=True)
+        self.assertEqual(r.decide("is_meeting", "Webinar.", "Webinar", ["yes", "no"]), ("yes", "agreed"))
+        r.forget()                                 # the delivery was refuted
+        self.assertEqual(len(r.table), 0)
+        self.assertEqual(r.decide("is_meeting", "Webinar.", "Webinar", ["yes", "no"])[1], "agreed")
 
     def test_a_disagreement_goes_to_the_person_once_per_wording(self):
         a, b = Model({"No problem at all": "no"}, "a"), Model({"No problem at all": "yes"}, "b")

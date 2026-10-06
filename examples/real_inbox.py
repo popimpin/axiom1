@@ -722,6 +722,12 @@ def run(n, model_name, agree_names, first_seed, out=None):
                 detail = p.stdout.strip()[-400:]
         else:
             detail = msg
+        # what the models agreed on in this inbox becomes a rule only if the inbox was witnessed; a refuted or refused
+        # one teaches nothing (before 2026-10-06 agreement froze at once, and one wrong agreement spread to 8 inboxes)
+        if label == "witnessed":
+            router.freeze()
+        else:
+            router.forget()
         used = {k: model.usage[k] - used0[k] for k in model.usage}
         verdicts = {}
         if ok:

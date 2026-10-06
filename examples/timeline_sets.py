@@ -80,7 +80,10 @@ def main():
         tier_of = {r["thread"]: r.get("tier") or "" for r in rows}
         for t in everything:
             ms = raw.get(topic_of.get(t["thread"]), [])
-            t["outside"] = PV.outside_flag(ms[0]["from"], owner, known) if ms and tier_of.get(t["thread"], "").startswith("invited") else None
+            tier = tier_of.get(t["thread"], "")
+            # filed by the outside rule (the run recorded the flag), or an invitation from outside that reached the list
+            t["outside"] = (PV.outside_flag(ms[0]["from"], owner, known) if ms and (tier.startswith("invited") or "from outside" in tier)
+                            else None)
         s["outside"] = sum(1 for t in everything if t["outside"])
         # the review folder's text, for the sandboxed inspector only (web/timeline/inspect.html): the original messages
         # as plain text, never rendered as HTML, attachments listed by name and never opened

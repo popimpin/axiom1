@@ -28,15 +28,17 @@ from axiom1 import forms  # noqa: E402
 ROUTED = ("is_meeting", "said_yes", "called_off", "which_time", "agreed_day", "agreed_time")
 
 
-def run_thread(name, text, router, model):
+def run_thread(name, text, router, model, outside=None):
     """One thread: (answer, outcome row). The row has the shape inbox_timeline.outcome() reads."""
     def person():
         pass
     person.truth = {}
     teach = lambda *a: None                      # nobody to ask: no truth is taught
     t0 = _time.time()
-    answer, _ = R.decide_thread(name, text, router, model, person, teach)
+    answer, _ = R.decide_thread(name, text, router, model, person, teach, outside=outside)
     row = {"thread": name, "tier": answer.get("tier"), "got": "off", "placed": None, "reminder": None}
+    if answer.get("outside"):
+        row["outside"] = answer["outside"]
     if answer.get("agreed") or answer.get("handoff") or answer.get("invited"):
         ok, msg, produced = forms.run_pipeline(R.PIPELINE, {"threads": [answer], "open_end": True}, {name: text})
         if ok:
@@ -68,6 +70,11 @@ def main():
 
     msgs = MB.load(a.box)
     owner = MB.owner_of(msgs)
+    # the owner's address book: everyone they have sent mail to (axiom1.provenance) - a stranger from outside the
+    # organisation cannot put anything on their lists (Adrian, 2026-10-05)
+    from axiom1 import provenance as PV
+    known = PV.written_to([m for m in msgs if any("sent" in f for f in m.get("folders", [m["folder"]]))])
+    outside = lambda sender: PV.outside_flag(sender, owner, known)
     ts = MB.threads(msgs)
     names = sorted(ts, key=lambda k: ts[k][0]["date"] or "")[: a.limit]
     out = Path(a.out)
@@ -94,7 +101,7 @@ def main():
                 # "ConnectionResetError 10054: connection forcibly closed by the remote host" ended the whole run)
                 for attempt in range(4):
                     try:
-                        row = run_thread(name, texts[name], router, model)
+                        row = run_thread(name, texts[name], router, model, outside)
                         break
                     except (ConnectionError, TimeoutError, OSError) as e:
                         if attempt == 3:

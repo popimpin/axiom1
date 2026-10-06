@@ -91,11 +91,18 @@ def run(env, router, model):
     """Every thread decided, its outcome built, then reconciled against the calendar. {thread: outcome dict}."""
     ts = threads_of(env)
     out, todo = {}, {}
+    # Emma's address book: everyone she has written to. A stranger from outside bluesparrow cannot put anything on
+    # her lists (Adrian, 2026-10-05) - decided before a model reads the thread
+    from axiom1 import provenance as PV
+    owner = env.inbox.account_email
+    known = PV.written_to([{"to": list(e.recipients or []), "cc": list(getattr(e, "cc", None) or [])}
+                           for e in env.inbox.initial_emails if e.sender == owner])
+    outside = lambda sender: PV.outside_flag(sender, owner, known)
     for name, t in ts.items():
         def person():
             pass
         person.truth = {}
-        answer, _ = R.decide_thread(name, t["text"], router, model, person, lambda *a: None)
+        answer, _ = R.decide_thread(name, t["text"], router, model, person, lambda *a: None, outside=outside)
         kind, start, detail = "filed", None, ""
         if answer.get("agreed") or answer.get("handoff") or answer.get("invited"):
             ok, msg, produced = forms.run_pipeline(R.PIPELINE, {"threads": [answer], "open_end": True}, {name: t["text"]})

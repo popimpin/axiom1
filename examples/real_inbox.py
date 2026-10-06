@@ -484,10 +484,15 @@ table.write_json("asks.json", asks)
 '''
 
 
-def decide_thread(name, text, router, model, person, teach):
+from axiom1 import provenance as PV  # noqa: E402
+
+
+def decide_thread(name, text, router, model, person, teach, outside=None):
     """One thread, decided the harness's way: structure first, then the routed decisions, then the slot form.
     `teach(decision)` is what the simulated person would answer if a question reached them. Returns (answer,
-    corrections). The generated inbox and the real (MailEx) one run this same function."""
+    corrections). The generated inbox and the real (MailEx) one run this same function.
+    `outside(sender)` returns a flag when the sender is outside the owner's organisation AND someone the owner never
+    wrote to (axiom1.provenance.outside_flag, bound to the owner's sent mail); None = no address book to check."""
     corrections = []
     msgs = M.split_thread(text)
     # instruction is one way only: blocks addressed to an AI come out BEFORE structure reads anything, so an injected
@@ -505,6 +510,15 @@ def decide_thread(name, text, router, model, person, teach):
     if over:
         return {"file": name, "agreed": False, "day": "", "time": "", "length": "", "ai_instructions": ai_found,
                 "oversight": over, "tier": "structure: needs human oversight (no model read it)"}, corrections
+    # FROM OUTSIDE, NEVER WRITTEN TO (Adrian, 2026-10-05: "tighter security from non internal sources"; tightened from
+    # 10-04's "flagged, not dropped"): a thread whose every sender is outside the organisation and someone the owner
+    # never wrote to cannot put anything on the owner's lists. Filed and flagged - the person still sees the flag - and
+    # decided BEFORE any model reads it, so injected text from a stranger never reaches a model.
+    if outside is not None and not M.mine(msgs, ME):
+        flags = [outside(m["from"]) for m in msgs]
+        if flags and all(flags):
+            return {"file": name, "agreed": False, "day": "", "time": "", "length": "", "ai_instructions": ai_found,
+                    "outside": flags[0], "tier": "structure: from outside, never written to (filed, flagged)"}, corrections
     shown = render(msgs)
     last = msgs[-1]
     key = ("me: " if M.mine([last], ME) else "them: ") + last["body"]
@@ -686,7 +700,10 @@ def run(n, model_name, agree_names, first_seed, out=None):
                 return {"is_meeting": "no" if exp["scenario"] == "newsletter" else "yes",
                         "said_yes": "no" if exp["scenario"] == "no" else "yes",
                         "called_off": "yes" if exp["scenario"] == "cancelled" else "no"}[d]
-            a, more = decide_thread(name, files[name], router, model, person, teach)
+            # my address book in a generated inbox: the organisation is example.com, and I have written to no one
+            # outside it - so mail from another domain cannot put anything on my lists (the outside rule)
+            a, more = decide_thread(name, files[name], router, model, person, teach,
+                                    outside=lambda s: PV.outside_flag(s, ME, set()))
             corrections += more
             answers.append(a)
         ok, msg, produced = forms.run_pipeline(PIPELINE, {"threads": answers}, files)

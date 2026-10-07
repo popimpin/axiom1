@@ -78,6 +78,9 @@ def main():
     p.add_argument("--agree", nargs="+", required=True)
     p.add_argument("--only", nargs="*")
     p.add_argument("--out")
+    # production mode: nobody to ask - a disagreement becomes a "confirm" reminder, never a guess (the whole-mailbox
+    # runs work this way). Default keeps the simulated person, answering from the key, for comparison with earlier runs
+    p.add_argument("--no-person", action="store_true")
     a = p.parse_args()
     from axiom1.agent import ChatModel
     from axiom1.router import Router, Table
@@ -90,7 +93,7 @@ def main():
         taps.append({"text": text[:120], "votes": votes})
         return person.truth.get(text, "no")
     router = Router(Table(), {d: agree for d in ("is_meeting", "said_yes", "called_off", "which_time", "agreed_day", "agreed_time")},
-                    consensus=True, ask_user=person)
+                    consensus=True, ask_user=None if a.no_person else person)
     rows, score = [], {"right": 0, "WRONG_ON_CALENDAR": 0, "missed": 0, "needless_ask": 0, "wrong_time": 0, "wrong_section": 0}
     for name in sorted(a.only or key):
         exp = key[name]

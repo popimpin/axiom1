@@ -1,0 +1,87 @@
+{
+ "seed": "fresh-20261006",
+ "marked": 56,
+ "sample": 56,
+ "HEADLINE_short_list_precision": 0.816,
+ "HEADLINE_estimated_missed_items": 0,
+ "of_filed_threads": 8577,
+ "weighted_agreement_all_threads": 0.989,
+ "baseline_file_everything": 0.94,
+ "population_covered": 9124,
+ "per_stratum": {
+  "reminder": {
+   "n": 10,
+   "agree": 9,
+   "rate": 0.9,
+   "ci95": [
+    0.596,
+    0.982
+   ],
+   "population": 45
+  },
+  "filed_model": {
+   "n": 10,
+   "agree": 10,
+   "rate": 1.0,
+   "ci95": [
+    0.722,
+    1.0
+   ],
+   "population": 2166
+  },
+  "filed_outside": {
+   "n": 8,
+   "agree": 8,
+   "rate": 1.0,
+   "ci95": [
+    0.676,
+    1.0
+   ],
+   "population": 1125
+  },
+  "follow_up": {
+   "n": 20,
+   "agree": 16,
+   "rate": 0.8,
+   "ci95": [
+    0.584,
+    0.919
+   ],
+   "population": 480
+  },
+  "filed_structure": {
+   "n": 6,
+   "agree": 6,
+   "rate": 1.0,
+   "ci95": [
+    0.61,
+    1.0
+   ],
+   "population": 5286
+  },
+  "calendar": {
+   "n": 2,
+   "agree": 2,
+   "rate": 1.0,
+   "ci95": [
+    0.342,
+    1.0
+   ],
+   "population": 22
+  }
+ },
+ "confusion_axiom_vs_person": {
+  "calendar -> calendar": 2,
+  "follow_up -> calendar": 2,
+  "follow_up -> follow_up": 16,
+  "follow_up -> nothing": 2,
+  "nothing -> nothing": 24,
+  "reminder -> calendar": 1,
+  "reminder -> reminder": 9
+ },
+ "details_on_agreed_items": {
+  "calendar: right": 1,
+  "reminder: right": 7
+ },
+ "method": "blind: the person picks what the thread needs before seeing Axiom-1's decision"
+}

@@ -68,14 +68,14 @@ def main():
     # the filed share (92% here) and does nothing. Lead with the two numbers a do-nothing system cannot fake.
     short = [k for k in ("calendar", "reminder", "follow_up") if k in per]
     short_pop = sum(pop[k] for k in short)
-    filed = [k for k in ("filed_model", "filed_structure") if k in per]
+    filed = [k for k in ("filed_model", "filed_structure", "filed_outside") if k in per]
     res = {"seed": sample["seed"], "marked": sum(s["n"] for s in per.values()), "sample": sample["n"],
            "HEADLINE_short_list_precision":
                round(sum(per[k]["rate"] * pop[k] for k in short) / short_pop, 3) if short_pop else None,
            "HEADLINE_estimated_missed_items": round(sum((1 - per[k]["rate"]) * pop[k] for k in filed)),
            "of_filed_threads": sum(pop[k] for k in filed),
            "weighted_agreement_all_threads": round(weighted, 3) if weighted is not None else None,
-           "baseline_file_everything": round(sum(pop.get(k, 0) for k in ("filed_model", "filed_structure")) / sum(pop.values()), 3),
+           "baseline_file_everything": round(sum(pop.get(k, 0) for k in ("filed_model", "filed_structure", "filed_outside")) / sum(pop.values()), 3),
            "population_covered": covered, "per_stratum": per,
            "confusion_axiom_vs_person": {f"{a} -> {b}": n for (a, b), n in sorted(confusion.items())},
            "details_on_agreed_items": {f"{a}: {b}": n for (a, b), n in sorted(details.items())},

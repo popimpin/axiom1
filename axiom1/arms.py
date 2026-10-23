@@ -243,8 +243,8 @@ def build_composer_prompt(
     diff2 = compute_unified_diff(reference_script, cand2.get("script", ""))
 
     prompt = COMPOSER_USER_PROMPT.format(
-        reference_script=reference_script.strip() or "(empty process.py)",
-        reference_entry=reference_entry.strip() or "(empty entry.json)",
+        reference_script=(reference_script or "").strip() or "(empty process.py)",
+        reference_entry=(reference_entry or "").strip() or "(empty entry.json)",
         cand1_diff=diff1,
         cand1_exit=cand1.get("run", {}).get("exit", 0),
         cand1_output=c1_out.strip() or "(no stdout/stderr)",
@@ -427,8 +427,8 @@ class ArmsExperiment:
         # Reference baseline from Arm C (or B)
         c_ax = arm_contexts["C"]["ax"] if "C" in arm_contexts else self.get_axiom("C")
         proc = c_ax.process_for(arm_contexts["C"]["check_id"]) if "C" in arm_contexts else None
-        base_script = proc["script"] if proc else ""
-        base_entry = proc.get("entry_example", "") if proc else ""
+        base_script = (proc.get("script") or "") if proc else ""
+        base_entry = (proc.get("entry_example") or "") if proc else ""
 
         # Collect sample input files for proposal context
         input_files_text = ""

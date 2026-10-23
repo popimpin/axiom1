@@ -264,9 +264,10 @@ class ChatModel:
         req = urllib.request.Request(f"{self.base_url}/chat/completions", data=json.dumps(body).encode(),
                                      headers={"Authorization": f"Bearer {self.api_key}",
                                               "Content-Type": "application/json"})
+        timeout = int(os.environ.get("AXIOM_HTTP_TIMEOUT", 600))
         for attempt in range(5):
             try:
-                with urllib.request.urlopen(req, timeout=180) as r:
+                with urllib.request.urlopen(req, timeout=timeout) as r:
                     data = json.load(r)
                 u = data.get("usage") or {}
                 self.usage["calls"] += 1

@@ -127,19 +127,13 @@ def build(ax: Axiom, agent_id: str | None = None, caps=(), identify=None) -> Fas
         return await call(ctx, lambda me: ax.verify(claim_id))
 
     @mcp.tool()
-    async def probe(check_id: str, before_ref: str, after_ref: str, ctx: Context,
-                    kind: str = "fix") -> dict:
-        """Side-effect-free dry-run check of a candidate commit under a registered check.
-        Runs check + canaries + regression over process_instances without modifying claims,
-        processes, lessons, or track record."""
-        return await call(ctx, lambda me: ax.probe(me, check_id, before_ref, after_ref, kind))
-
-    @mcp.tool()
-    async def record_refusal(task_id: str, candidate_kind: str, reason: str, ctx: Context,
-                             body: str = "") -> dict:
-        """Record a refused candidate into the lessons table with label REFUTED, associated
-        with the task's title for subsequent attempts."""
-        return await call(ctx, lambda me: ax.record_refusal(me, task_id, candidate_kind, reason, body))
+    async def submit_candidates(task_id: str, candidates: list[dict], before_ref: str,
+                                ctx: Context) -> dict:
+        """Submit up to K=2 candidate repairs for a leased task. The server probes each candidate,
+        locks the best passing non-regressing candidate as the new process version, and writes
+        refusals directly to lessons using verifier reasons. If neither passes, records a refuted
+        claim in your honesty track record."""
+        return await call(ctx, lambda me: ax.submit_candidates(me, task_id, candidates, before_ref))
 
     @mcp.tool()
     async def track_record(agent: str, ctx: Context) -> dict:

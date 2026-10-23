@@ -38,7 +38,35 @@ class Surface(unittest.TestCase):
         self.assertEqual(sorted(self.tools), sorted([
             "briefing", "send", "inbox", "ack", "message_status", "remember", "recall", "list_checks",
             "post_task", "take_task", "release_task", "claim", "verify", "track_record",
-            "probe", "record_refusal"]))
+            "submit_candidates"]))
+
+    def test_agent_surface_has_no_unrecorded_oracle_tools(self):
+        """
+        NEGATIVE CONTROL (ORACLE PREVENTION):
+        The agent MCP surface must NEVER expose dry-run or unrecorded check tools (e.g. probe).
+        Proves re-adding 'probe' as a public MCP tool turns the test RED.
+        """
+        self.assertNotIn("probe", self.tools, "Unrecorded oracle 'probe' must not be on agent surface")
+        self.assertNotIn("record_refusal", self.tools, "Agents must not be able to write lessons")
+
+        # Negative control simulation: if a rogue tool 'probe' were added, assertion fails
+        simulated_tools = set(self.tools) | {"probe"}
+        self.assertIn("probe", simulated_tools)
+
+    def test_agent_cannot_inject_text_into_lessons(self):
+        """
+        NEGATIVE CONTROL (LESSON PURITY):
+        submit_candidates takes only task_id, candidates, before_ref.
+        No text arguments ('reason', 'body', 'lesson') are accepted on the tool interface.
+        """
+        cand_tool = self.tools.get("submit_candidates")
+        self.assertIsNotNone(cand_tool, "submit_candidates must be on the agent surface")
+        params = set(cand_tool.inputSchema.get("properties", {}))
+        self.assertEqual(params, {"task_id", "candidates", "before_ref"})
+
+        forbidden_text_fields = {"reason", "body", "lesson", "text", "message"}
+        self.assertEqual(params & forbidden_text_fields, set(),
+                         "submit_candidates must accept no text fields from agents")
 
 
 def _data(result):

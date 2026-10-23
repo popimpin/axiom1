@@ -118,22 +118,12 @@ class FakeSession:
         if name == "release_task":
             res = self.ax.release_task(self.agent_id, args["task_id"], args.get("note", ""))
             return Response(json.dumps(res))
-        if name == "probe":
-            res = self.ax.probe(
-                self.agent_id,
-                args["check_id"],
-                args["before_ref"],
-                args["after_ref"],
-                kind=args.get("kind", "fix"),
-            )
-            return Response(json.dumps(res))
-        if name == "record_refusal":
-            res = self.ax.record_refusal(
+        if name == "submit_candidates":
+            res = self.ax.submit_candidates(
                 self.agent_id,
                 args["task_id"],
-                args["candidate_kind"],
-                args["reason"],
-                body=args.get("body", ""),
+                args["candidates"],
+                args["before_ref"],
             )
             return Response(json.dumps(res))
         raise NotImplementedError(f"Tool {name} not mocked in FakeSession")
@@ -245,9 +235,9 @@ class TestPPCRepair(unittest.TestCase):
         self.assertEqual(refused["candidate"]["kind"], "domain")
         self.assertGreater(refused["regression_failed"], 0)
 
-        # Memory verified: refusal reason was recorded
-        mem = self.ax.recall(f"ppc:refused:{task2['id']}:domain")
-        self.assertTrue(any("regression" in e["content"] for e in mem))
+        # Lesson verified: refusal reason was recorded in lessons table by the server
+        task_lessons = self.ax._lessons_for("Monthly receipts 2")
+        self.assertTrue(any("regression" in l["lesson"] or "regression" in l["reason"] for l in task_lessons))
 
     def test_ppc_negative_control_both_regress_refuses_both(self):
         """
@@ -604,24 +594,26 @@ class TestPPCRepair(unittest.TestCase):
         self.assertEqual(rec["witnessed"], 2, f"Expected witnessed=2 but got {rec['witnessed']}")
 
         # NEGATIVE CONTROL:
-        # Simulate the old buggy probe that called claim + verify during probing.
-        # Verify that under buggy probing, versions locks [1, 2, 3, 4] and witnessed becomes 4.
-        class BuggyProbeSession(FakeSession):
+        # If an agent was forced to claim+verify each candidate separately instead of
+        # the atomic server-side submit_candidates gate, multiple versions get locked:
+        class BuggyClaimPerCandidateSession(FakeSession):
             async def call_tool(self, name: str, args: dict):
-                if name == "probe":
-                    c = self.ax.claim(
-                        self.agent_id,
-                        f"Buggy probe",
-                        args["check_id"],
-                        args["before_ref"],
-                        args["after_ref"],
-                    )
-                    v = self.ax.verify(c["id"])
+                if name == "submit_candidates":
+                    # Simulating client-side probe via direct claim+verify
+                    for c_item in args["candidates"]:
+                        c = self.ax.claim(self.agent_id, f"probe {c_item['kind']}", "receipts_neg",
+                                          args["before_ref"], c_item["after_ref"])
+                        self.ax.verify(c["id"])
+                    # Winner claim
+                    win_c = self.ax.claim(self.agent_id, "winner", "receipts_neg",
+                                          args["before_ref"], args["candidates"][0]["after_ref"],
+                                          task_id=args["task_id"])
+                    self.ax.verify(win_c["id"])
                     class Resp:
                         def __init__(self, t):
                             self.content = [type("C", (), {"text": t})()]
                             self.isError = False
-                    return Resp(json.dumps(v))
+                    return Resp(json.dumps({"witnessed": True, "winner": args["candidates"][0]["kind"]}))
                 return await super().call_tool(name, args)
 
         repo_neg = DataRepo(Path(self.tmp.name) / "instance_diff_neg")
@@ -649,7 +641,7 @@ class TestPPCRepair(unittest.TestCase):
         repo_neg.git("worktree", "add", "-q", "--detach", str(wt_neg), "main")
         ws_neg = Workspace(str(wt_neg), LocalSandbox())
         ws_neg.install_engines()
-        buggy_session = BuggyProbeSession(self.ax, "agent-1")
+        buggy_session = BuggyClaimPerCandidateSession(self.ax, "agent-1")
 
         # Post task 2 and run repair with buggy session
         self.ax.post_task("operator", "Buggy probe task 2", check_id="receipts_neg")
@@ -670,8 +662,8 @@ class TestPPCRepair(unittest.TestCase):
             r["version"]
             for r in self.ax.db.execute("SELECT version FROM processes WHERE check_id='receipts_neg' ORDER BY version").fetchall()
         ]
-        # Under the old buggy behavior, multiple intermediate versions got locked:
-        self.assertGreater(len(buggy_versions), 2, f"Buggy probe should have locked >2 versions, got {buggy_versions}")
+        # Under client-side multi-claim, multiple intermediate versions got locked:
+        self.assertGreater(len(buggy_versions), 2, f"Expected >2 versions under buggy multi-claim, got {buggy_versions}")
 
 
 if __name__ == "__main__":

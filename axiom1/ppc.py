@@ -170,18 +170,15 @@ async def repair_ppc(
         return {"witnessed": False, "winner": None, "refused": [], "messages": [],
                 "note": "PPC proposal yielded no valid candidates"}
 
-    # 2. PROBE K=2 in worktree (0 model calls)
-    # Probes run sequentially in the worktree (while the verifier sandbox runs isolated copies).
-    # Probing is side-effect-free: runs check + canaries + regression over past instances
-    # without locking processes or writing claims/lessons.
-    probed_results = []
+    # 2. PREPARE CANDIDATES IN WORKTREE
+    candidates_payload = []
     messages = [{"role": "user", "content": f"PPC repair round for task {task['id']}"}]
 
     for kind in ("invariant", "domain"):
         cand = candidates.get(kind)
         if not cand:
             continue
-        log(f"[{agent_id}] Probing candidate: {kind}")
+        log(f"[{agent_id}] Preparing candidate commit: {kind}")
 
         # Write candidate files to workspace
         ws.write_file(PROCESS_FILE, cand["script"])
@@ -190,127 +187,56 @@ async def repair_ppc(
         elif entry_example:
             ws.write_file(ENTRY_FILE, entry_example)
 
-        # Run process to verify basic execution
+        # Run process in workspace to generate any delivered artifacts
         ran = ws.run(" ".join(process_argv("python")))
         if ran.get("exit") != 0:
-            probed_results.append({
-                "candidate": cand,
-                "passed": False,
-                "reproduced": False,
-                "regression_failed": 0,
-                "reason": f"process execution failed with exit {ran.get('exit')}: {ran.get('output', '')[-200:]}",
-                "diff": diff_size(base_script, cand["script"]),
-                "regression": {},
-            })
-            continue
+            log(f"[{agent_id}] Candidate {kind} basic execution exit {ran.get('exit')}")
 
-        # Commit and probe side-effect-free through the gate
         sha = ws.commit(f"PPC candidate {kind}")["sha"]
-        try:
-            res = await session.call_tool("probe", {
-                "check_id": task["check_id"],
-                "before_ref": start_sha,
-                "after_ref": sha,
-            })
-            verdict = json.loads(res.content[0].text) if res.content else {}
-        except Exception as e:
-            verdict = {"label": "error", "reason": str(e), "passed": False}
+        candidates_payload.append({"kind": kind, "after_ref": sha})
 
-        is_witnessed = verdict.get("label") == "witnessed" or verdict.get("passed", False)
-        ev = verdict.get("evidence") or {}
-        p_ev = ev.get("process") or {}
-        regression = p_ev.get("regression") or {}
-        reproduced = p_ev.get("reproduced", False)
-        reg_failed = regression.get("failed", 0)
-
-        probed_results.append({
-            "candidate": cand,
-            "sha": sha,
-            "passed": is_witnessed,
-            "reproduced": reproduced,
-            "regression_failed": reg_failed,
-            "regression": regression,
-            "reason": verdict.get("reason", ""),
-            "diff": diff_size(base_script, cand["script"]),
-            "verdict": verdict,
-        })
-
-    # 3. COMPOSE = THE GATE (Check + Tamper + Regression over past instances)
-    # A candidate wins ONLY if it passes the acceptance check AND does not regress any earlier instance
-    valid_winners = [
-        r for r in probed_results
-        if r["passed"] and r["reproduced"] and r["regression_failed"] == 0
-    ]
-
-    winner = None
-    refused = []
-
-    if valid_winners:
-        # Tie-break on smallest diff against base process
-        valid_winners.sort(key=lambda r: r["diff"])
-        winner = valid_winners[0]
-        # Any other candidates are refused / runners-up
-        for r in probed_results:
-            if r is not winner:
-                refused.append(r)
-    else:
-        refused = probed_results
-
-    # 4. MEMORY WRITE-BACK & ANTI-DRIFT
-    # Log refused candidates and write reasons to lessons table so next round knows what failed
-    for r in refused:
-        cand_kind = r["candidate"]["kind"]
-        ref_reason = r["reason"]
-        if r.get("regression_failed", 0) > 0:
-            ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
-        log(f"[{agent_id}] PPC candidate refused ({cand_kind}): {ref_reason}")
-        try:
-            await session.call_tool("record_refusal", {
-                "task_id": task["id"],
-                "candidate_kind": cand_kind,
-                "reason": ref_reason,
-                "body": f"PPC candidate {cand_kind} refused: {ref_reason}",
-            })
-        except Exception as e:
-            log(f"[{agent_id}] Warning: failed to record refusal for {cand_kind}: {e}")
-        try:
-            await session.call_tool("remember", {
-                "key": f"ppc:refused:{task['id']}:{cand_kind}",
-                "content": f"[refused] Candidate {cand_kind} failed: {ref_reason}",
-            })
-        except Exception as e:
-            log(f"[{agent_id}] Warning: failed to remember refusal for {cand_kind}: {e}")
-
-    if winner:
-        log(f"[{agent_id}] PPC Winner chosen: {winner['candidate']['kind']} (diff={winner['diff']}) -> locking via task claim")
-        # Ensure winning script is active in workspace
-        ws.write_file(PROCESS_FILE, winner["candidate"]["script"])
-        if winner["candidate"]["entry"]:
-            ws.write_file(ENTRY_FILE, winner["candidate"]["entry"])
-        win_sha = ws.commit(f"PPC winner {winner['candidate']['kind']}")["sha"]
-        # Claim with task_id to complete the task lease and attribute winner
-        try:
-            res_win = await session.call_tool("claim", {
-                "statement": f"PPC winner ({winner['candidate']['kind']})",
-                "check_id": task["check_id"],
-                "before_ref": start_sha,
-                "after_ref": win_sha,
-                "task_id": task["id"],
-            })
-            claim_win = json.loads(res_win.content[0].text) if res_win.content else {}
-            res_v = await session.call_tool("verify", {"claim_id": claim_win.get("id")})
-            win_verdict = json.loads(res_v.content[0].text) if res_v.content else {}
-        except Exception as e:
-            log(f"[{agent_id}] Error finalizing winner claim: {e}")
-            win_verdict = {"label": "error", "reason": str(e)}
-
-        messages.append({"role": "assistant", "content": f"PPC Winner: {winner['candidate']['kind']}"})
+    if not candidates_payload:
+        if anti_drift:
+            log(f"[{agent_id}] Anti-drift: resetting workspace to verified baseline process")
+            ws.write_file(PROCESS_FILE, base_script)
+            if entry_example:
+                ws.write_file(ENTRY_FILE, entry_example)
         return {
-            "witnessed": win_verdict.get("label") == "witnessed",
-            "winner": winner,
-            "refused": refused,
+            "witnessed": False,
+            "winner": None,
+            "refused": [],
             "messages": messages,
-            "note": f"PPC winner locked: {winner['candidate']['kind']}",
+            "note": "No candidates passed basic execution",
+        }
+
+    # 3. SUBMIT TO SERVER GATE VIA SINGLE MCP TOOL
+    # The server probes both, applies the gate + regression, locks winner as v+1,
+    # and writes refusal lessons using verifier reasons.
+    try:
+        res = await session.call_tool("submit_candidates", {
+            "task_id": task["id"],
+            "before_ref": start_sha,
+            "candidates": candidates_payload,
+        })
+        data = json.loads(res.content[0].text) if res.content else {}
+    except Exception as e:
+        log(f"[{agent_id}] submit_candidates call failed: {e}")
+        data = {"witnessed": False, "reason": str(e)}
+
+    if data.get("witnessed"):
+        win_kind = data.get("winner")
+        win_cand = candidates.get(win_kind)
+        if win_cand:
+            ws.write_file(PROCESS_FILE, win_cand["script"])
+            if win_cand.get("entry"):
+                ws.write_file(ENTRY_FILE, win_cand["entry"])
+        messages.append({"role": "assistant", "content": f"PPC Winner: {win_kind}"})
+        return {
+            "witnessed": True,
+            "winner": {"candidate": {"kind": win_kind}, "diff": data.get("winner_diff", 0)},
+            "refused": data.get("refused", []),
+            "messages": messages,
+            "note": f"PPC winner locked: {win_kind}",
         }
 
     # ANTI-DRIFT RESET: Neither candidate was verified without regression.
@@ -324,7 +250,7 @@ async def repair_ppc(
     return {
         "witnessed": False,
         "winner": None,
-        "refused": refused,
+        "refused": data.get("refused", []),
         "messages": messages,
-        "note": "No PPC candidate passed check and regression suite",
+        "note": data.get("reason", "No PPC candidate passed check and regression suite"),
     }

@@ -170,7 +170,10 @@ async def repair_ppc(
         return {"witnessed": False, "winner": None, "refused": [], "messages": [],
                 "note": "PPC proposal yielded no valid candidates"}
 
-    # 2. PROBE K=2 in parallel/isolated sandboxes (0 model calls)
+    # 2. PROBE K=2 in worktree (0 model calls)
+    # Probes run sequentially in the worktree (while the verifier sandbox runs isolated copies).
+    # Probing is side-effect-free: runs check + canaries + regression over past instances
+    # without locking processes or writing claims/lessons.
     probed_results = []
     messages = [{"role": "user", "content": f"PPC repair round for task {task['id']}"}]
 
@@ -201,22 +204,19 @@ async def repair_ppc(
             })
             continue
 
-        # Commit and claim through the gate (probe without task_id so task remains open during K=2 probing)
+        # Commit and probe side-effect-free through the gate
         sha = ws.commit(f"PPC candidate {kind}")["sha"]
         try:
-            res = await session.call_tool("claim", {
-                "statement": f"PPC probe ({kind})",
+            res = await session.call_tool("probe", {
                 "check_id": task["check_id"],
                 "before_ref": start_sha,
                 "after_ref": sha,
             })
-            claim = json.loads(res.content[0].text) if res.content else {}
-            res_v = await session.call_tool("verify", {"claim_id": claim.get("id")})
-            verdict = json.loads(res_v.content[0].text) if res_v.content else {}
+            verdict = json.loads(res.content[0].text) if res.content else {}
         except Exception as e:
-            verdict = {"label": "error", "reason": str(e)}
+            verdict = {"label": "error", "reason": str(e), "passed": False}
 
-        is_witnessed = verdict.get("label") == "witnessed"
+        is_witnessed = verdict.get("label") == "witnessed" or verdict.get("passed", False)
         ev = verdict.get("evidence") or {}
         p_ev = ev.get("process") or {}
         regression = p_ev.get("regression") or {}
@@ -233,7 +233,6 @@ async def repair_ppc(
             "reason": verdict.get("reason", ""),
             "diff": diff_size(base_script, cand["script"]),
             "verdict": verdict,
-            "claim_id": claim.get("id"),
         })
 
     # 3. COMPOSE = THE GATE (Check + Tamper + Regression over past instances)
@@ -258,7 +257,7 @@ async def repair_ppc(
         refused = probed_results
 
     # 4. MEMORY WRITE-BACK & ANTI-DRIFT
-    # Log refused candidates and write reasons to memory so next round knows what failed
+    # Log refused candidates and write reasons to lessons table so next round knows what failed
     for r in refused:
         cand_kind = r["candidate"]["kind"]
         ref_reason = r["reason"]
@@ -266,12 +265,21 @@ async def repair_ppc(
             ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
         log(f"[{agent_id}] PPC candidate refused ({cand_kind}): {ref_reason}")
         try:
+            await session.call_tool("record_refusal", {
+                "task_id": task["id"],
+                "candidate_kind": cand_kind,
+                "reason": ref_reason,
+                "body": f"PPC candidate {cand_kind} refused: {ref_reason}",
+            })
+        except Exception as e:
+            log(f"[{agent_id}] Warning: failed to record refusal for {cand_kind}: {e}")
+        try:
             await session.call_tool("remember", {
                 "key": f"ppc:refused:{task['id']}:{cand_kind}",
                 "content": f"[refused] Candidate {cand_kind} failed: {ref_reason}",
             })
-        except Exception:
-            pass
+        except Exception as e:
+            log(f"[{agent_id}] Warning: failed to remember refusal for {cand_kind}: {e}")
 
     if winner:
         log(f"[{agent_id}] PPC Winner chosen: {winner['candidate']['kind']} (diff={winner['diff']}) -> locking via task claim")
@@ -290,13 +298,15 @@ async def repair_ppc(
                 "task_id": task["id"],
             })
             claim_win = json.loads(res_win.content[0].text) if res_win.content else {}
-            await session.call_tool("verify", {"claim_id": claim_win.get("id")})
+            res_v = await session.call_tool("verify", {"claim_id": claim_win.get("id")})
+            win_verdict = json.loads(res_v.content[0].text) if res_v.content else {}
         except Exception as e:
             log(f"[{agent_id}] Error finalizing winner claim: {e}")
+            win_verdict = {"label": "error", "reason": str(e)}
 
         messages.append({"role": "assistant", "content": f"PPC Winner: {winner['candidate']['kind']}"})
         return {
-            "witnessed": True,
+            "witnessed": win_verdict.get("label") == "witnessed",
             "winner": winner,
             "refused": refused,
             "messages": messages,

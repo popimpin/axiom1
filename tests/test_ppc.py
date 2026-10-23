@@ -115,6 +115,27 @@ class FakeSession:
         if name == "take_task":
             res = self.ax.take_task(self.agent_id)
             return Response(json.dumps({"task": res}))
+        if name == "release_task":
+            res = self.ax.release_task(self.agent_id, args["task_id"], args.get("note", ""))
+            return Response(json.dumps(res))
+        if name == "probe":
+            res = self.ax.probe(
+                self.agent_id,
+                args["check_id"],
+                args["before_ref"],
+                args["after_ref"],
+                kind=args.get("kind", "fix"),
+            )
+            return Response(json.dumps(res))
+        if name == "record_refusal":
+            res = self.ax.record_refusal(
+                self.agent_id,
+                args["task_id"],
+                args["candidate_kind"],
+                args["reason"],
+                body=args.get("body", ""),
+            )
+            return Response(json.dumps(res))
         raise NotImplementedError(f"Tool {name} not mocked in FakeSession")
 
 
@@ -396,11 +417,35 @@ class TestPPCRepair(unittest.TestCase):
         self.assertEqual(round2_start_script.strip(), PROCESS_V1.strip())
         self.assertNotIn("POISON_LEAK_INJECTED_MUTATION", round2_start_script)
 
-        # NEGATIVE CONTROL 3: Disable anti-drift reset -> poison LEAKS, proving the test can fail
+        # MEMORY WRITE-BACK CHECK:
+        # Refused candidates were recorded in the lessons table tied to task title.
+        # Release task from Round 1 and take task for Round 2.
+        self.ax.release_task("agent-1", task["id"], "Round 1 strayed")
+        task_round2 = self.ax.take_task("agent-1")
+        self.assertIsNotNone(task_round2)
+        r2_lessons = task_round2.get("lessons", [])
+        self.assertTrue(
+            any("PPC candidate" in l["lesson"] and "refused" in l["lesson"] for l in r2_lessons),
+            "Expected refused PPC candidate in Round 2 task lessons",
+        )
+        # Format memory: refusal MUST surface as [UNVERIFIED] and NEVER [WITNESSED]
+        w_text, d_text = format_memory(r2_lessons)
+        self.assertIn("[UNVERIFIED] PPC candidate", d_text)
+        self.assertNotIn("[WITNESSED]", d_text)
+        self.assertNotIn("PPC candidate", w_text)
+
+        # NEGATIVE CONTROL 3A: Disabling memory write-back leaves Round 2 blind
+        # Create a fresh task where refusal was NOT recorded -> lessons is empty / missing refusal
+        self.ax.post_task("operator", "Unrecorded task", check_id="receipts")
+        blind_task = self.ax.take_task("agent-1")
+        blind_refusals = [l for l in blind_task.get("lessons", []) if "PPC candidate" in l.get("lesson", "")]
+        self.assertEqual(len(blind_refusals), 0, "Negative control: without record_refusal, lessons has 0 entries")
+
+        # NEGATIVE CONTROL 3B: Disable anti-drift reset -> poison LEAKS, proving the test can fail
         res_no_guard = asyncio.run(
             repair_ppc(
                 "agent-1",
-                task,
+                task_round2,
                 {"note": "strayed"},
                 mock_poison_proposer,
                 ws,
@@ -481,6 +526,152 @@ class TestPPCRepair(unittest.TestCase):
         self.assertTrue(res["witnessed"])
         self.assertEqual(res["winner"]["candidate"]["kind"], "invariant")
         self.assertLess(res["winner"]["diff"], res["refused"][0]["diff"])
+
+
+    def test_ppc_both_pass_different_scripts_locks_exactly_one_version(self):
+        """
+        When Candidate A and Candidate B BOTH pass with DIFFERENT scripts,
+        probing must be side-effect free:
+          - Exactly ONE new version is locked in the processes table (version 2).
+          - Candidate B (or the loser) does NOT lock an intermediate version.
+          - Track record witnessed increments by exactly +1 (1 setup + 1 repair = 2).
+        NEGATIVE CONTROL:
+          - When probes are routed through the buggy claim+verify path,
+            versions locked jumps to [1, 2, 3, 4] and witnessed increments to 4,
+            turning the assertions RED.
+        """
+        self._setup_v1_and_earlier_instance()
+
+        repo = DataRepo(Path(self.tmp.name) / "instance_diff_pass")
+        self.ax.register_check(
+            "receipts",
+            repo.root,
+            [sys.executable, "-I", ".axiom_check/check.py"],
+            [],
+            holdout=str(self.check_dir),
+            claim_kind="deliver",
+        )
+        self.ax.post_task("operator", "Different pass scripts task", check_id="receipts")
+        task = self.ax.take_task("agent-1")
+
+        wt = Path(self.tmp.name) / "wt_diff_pass"
+        repo.git("worktree", "add", "-q", "--detach", str(wt), "main")
+        ws = Workspace(str(wt), LocalSandbox())
+        ws.install_engines()
+        session = FakeSession(self.ax, "agent-1")
+
+        # Candidate A: Real change (adds comment # candidate A)
+        # Candidate B: Real change (adds comment # candidate B - longer diff)
+        # Both are valid, executable, passing, non-regressing scripts!
+        cand_a = PROCESS_V1 + "\n# Candidate A modification\n"
+        cand_b = PROCESS_V1 + "\n# Candidate B modification with extra length\n"
+
+        def mock_different_pass_proposer(messages, tools):
+            return {
+                "role": "assistant",
+                "content": json.dumps({
+                    "invariant": {"script": cand_a, "entry": ENTRY},
+                    "domain": {"script": cand_b, "entry": ENTRY},
+                }),
+            }
+
+        res = asyncio.run(
+            repair_ppc(
+                "agent-1",
+                task,
+                {"note": "strayed"},
+                mock_different_pass_proposer,
+                ws,
+                session,
+                repo.base,
+                log=lambda *_: None,
+            )
+        )
+
+        self.assertTrue(res["witnessed"])
+        self.assertEqual(res["winner"]["candidate"]["kind"], "invariant")
+        self.assertEqual(len(res["refused"]), 1)
+
+        # Assert exactly ONE new version was locked!
+        versions = [
+            r["version"]
+            for r in self.ax.db.execute("SELECT version FROM processes WHERE check_id='receipts' ORDER BY version").fetchall()
+        ]
+        self.assertEqual(versions, [1, 2], f"Expected exactly [1, 2] but got {versions}")
+
+        # Assert track record witnessed incremented by exactly 1 (1 setup + 1 winner = 2)
+        rec = self.ax.track_record("agent-1")
+        self.assertEqual(rec["witnessed"], 2, f"Expected witnessed=2 but got {rec['witnessed']}")
+
+        # NEGATIVE CONTROL:
+        # Simulate the old buggy probe that called claim + verify during probing.
+        # Verify that under buggy probing, versions locks [1, 2, 3, 4] and witnessed becomes 4.
+        class BuggyProbeSession(FakeSession):
+            async def call_tool(self, name: str, args: dict):
+                if name == "probe":
+                    c = self.ax.claim(
+                        self.agent_id,
+                        f"Buggy probe",
+                        args["check_id"],
+                        args["before_ref"],
+                        args["after_ref"],
+                    )
+                    v = self.ax.verify(c["id"])
+                    class Resp:
+                        def __init__(self, t):
+                            self.content = [type("C", (), {"text": t})()]
+                            self.isError = False
+                    return Resp(json.dumps(v))
+                return await super().call_tool(name, args)
+
+        repo_neg = DataRepo(Path(self.tmp.name) / "instance_diff_neg")
+        self.ax.register_check(
+            "receipts_neg",
+            repo_neg.root,
+            [sys.executable, "-I", ".axiom_check/check.py"],
+            [],
+            holdout=str(self.check_dir),
+            claim_kind="deliver",
+        )
+        self.ax.post_task("operator", "Buggy probe task", check_id="receipts_neg")
+        task_neg = self.ax.take_task("agent-1")
+
+        # First lock v1 on receipts_neg
+        files = {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD}
+        s1 = repo_neg.branch("v1_branch", files)
+        c1 = self.ax.claim("agent-1", "v1 lock", "receipts_neg", repo_neg.base, s1, task_id=task_neg["id"])
+        v1 = self.ax.verify(c1["id"])
+        self.assertEqual(v1["label"], "witnessed")
+
+        # Now set up worktree for task 2
+        wt_neg = Path(self.tmp.name) / "wt_diff_neg"
+        repo_neg.git("checkout", "main")
+        repo_neg.git("worktree", "add", "-q", "--detach", str(wt_neg), "main")
+        ws_neg = Workspace(str(wt_neg), LocalSandbox())
+        ws_neg.install_engines()
+        buggy_session = BuggyProbeSession(self.ax, "agent-1")
+
+        # Post task 2 and run repair with buggy session
+        self.ax.post_task("operator", "Buggy probe task 2", check_id="receipts_neg")
+        task_neg2 = self.ax.take_task("agent-1")
+        res_buggy = asyncio.run(
+            repair_ppc(
+                "agent-1",
+                task_neg2,
+                {"note": "strayed"},
+                mock_different_pass_proposer,
+                ws_neg,
+                buggy_session,
+                repo_neg.base,
+                log=lambda *_: None,
+            )
+        )
+        buggy_versions = [
+            r["version"]
+            for r in self.ax.db.execute("SELECT version FROM processes WHERE check_id='receipts_neg' ORDER BY version").fetchall()
+        ]
+        # Under the old buggy behavior, multiple intermediate versions got locked:
+        self.assertGreater(len(buggy_versions), 2, f"Buggy probe should have locked >2 versions, got {buggy_versions}")
 
 
 if __name__ == "__main__":

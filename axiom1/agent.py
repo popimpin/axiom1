@@ -367,9 +367,13 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
             from .ppc import repair_ppc
             ppc = await repair_ppc(agent_id, task, replay, model, ws, session, start_sha, log)
             if ppc["witnessed"]:
+                state["ppc_arm"] = "ppc_winner"
+                state["ppc_failed"] = False
                 state["witnessed"] = True
                 return ppc["messages"]
             # The input strayed from the locked process: the model repairs it, with thinking on.
+            state["ppc_arm"] = "ppc_fallback_interactive"
+            state["ppc_failed"] = True
             state["think"] = thinking != "off"
             state["refuted"] = True
             res = await session.call_tool("take_task", {})       # the refutation returned the task to the pool

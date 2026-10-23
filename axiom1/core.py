@@ -502,6 +502,26 @@ class Axiom:
         return [dict(r) for r in self.db.execute("SELECT * FROM lessons ORDER BY at DESC LIMIT ?", (limit,))]
 
     @_locked
+    def record_refusal(self, agent_id, task_id, candidate_kind, reason, body=""):
+        """Record a refused repair candidate into the lessons table with label REFUTED.
+        Associated with the task's title so subsequent attempts at this task receive the
+        refusal as an unverified lesson."""
+        self._agent(agent_id)
+        task = self.db.execute("SELECT check_id, title FROM tasks WHERE id=?", (task_id,)).fetchone()
+        if task is None:
+            raise AxiomError(f"no task {task_id!r}")
+        check_id = task["check_id"]
+        task_title = task["title"]
+        lesson_id = uuid.uuid4().hex[:12]
+        claim_id = f"refusal-{task_id}-{candidate_kind}"
+        full_body = body or f"PPC candidate {candidate_kind} refused: {reason}"
+        self.db.execute("INSERT INTO lessons VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                        (lesson_id, "lesson", claim_id, check_id, task_title,
+                         agent_id, REFUTED, reason, json.dumps([]), full_body, self.clock()))
+        return {"id": lesson_id, "task_id": task_id, "task_title": task_title,
+                "label": REFUTED, "reason": reason, "body": full_body}
+
+    @_locked
     def export_okf(self, directory):
         """Write the collective's record as an OKF bundle: markdown + YAML frontmatter + [[links]],
         one file per lesson or skill and per witnessed fact, plus an index. Git-native and portable."""
@@ -633,6 +653,49 @@ class Axiom:
             if "check_output" in private:  # a deliver check's full output may hold the hidden truth
                 self._event("check_output", c["agent"], claim_id, tail=private["check_output"])
         return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence, "counts": anchored}
+
+    def probe(self, agent_id, check_id, before_ref, after_ref, kind="fix"):
+        """Run check + canaries + regression for a candidate commit without side effects.
+        Does NOT insert into claims, does NOT lock a process, does NOT record track record,
+        does NOT write lessons or memories. Returns evidence and passed status."""
+        with self.lock:
+            self._agent(agent_id)
+            if kind not in CLAIM_KINDS:
+                raise AxiomError(f"unknown claim kind {kind!r}; use one of {sorted(CLAIM_KINDS)}")
+            check = self.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone()
+            if check is None:
+                raise AxiomError(f"no registered check {check_id!r}")
+            if check["claim_kind"] == "deliver":
+                kind = "deliver"
+            elif kind == "deliver":
+                raise AxiomError(f"check {check_id!r} judges code; claim kind 'fix' or 'no_regression'")
+            try:
+                before_sha = verifier.resolve(check["repo"], before_ref)
+                after_sha = verifier.resolve(check["repo"], after_ref)
+            except Exception as e:
+                raise AxiomError(f"could not resolve refs: {e}") from None
+            if before_sha == after_sha:
+                raise AxiomError("before and after are the same commit")
+            anchored = verifier.is_ancestor(check["repo"], before_sha, check["base_ref"])
+
+        _, check_fn = CLAIM_KINDS[kind]
+        label, reason, evidence, private = check_fn(
+            check["repo"], before_sha, after_sha,
+            json.loads(check["argv"]), json.loads(check["test_paths"]),
+            sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
+        if label == WITNESSED and (evidence.get("process") or {}).get("reproduced"):
+            evidence["process"].update(self._regression(check, after_sha))
+
+        passed = (label == WITNESSED and bool(anchored))
+        return {
+            "label": label,
+            "passed": passed,
+            "anchored": bool(anchored),
+            "reason": reason,
+            "evidence": evidence,
+            "before": before_sha,
+            "after": after_sha,
+        }
 
     # ---- track record: honesty and reliability are separate ----------------
     @_locked

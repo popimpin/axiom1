@@ -414,7 +414,7 @@ class ArmsExperiment:
                 claim_kind=claim_kind,
             )
             ax.post_task("operator", task_title, check_id=check_name)
-            task = ax.take_task("agent-1")
+            task = ax.take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 3600)))
             arm_contexts[arm] = {
                 "ax": ax,
                 "repo": repo,
@@ -681,7 +681,7 @@ class ArmsExperiment:
 
         if cold_start_fn:
             for arm in self.arms:
-                arm_contexts[arm]["task"] = arm_contexts[arm]["ax"].take_task("agent-1")
+                arm_contexts[arm]["task"] = arm_contexts[arm]["ax"].take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 3600)))
             cs_res = cold_start_fn(arm_contexts)
             results.update(cs_res)
         else:

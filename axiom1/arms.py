@@ -321,15 +321,19 @@ class ArmsExperiment:
         c_cost = (completion_tokens / 1_000_000.0) * pricing["completion_per_1m_usd"]
         return p_cost + c_cost
 
-    def record_usage(self, prompt_tokens: int, completion_tokens: int):
-        """Record token usage and enforce max_cost ceiling."""
-        self.token_usage["prompt_tokens"] += prompt_tokens
-        self.token_usage["completion_tokens"] += completion_tokens
+    def record_usage(self, prompt_tokens: int | None, completion_tokens: int | None):
+        """Record real token usage; if missing or 0, record as 'missing' without guessing."""
+        if prompt_tokens is None or completion_tokens is None or (prompt_tokens == 0 and completion_tokens == 0):
+            self.token_usage["missing"] = self.token_usage.get("missing", 0) + 1
+            return "missing"
+        self.token_usage["prompt_tokens"] = self.token_usage.get("prompt_tokens", 0) + prompt_tokens
+        self.token_usage["completion_tokens"] = self.token_usage.get("completion_tokens", 0) + completion_tokens
         cost = self.calculate_cost(prompt_tokens, completion_tokens, self.model, self.base_url)
         self.accumulated_cost_usd += cost
         if self.accumulated_cost_usd >= self.max_cost:
             self.stopped_early = True
             self.stop_reason = f"Max cost reached: ${self.accumulated_cost_usd:.5f} >= ${self.max_cost:.5f}"
+        return {"prompt_tokens": prompt_tokens, "completion_tokens": completion_tokens}
 
     def load_receipt(self) -> dict[str, Any]:
         """Load existing receipt from disk if present for resumability."""
@@ -451,12 +455,16 @@ class ArmsExperiment:
         prop_content = proposal_reply.get("content") if isinstance(proposal_reply, dict) and "content" in proposal_reply else proposal_reply
         raw_candidates = extract_candidates(prop_content)
 
-        # Track usage if reported
-        if isinstance(proposal_reply, dict) and "usage" in proposal_reply:
-            u = proposal_reply["usage"]
-            self.record_usage(u.get("prompt_tokens", 2000), u.get("completion_tokens", 600))
+        # Track real usage: if missing, record as 'missing' (NEVER a guess or default)
+        u = proposal_reply.get("usage") if isinstance(proposal_reply, dict) else None
+        if u and (u.get("prompt_tokens") or u.get("completion_tokens")):
+            p_tok = u.get("prompt_tokens")
+            c_tok = u.get("completion_tokens")
+            rec = self.record_usage(p_tok, c_tok)
+            results["propose_token_usage"] = rec
         else:
-            self.record_usage(2000, 600)
+            self.record_usage(None, None)
+            results["propose_token_usage"] = "missing"
 
         # Build candidate worktree commits for both invariant and domain
         cand_details = {}
@@ -529,12 +537,7 @@ class ArmsExperiment:
                 a_res = repair_a_fn(a_ctx)
                 results["arm_a"] = a_res
             else:
-                # Default baseline stub
-                results["arm_a"] = {
-                    "strategy": "single_repair",
-                    "calls": 21,
-                    "witnessed": False,
-                }
+                results["arm_a"] = "NOT_RUN"
 
         # Step 4: Arm B - Model Composer (Rule 2 & 3)
         if "B" in self.arms:
@@ -546,11 +549,15 @@ class ArmsExperiment:
             )
             composer_reply = compose_fn(prompt_b)
             self.call_count += 1
-            if isinstance(composer_reply, dict) and "usage" in composer_reply:
-                u = composer_reply["usage"]
-                self.record_usage(u.get("prompt_tokens", 2200), u.get("completion_tokens", 300))
+            u = composer_reply.get("usage") if isinstance(composer_reply, dict) else None
+            if u and (u.get("prompt_tokens") or u.get("completion_tokens")):
+                p_tok = u.get("prompt_tokens")
+                c_tok = u.get("completion_tokens")
+                rec = self.record_usage(p_tok, c_tok)
+                results["compose_token_usage"] = rec
             else:
-                self.record_usage(2200, 300)
+                self.record_usage(None, None)
+                results["compose_token_usage"] = "missing"
 
             b_decision = parse_composer_decision(composer_reply)
             dec = b_decision["decision"]
@@ -613,6 +620,116 @@ class ArmsExperiment:
                 results["disagree_reason"] = reason
             else:
                 results["disagree_reason"] = None
+
+        return results
+
+
+    def evaluate_cold_start_instance(
+        self,
+        task_id: str,
+        task_title: str,
+        repo_builder: Callable,
+        check_id: str = None,
+        cold_start_fn: Callable = None,
+        max_steps: int = 20,
+    ) -> dict[str, Any]:
+        """
+        Execute cold start on Instance #0 to attempt to lock version 1.
+        If locked_v1 is False, runner must stop early.
+        """
+        results = {
+            "task_id": task_id,
+            "task_title": task_title,
+            "timestamp": time.time(),
+            "cold_start": True,
+        }
+        check_name = check_id or f"chk_{task_id}"
+
+        arm_contexts = {}
+        for arm in self.arms:
+            ax = self.get_axiom(arm)
+            ax.join("agent-1")
+            ax.join("operator")
+            if callable(repo_builder):
+                import inspect
+                sig = inspect.signature(repo_builder)
+                if len(sig.parameters) > 0:
+                    repo, check_dir, base_sha, claim_kind = repo_builder(arm)
+                else:
+                    repo, check_dir, base_sha, claim_kind = repo_builder()
+            else:
+                repo, check_dir, base_sha, claim_kind = repo_builder
+            repo_path = repo.root if hasattr(repo, "root") and not isinstance(repo, Path) else Path(repo)
+            ax.register_check(
+                check_name,
+                repo_path,
+                [sys.executable, "-I", ".axiom_check/check.py"],
+                [],
+                holdout=str(check_dir),
+                claim_kind=claim_kind,
+            )
+            ax.join("agent-cold", ["shell"])
+            ax.post_task("operator", task_title, check_id=check_name)
+            arm_contexts[arm] = {
+                "ax": ax,
+                "repo": repo,
+                "check_id": check_name,
+                "task": None,
+                "base_sha": base_sha,
+                "claim_kind": claim_kind,
+            }
+
+        if cold_start_fn:
+            for arm in self.arms:
+                arm_contexts[arm]["task"] = arm_contexts[arm]["ax"].take_task("agent-1")
+            cs_res = cold_start_fn(arm_contexts)
+            results.update(cs_res)
+        else:
+            from .agent import ChatModel, run_agent
+            from .sandbox import LocalSandbox
+            model = ChatModel(model=self.model, base_url=self.base_url)
+            model.thinking = False
+
+            c_ctx = arm_contexts.get("C") or list(arm_contexts.values())[0]
+            wt_path = Path(tempfile.mkdtemp(prefix=f"cs_{task_id}_", dir=str(self.db_dir)))
+            git_run(c_ctx["repo"], "worktree", "add", "-q", "--detach", str(wt_path), c_ctx["base_sha"])
+
+            u0 = dict(model.usage)
+            t0 = time.time()
+            try:
+                import asyncio
+                asyncio.run(run_agent(
+                    "agent-cold",
+                    wt_path,
+                    str(self.db_dir / "arm_c.db"),
+                    model,
+                    max_steps=max_steps,
+                    log=lambda *_: None,
+                    shell=LocalSandbox(),
+                    thinking="off",
+                ))
+            except Exception as e:
+                results["error"] = str(e)
+
+            wall_time = round(time.time() - t0, 1)
+            p_used = model.usage["prompt_tokens"] - u0["prompt_tokens"]
+            c_used = model.usage["completion_tokens"] - u0["completion_tokens"]
+            calls_used = model.usage["calls"] - u0["calls"]
+            self.call_count += calls_used
+            self.record_usage(p_used, c_used)
+
+            proc = c_ctx["ax"].process_for(check_name)
+            locked_v1 = proc is not None
+            results["locked_v1"] = locked_v1
+            results["wall_time_seconds"] = wall_time
+            results["model_calls"] = calls_used
+            results["token_usage"] = {"prompt_tokens": p_used, "completion_tokens": c_used}
+            if locked_v1:
+                results["version"] = proc.get("version", 1)
+            else:
+                claims = c_ctx["ax"].db.execute("SELECT label, reason FROM claims WHERE agent=?", ("agent-cold",)).fetchall()
+                reasons = [c["reason"] for c in claims if c["reason"]]
+                results["reason"] = reasons[-1] if reasons else "no witnessed claim made"
 
         return results
 
@@ -800,6 +917,7 @@ def run_series(
     propose_fn: Callable = None,
     compose_fn: Callable = None,
     repair_a_fn: Callable = None,
+    cold_start_fn: Callable = None,
     model_name: str = None,
     base_url: str = None,
     base_seed: int = 1000,
@@ -828,6 +946,7 @@ def run_series(
         chat_model.thinking = False
 
         def live_propose(title, base_script, base_entry, input_files="(see workspace)"):
+            u0 = dict(chat_model.usage)
             prompt = PPC_PROPOSAL_PROMPT.format(
                 base_script=base_script,
                 entry_example=base_entry,
@@ -840,15 +959,26 @@ def run_series(
                 {"role": "system", "content": "You are a software repair engine for verified processes."},
                 {"role": "user", "content": prompt},
             ], [])
-            return msg
+            p_used = chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
+            c_used = chat_model.usage["completion_tokens"] - u0["completion_tokens"]
+            res = dict(msg) if isinstance(msg, dict) else {"content": str(msg)}
+            if p_used > 0 or c_used > 0:
+                res["usage"] = {"prompt_tokens": p_used, "completion_tokens": c_used}
+            return res
 
         def live_compose(prompt):
+            u0 = dict(chat_model.usage)
             msg = chat_model([
                 {"role": "system", "content": COMPOSER_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ], [])
+            p_used = chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
+            c_used = chat_model.usage["completion_tokens"] - u0["completion_tokens"]
             content = msg.get("content", "") if isinstance(msg, dict) else str(msg)
-            return parse_composer_decision(content)
+            res = parse_composer_decision(content)
+            if p_used > 0 or c_used > 0:
+                res["usage"] = {"prompt_tokens": p_used, "completion_tokens": c_used}
+            return res
 
         propose_fn = live_propose
         compose_fn = live_compose
@@ -891,6 +1021,37 @@ def run_series(
             repo, check_dir, files, truth = et.build(task_def, tmp_root, seed)
             base_sha = git_run(repo, "rev-parse", "HEAD")
             return repo, check_dir, base_sha, "deliver"
+
+        # Instance 0 check: if no locked process exists, run cold start
+        if i == 0:
+            c_ax = exp.get_axiom("C")
+            proc = c_ax.process_for(f"chk_{series_name}")
+            if proc is None:
+                inst_res = exp.evaluate_cold_start_instance(
+                    task_id=task_id,
+                    task_title=f"{task_def.get('ask', series_name)} (instance {i})",
+                    repo_builder=repo_builder,
+                    check_id=f"chk_{series_name}",
+                    cold_start_fn=cold_start_fn,
+                )
+                receipt["completed_instances"].append(inst_res)
+                receipt["instances_completed"] = len(receipt["completed_instances"])
+                receipt["instance_0_locked_v1"] = inst_res.get("locked_v1", False)
+                receipt["accumulated_cost_usd"] = 0.0 if is_local else round(exp.accumulated_cost_usd, 5)
+                receipt["total_model_calls"] = exp.call_count
+                receipt["token_usage"] = dict(exp.token_usage)
+
+                if not inst_res.get("locked_v1", False):
+                    exp.stopped_early = True
+                    exp.stop_reason = f"Instance #0 (cold start) did not lock version 1 ({inst_res.get('reason', 'unwitnessed')}); stopped series"
+                    receipt["stopped_early"] = True
+                    receipt["stop_reason"] = exp.stop_reason
+                    receipt["status"] = "stopped_cold_start_unwitnessed"
+                    exp.save_receipt(receipt)
+                    break
+
+                exp.save_receipt(receipt)
+                continue
 
         inst_res = exp.evaluate_instance_arms(
             task_id=task_id,

@@ -376,6 +376,7 @@ class TestArmsExperiment(unittest.TestCase):
         # 1. First run with ultra-low max_cost ($0.0015):
         # 1 instance cost = (4000+3000)*0.20/1e6 + (800+500)*0.60/1e6 = 0.00140 + 0.00078 = $0.00218
         # Since $0.00218 > $0.0015, it will complete 1 instance and stop early!
+        mock_cs = lambda _: {"locked_v1": True, "version": 1}
         receipt1 = run_series(
             series_name="receipts-to-spreadsheet",
             n_instances=3,
@@ -386,10 +387,11 @@ class TestArmsExperiment(unittest.TestCase):
             confirm_paid=True,
             propose_fn=mock_proposer,
             compose_fn=mock_composer,
+            cold_start_fn=mock_cs,
         )
 
         self.assertTrue(receipt1["stopped_early"])
-        self.assertEqual(receipt1["instances_completed"], 1)
+        self.assertEqual(receipt1["instances_completed"], 2)  # Instance 0 (cold start) + Instance 1 (hit budget ceiling)
         self.assertEqual(receipt1["status"], "partial")
         self.assertTrue(receipt_file.exists())
 
@@ -405,12 +407,85 @@ class TestArmsExperiment(unittest.TestCase):
             confirm_paid=True,
             propose_fn=mock_proposer,
             compose_fn=mock_composer,
+            cold_start_fn=mock_cs,
         )
 
         self.assertFalse(receipt2["stopped_early"])
         self.assertEqual(receipt2["instances_completed"], 3)
         self.assertEqual(receipt2["status"], "complete")
         self.assertEqual(len(receipt2["completed_instances"]), 3)
+
+
+    def test_unrun_arm_a_is_marked_not_run_and_never_reports_calls(self):
+        """
+        Claude Rule 1: With no repair_a_fn, Arm A must be marked 'NOT_RUN' -
+        NEVER a hardcoded call count or stub that pretends to be a measurement.
+        NEGATIVE CONTROL: Returning a dict with 'calls' when unrun fails this test.
+        """
+        exp = ArmsExperiment(self.db_dir, arms=["A", "B", "C"])
+        res = exp.evaluate_instance_arms(
+            task_id="inst_arm_a_check",
+            task_title="Test Arm A unrun",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_arm_a", arm=arm),
+            propose_fn=lambda *_: {"invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY}, "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY}},
+            compose_fn=lambda *_: {"decision": "adopt_invariant", "observation": "ok"},
+            repair_a_fn=None,  # NOT provided!
+        )
+        self.assertEqual(res["arm_a"], "NOT_RUN", "Unrun Arm A must be 'NOT_RUN'")
+        self.assertFalse(isinstance(res["arm_a"], dict) and "calls" in res["arm_a"], "Unrun Arm A must never report calls")
+
+    def test_missing_token_usage_is_recorded_as_missing(self):
+        """
+        Claude Rule 2: Token usage of 0 or None from model is recorded as 'missing',
+        NEVER papered over with fallback guesses (2000/600 or 2200/300).
+        """
+        exp = ArmsExperiment(self.db_dir, arms=["B", "C"])
+        res = exp.evaluate_instance_arms(
+            task_id="inst_missing_tok",
+            task_title="Test Missing Tokens",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_missing_tok", arm=arm),
+            # Model returns no usage key:
+            propose_fn=lambda *_: {"role": "assistant", "content": json.dumps({"invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY}, "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY}})},
+            compose_fn=lambda *_: {"decision": "adopt_invariant", "observation": "ok"},
+        )
+        self.assertEqual(res["propose_token_usage"], "missing")
+        self.assertEqual(res["compose_token_usage"], "missing")
+        self.assertEqual(exp.token_usage.get("missing"), 2)
+        # Verify no fake tokens were added:
+        self.assertEqual(exp.token_usage.get("prompt_tokens", 0), 0)
+        self.assertEqual(exp.token_usage.get("completion_tokens", 0), 0)
+
+    def test_cold_start_failure_stops_series_early(self):
+        """
+        Claude Rule 3: If instance #0 cold start fails to lock version 1,
+        run_series must STOP IMMEDIATELY and report that, never continuing into repairs.
+        """
+        receipt_file = Path(self.tmp.name) / "test_cold_start_fail_receipt.json"
+
+        # Cold start fails to lock v1:
+        mock_failing_cs = lambda _: {
+            "locked_v1": False,
+            "reason": "the delivered files do not pass the acceptance check",
+            "model_calls": 15,
+        }
+
+        receipt = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=5,
+            arms=["B", "C"],
+            db_dir=Path(self.tmp.name) / "run_cs_fail_db",
+            receipt_path=receipt_file,
+            confirm_paid=True,
+            propose_fn=lambda *_: {},
+            compose_fn=lambda *_: {},
+            cold_start_fn=mock_failing_cs,
+        )
+
+        self.assertTrue(receipt["stopped_early"])
+        self.assertFalse(receipt["instance_0_locked_v1"])
+        self.assertEqual(receipt["instances_completed"], 1, "Must NOT run instances 1..4 when instance 0 failed to lock v1")
+        self.assertEqual(receipt["status"], "stopped_cold_start_unwitnessed")
+        self.assertIn("Instance #0 (cold start) did not lock version 1", receipt["stop_reason"])
 
 
 if __name__ == "__main__":

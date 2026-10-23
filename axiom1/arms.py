@@ -1022,6 +1022,12 @@ def run_series(
     })
 
     completed_ids = {inst["task_id"] for inst in receipt.get("completed_instances", [])}
+    if f"{series_name}_0" in completed_ids and not receipt.get("instance_0_locked_v1", False):
+        exp.stopped_early = True
+        exp.stop_reason = receipt.get("stop_reason") or f"Instance #0 (cold start) did not lock version 1; stopped series"
+        receipt["stopped_early"] = True
+        receipt["stop_reason"] = exp.stop_reason
+        return receipt
 
     for i in range(n_instances):
         if exp.stopped_early:

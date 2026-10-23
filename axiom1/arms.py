@@ -848,8 +848,8 @@ class ArmsExperiment:
                     if arm != "C" and arm in arm_contexts:
                         ax_other = arm_contexts[arm]["ax"]
                         ax_other.db.execute(
-                            "INSERT OR REPLACE INTO processes VALUES (?,?,?,?,?,?)",
-                            (check_name, proc["version"], proc["script"], proc.get("entry_example"), proc["locked_at"], proc.get("claim_id"))
+                            "INSERT OR REPLACE INTO processes (check_id, version, script, entry, claim_id, agent, at, fits, proven) VALUES (?,?,?,?,?,?,?,?,?)",
+                            (check_name, proc["version"], proc["script"], proc.get("entry") or proc.get("entry_example"), proc.get("claim_id", ""), proc.get("agent", "agent-cold"), proc.get("at", time.time()), proc.get("fits"), proc.get("proven", "[]"))
                         )
                         ax_other.db.commit()
             else:
@@ -1236,8 +1236,8 @@ def run_series(
                 ax_other = exp.get_axiom(arm)
                 if not ax_other.process_for(f"chk_{series_name}"):
                     ax_other.db.execute(
-                        "INSERT OR REPLACE INTO processes VALUES (?,?,?,?,?,?)",
-                        (f"chk_{series_name}", proc["version"], proc["script"], proc.get("entry_example"), proc["locked_at"], proc.get("claim_id"))
+                        "INSERT OR REPLACE INTO processes (check_id, version, script, entry, claim_id, agent, at, fits, proven) VALUES (?,?,?,?,?,?,?,?,?)",
+                        (f"chk_{series_name}", proc["version"], proc["script"], proc.get("entry") or proc.get("entry_example"), proc.get("claim_id", ""), proc.get("agent", "agent-cold"), proc.get("at", time.time()), proc.get("fits"), proc.get("proven", "[]"))
                     )
                     ax_other.db.commit()
 

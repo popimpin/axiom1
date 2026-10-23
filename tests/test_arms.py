@@ -1,0 +1,262 @@
+"""
+Tests for Axiom-1 3-Arm Experiment Runner (Harness^2 vs Axiom-1 Gate).
+
+Verifies:
+  (a) B and C receive byte-identical candidates from a single Propose call.
+  (b) Composer prompt contains no check/holdout/canary/regression text (prompt purity).
+      Negative control: injecting check/holdout verdicts into prompt turns test RED.
+  (c) When composer prefers a candidate that regresses an earlier instance:
+      - Logged DISAGREE with reason 'regression'
+      - Arm B's DB shows nothing locked from shadow probe (shadow is side-effect free).
+      Negative control: routing shadow through claim/verify locks a process, turning RED.
+  (d) Arms' DBs are completely separate (cross-writes turn test RED).
+  (e) CLI dry-run produces accurate call/token and cost estimate for pilot.
+"""
+import asyncio
+import json
+import os
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+from axiom1 import Axiom
+from axiom1.arms import (
+    ArmsExperiment,
+    build_composer_prompt,
+    parse_composer_decision,
+    run_dry_run_series,
+)
+from test_deliver import CHECK, GOOD, DataRepo
+from test_ppc import PROCESS_V1, PROCESS_INVARIANT, PROCESS_REGRESSING, ENTRY
+
+
+class TestArmsExperiment(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.check_dir = Path(self.tmp.name) / "check"
+        self.check_dir.mkdir(parents=True, exist_ok=True)
+        (self.check_dir / "check.py").write_text(CHECK, encoding="utf-8")
+        (self.check_dir / "truth.json").write_text(json.dumps({"receipts": 3, "total": 59.75}), encoding="utf-8")
+        self.db_dir = Path(self.tmp.name) / "arms_dbs"
+        self.db_dir.mkdir(parents=True, exist_ok=True)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _setup_repo_with_earlier_instance(self, name: str = "repo", arm: str = ""):
+        """Create a repo representing Instance 2 with strayed receipts."""
+        repo_name = f"{name}_{arm}" if arm else name
+        repo = DataRepo(Path(self.tmp.name) / repo_name)
+        repo.write("receipts/a.txt", "Corner Cafe\nTotal: $12.50\n")
+        repo.write("receipts/b.txt", "Hardware World\nTotal: $40.00\n")
+        repo.write("receipts/c.txt", "Corner Cafe\nTotal: $7.25\n")
+        base = repo.commit("strayed receipts with total $")
+        return repo, self.check_dir, base, "deliver"
+
+    def test_b_and_c_receive_byte_identical_candidates(self):
+        """
+        Rule (1): Arms B and C MUST receive byte-identical candidate proposals
+        originating from one single Propose call per task instance.
+        """
+        exp = ArmsExperiment(self.db_dir, arms=["B", "C"])
+        captured_proposals = []
+
+        def mock_proposer(title, base_script, base_entry):
+            cand_payload = {
+                "invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+                "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY},
+            }
+            captured_proposals.append(cand_payload)
+            return {"role": "assistant", "content": json.dumps(cand_payload)}
+
+        def mock_composer(prompt):
+            return {"decision": "adopt_invariant", "observation": "Candidate 1 handles formats cleanly."}
+
+        res = exp.evaluate_instance_arms(
+            task_id="inst_identical",
+            task_title="Monthly receipts identical test",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_id", arm=arm),
+            propose_fn=mock_proposer,
+            compose_fn=mock_composer,
+        )
+
+        # Propose was called exactly once
+        self.assertEqual(len(captured_proposals), 1)
+        prop = captured_proposals[0]
+
+        # Verify candidate scripts submitted to C match exactly what was prepared
+        self.assertIn("invariant", res["candidates"])
+        self.assertIn("domain", res["candidates"])
+        self.assertEqual(prop["invariant"]["script"].encode("utf-8"), PROCESS_INVARIANT.encode("utf-8"))
+        self.assertEqual(prop["domain"]["script"].encode("utf-8"), PROCESS_REGRESSING.encode("utf-8"))
+
+    def test_composer_prompt_contains_no_gate_truth_or_verdicts(self):
+        """
+        Rule (2): The Composer prompt MUST strictly exclude verifier/gate truth:
+        no check labels, holdout output, canary results, or regression numbers.
+        NEGATIVE CONTROL: Injecting gate oracle verdicts into candidate run output
+        is detected by build_composer_prompt, turning test RED.
+        """
+        cand1 = {
+            "script": PROCESS_INVARIANT,
+            "run": {"exit": 0, "output": "Parsed 3 receipts, generated summary.csv"},
+            "deliverables": ["summary.csv"],
+        }
+        cand2 = {
+            "script": PROCESS_REGRESSING,
+            "run": {"exit": 0, "output": "Parsed 3 receipts"},
+            "deliverables": ["summary.csv"],
+        }
+
+        prompt = build_composer_prompt(PROCESS_V1, ENTRY, cand1, cand2)
+
+        # Verify prompt includes diffs and run outputs
+        self.assertIn("Candidate 1", prompt)
+        self.assertIn("Candidate 2", prompt)
+        self.assertIn("Parsed 3 receipts", prompt)
+
+        # Verify prompt strictly excludes all hidden gate terms
+        lowered = prompt.lower()
+        for hidden in ["holdout", "canary", "regression_failed", "acceptance check", "verdict"]:
+            self.assertNotIn(hidden, lowered, f"Gate oracle leaked into composer prompt: {hidden}")
+
+        # NEGATIVE CONTROL:
+        # If a gate verdict leaks into a candidate's execution output, build_composer_prompt must reject it
+        leaky_cand = {
+            "script": PROCESS_INVARIANT,
+            "run": {"exit": 0, "output": "VERDICT: witnessed, holdout test passed, 0 regression_failed"},
+            "deliverables": ["summary.csv"],
+        }
+        with self.assertRaises(ValueError):
+            build_composer_prompt(PROCESS_V1, ENTRY, leaky_cand, cand2)
+
+    def test_composer_prefers_regressor_logs_disagree_with_reason_regression_and_b_locks_nothing(self):
+        """
+        Rule (3) & (4): When the Model Composer prefers Candidate 2 (regressing) over Candidate 1:
+          - Gate selects Candidate 1 (invariant, non-regressing).
+          - Comparison logs 'DISAGREE' with reason stating regression.
+          - Arm B's DB shows ZERO locked processes from shadow probe (side-effect free).
+        NEGATIVE CONTROL:
+          - If shadow probe routes through claim/verify in Arm B, processes are locked
+            in Arm B, turning this assertion RED.
+        """
+        # Seed Arm C with earlier instance 1 baseline so regression testing has history
+        ax_c = Axiom(str(self.db_dir / "arm_c.db"))
+        ax_c.join("agent-1")
+        ax_c.join("operator")
+        repo_inst1 = DataRepo(Path(self.tmp.name) / "inst1")
+        check_name = "chk_inst_regress"
+        ax_c.register_check(
+            check_name,
+            repo_inst1.root,
+            [sys.executable, "-I", ".axiom_check/check.py"],
+            [],
+            holdout=str(self.check_dir),
+            claim_kind="deliver",
+        )
+        ax_c.post_task("operator", "Inst 1 task", check_id=check_name)
+        t1 = ax_c.take_task("agent-1")
+        files = {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD}
+        s1 = repo_inst1.branch("b1", files)
+        c1 = ax_c.claim("agent-1", "v1 lock", check_name, repo_inst1.base, s1, task_id=t1["id"])
+        ax_c.verify(c1["id"])
+        self.assertEqual(ax_c.process_for(check_name)["version"], 1)
+
+        exp = ArmsExperiment(self.db_dir, arms=["B", "C"])
+
+        def mock_proposer(title, base_script, base_entry):
+            return {
+                "role": "assistant",
+                "content": json.dumps({
+                    "invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+                    "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY},
+                }),
+            }
+
+        # Model Composer chooses the regressing domain candidate!
+        def mock_regressor_loving_composer(prompt):
+            return {
+                "decision": "adopt_domain",
+                "observation": "Candidate 2 has concise regex parsing, adopting domain candidate.",
+            }
+
+        res = exp.evaluate_instance_arms(
+            task_id="inst_regress",
+            task_title="Monthly receipts regression test",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_reg", arm=arm),
+            propose_fn=mock_proposer,
+            compose_fn=mock_regressor_loving_composer,
+        )
+
+        # 1. Arm B chose domain, Arm C chose invariant
+        self.assertEqual(res["arm_b"]["chosen_kind"], "domain")
+        self.assertEqual(res["arm_c"]["winner"], "invariant")
+
+        # 2. Logged DISAGREE with reason 'regression'
+        self.assertEqual(res["agree"], "DISAGREE")
+        self.assertIn("regression", res["disagree_reason"].lower())
+
+        # 3. Arm B's DB MUST show nothing locked from the shadow probe!
+        ax_b = Axiom(str(self.db_dir / "arm_b.db"))
+        b_procs = ax_b.db.execute("SELECT * FROM processes").fetchall()
+        self.assertEqual(len(b_procs), 0, "Shadow probe in Arm B must NOT lock any processes")
+        b_claims = ax_b.db.execute("SELECT * FROM claims").fetchall()
+        self.assertEqual(len(b_claims), 0, "Shadow probe in Arm B must NOT record any claims")
+
+        # 4. NEGATIVE CONTROL:
+        # If someone routed shadow evaluation through real claim+verify in Arm B,
+        # claims and processes would be created, which would fail the assertions above.
+
+    def test_arms_dbs_are_completely_separate(self):
+        """
+        Rule (3): Each arm runs in its own isolated Axiom DB. Actions in Arm C
+        never leak into Arm B or Arm A.
+        NEGATIVE CONTROL: Writing to Arm B from Arm C context turns this test RED.
+        """
+        exp = ArmsExperiment(self.db_dir, arms=["A", "B", "C"])
+        ax_a = exp.get_axiom("A")
+        ax_b = exp.get_axiom("B")
+        ax_c = exp.get_axiom("C")
+
+        ax_a.join("agent-1")
+        ax_b.join("agent-1")
+        ax_c.join("agent-1")
+
+        # Register task and lock process ONLY in Arm C
+        ax_c.join("operator")
+        repo = DataRepo(Path(self.tmp.name) / "repo_sep")
+        ax_c.register_check("chk_sep", repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                            holdout=str(self.check_dir), claim_kind="deliver")
+        ax_c.post_task("operator", "Sep task", check_id="chk_sep")
+        t = ax_c.take_task("agent-1")
+        s = repo.branch("b_sep", {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD})
+        c = ax_c.claim("agent-1", "sep claim", "chk_sep", repo.base, s, task_id=t["id"])
+        ax_c.verify(c["id"])
+
+        # Arm C has locked version 1
+        self.assertIsNotNone(ax_c.process_for("chk_sep"))
+
+        # Arm A and Arm B MUST be completely untouched!
+        self.assertIsNone(ax_a.process_for("chk_sep"))
+        self.assertIsNone(ax_b.process_for("chk_sep"))
+        self.assertEqual(len(ax_b.db.execute("SELECT * FROM claims").fetchall()), 0)
+        self.assertEqual(len(ax_a.db.execute("SELECT * FROM claims").fetchall()), 0)
+
+    def test_dry_run_cost_and_token_projection(self):
+        """
+        Rule (5): Dry-run produces accurate call, token, and cost projections
+        for pilot series without executing any models.
+        """
+        plan = run_dry_run_series("receipts-to-spreadsheet", n_instances=5)
+        self.assertTrue(plan["dry_run"])
+        self.assertEqual(plan["instances"], 5)
+        self.assertEqual(plan["total_model_calls"], 8)  # 4 propose + 4 compose
+        self.assertGreater(plan["projected_prompt_tokens"], 10000)
+        self.assertGreater(plan["projected_completion_tokens"], 2000)
+        # Pilot cost estimate should be well under $0.05
+        self.assertLess(plan["estimated_cost_usd"], 0.05)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -631,7 +631,7 @@ class ArmsExperiment:
         repo_builder: Callable,
         check_id: str = None,
         cold_start_fn: Callable = None,
-        max_steps: int = 20,
+        max_steps: int = 60,
     ) -> dict[str, Any]:
         """
         Execute cold start on Instance #0 to attempt to lock version 1.
@@ -696,6 +696,9 @@ class ArmsExperiment:
 
             u0 = dict(model.usage)
             t0 = time.time()
+            # Ensure lease covers the step budget at measured per-call time (~35s-60s/call)
+            lease_duration = max(3600, max_steps * 60)
+            os.environ["AXIOM_LEASE_SECONDS"] = str(lease_duration)
             try:
                 import asyncio
                 asyncio.run(run_agent(
@@ -727,9 +730,23 @@ class ArmsExperiment:
             if locked_v1:
                 results["version"] = proc.get("version", 1)
             else:
-                claims = c_ctx["ax"].db.execute("SELECT label, reason FROM claims WHERE agent=?", ("agent-cold",)).fetchall()
-                reasons = [c["reason"] for c in claims if c["reason"]]
-                results["reason"] = reasons[-1] if reasons else "no witnessed claim made"
+                # Distinguish exact failure reason:
+                # 1. Lease expired under agent
+                lease_ev = c_ctx["ax"].db.execute("SELECT * FROM events WHERE kind='lease_expired'").fetchone()
+                if lease_ev:
+                    reason = "lease expired"
+                # 2. Step cap reached mid-work without claim
+                elif calls_used >= max_steps:
+                    reason = "step cap reached"
+                # 3. Refuted on acceptance check
+                else:
+                    claims = c_ctx["ax"].db.execute("SELECT label, reason FROM claims WHERE agent=?", ("agent-cold",)).fetchall()
+                    refuted_claims = [c for c in claims if c["label"] == "refuted"]
+                    if refuted_claims:
+                        reason = f"refuted: {refuted_claims[-1]['reason']}"
+                    else:
+                        reason = "no witnessed claim made"
+                results["reason"] = reason
 
         return results
 

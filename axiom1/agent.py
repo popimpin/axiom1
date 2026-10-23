@@ -349,7 +349,8 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
         # The harness takes the task, not the model. Measured: agents that explored first took it late
         # (sometimes only after a claim bounced off the lease check), so the thinking dial learned about
         # a verified skill only after most of the run had already been paid for.
-        res = await session.call_tool("take_task", {})
+        lease_s = int(os.environ.get("AXIOM_LEASE_SECONDS", max(600, max_steps * 60)))
+        res = await session.call_tool("take_task", {"lease_seconds": lease_s})
         taken = json.loads(res.content[0].text) if res.content and not res.isError else {}
         task = taken.get("task") if isinstance(taken, dict) else None
         if not task:
@@ -376,7 +377,7 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
             state["ppc_failed"] = True
             state["think"] = thinking != "off"
             state["refuted"] = True
-            res = await session.call_tool("take_task", {})       # the refutation returned the task to the pool
+            res = await session.call_tool("take_task", {"lease_seconds": lease_s})       # the refutation returned the task to the pool
             again = json.loads(res.content[0].text) if res.content and not res.isError else {}
             if isinstance(again, dict) and again.get("task"):
                 task = again["task"]

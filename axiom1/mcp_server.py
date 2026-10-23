@@ -26,7 +26,7 @@ import os
 import anyio
 from mcp.server.fastmcp import Context, FastMCP
 
-from .core import Axiom, AxiomError
+from .core import Axiom, AxiomError, DEFAULT_LEASE_S
 
 INSTRUCTIONS = """You are one of several agents sharing one state through Axiom-1.
 Anything you write is stored as `declared`. Only the server's `verify` makes a claim `witnessed`
@@ -99,10 +99,11 @@ def build(ax: Axiom, agent_id: str | None = None, caps=(), identify=None) -> Fas
         return await call(ctx, lambda me: ax.post_task(me, title, caps or [], check_id))
 
     @mcp.tool()
-    async def take_task(ctx: Context, lease_seconds: int = 600) -> dict:
+    async def take_task(ctx: Context, lease_seconds: int = None) -> dict:
+        ls = lease_seconds if lease_seconds is not None else DEFAULT_LEASE_S
         """Lease the oldest open task you are capable of. `task` is null if there is none.
         You must hold a task's lease to claim it."""
-        return await call(ctx, lambda me: {"task": ax.take_task(me, lease_seconds)})
+        return await call(ctx, lambda me: {"task": ax.take_task(me, ls)})
 
     @mcp.tool()
     async def release_task(task_id: str, ctx: Context, note: str = "") -> dict:

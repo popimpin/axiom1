@@ -488,5 +488,70 @@ class TestArmsExperiment(unittest.TestCase):
         self.assertIn("Instance #0 (cold start) did not lock version 1", receipt["stop_reason"])
 
 
+    def test_cold_start_step_cap_reached_records_exact_reason(self):
+        """
+        Claude Test 1: When cold start hits the step cap without locking v1,
+        receipt reason must be 'step cap reached', strictly NOT 'refuted'.
+        NEGATIVE CONTROL: Marking reason as 'refuted' when cap was hit turns this test RED.
+        """
+        receipt_file = Path(self.tmp.name) / "test_step_cap_receipt.json"
+
+        mock_capped_cs = lambda _: {
+            "locked_v1": False,
+            "model_calls": 60,
+            "reason": "step cap reached",
+        }
+
+        receipt = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=5,
+            arms=["B", "C"],
+            db_dir=Path(self.tmp.name) / "run_step_cap_db",
+            receipt_path=receipt_file,
+            confirm_paid=True,
+            propose_fn=lambda *_: {},
+            compose_fn=lambda *_: {},
+            cold_start_fn=mock_capped_cs,
+        )
+
+        self.assertTrue(receipt["stopped_early"])
+        self.assertFalse(receipt["instance_0_locked_v1"])
+        self.assertEqual(receipt["completed_instances"][0]["reason"], "step cap reached")
+        self.assertNotIn("refuted", receipt["completed_instances"][0]["reason"])
+        self.assertIn("step cap reached", receipt["stop_reason"])
+
+    def test_cold_start_lease_expired_records_exact_reason(self):
+        """
+        Claude Test 2: When the lease expires under the agent before a witnessed claim,
+        receipt reason must be 'lease expired'.
+        NEGATIVE CONTROL: Marking reason as 'refuted' or 'no witnessed claim' turns test RED.
+        """
+        receipt_file = Path(self.tmp.name) / "test_lease_expired_receipt.json"
+
+        mock_expired_cs = lambda _: {
+            "locked_v1": False,
+            "model_calls": 25,
+            "reason": "lease expired",
+        }
+
+        receipt = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=5,
+            arms=["B", "C"],
+            db_dir=Path(self.tmp.name) / "run_lease_expired_db",
+            receipt_path=receipt_file,
+            confirm_paid=True,
+            propose_fn=lambda *_: {},
+            compose_fn=lambda *_: {},
+            cold_start_fn=mock_expired_cs,
+        )
+
+        self.assertTrue(receipt["stopped_early"])
+        self.assertFalse(receipt["instance_0_locked_v1"])
+        self.assertEqual(receipt["completed_instances"][0]["reason"], "lease expired")
+        self.assertNotIn("refuted", receipt["completed_instances"][0]["reason"])
+        self.assertIn("lease expired", receipt["stop_reason"])
+
+
 if __name__ == "__main__":
     unittest.main()

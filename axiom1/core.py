@@ -12,6 +12,7 @@ always store `declared`, and `witnessed` / `refuted` are written only by
 """
 import hashlib
 import json
+import os
 import sqlite3
 import time
 import functools
@@ -24,7 +25,7 @@ from . import sandbox as sandboxes
 from . import verifier
 
 DECLARED, WITNESSED, REFUTED = "declared", "witnessed", "refuted"
-DEFAULT_LEASE_S = 600
+DEFAULT_LEASE_S = int(os.environ.get("AXIOM_LEASE_SECONDS", 600))
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS agents   (id TEXT PRIMARY KEY, caps TEXT NOT NULL, joined_at REAL NOT NULL,

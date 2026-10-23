@@ -666,5 +666,91 @@ class TestPPCRepair(unittest.TestCase):
         self.assertGreater(len(buggy_versions), 2, f"Expected >2 versions under buggy multi-claim, got {buggy_versions}")
 
 
+    def test_ppc_winner_verify_refuted_returns_witnessed_false(self):
+        """
+        When the winning candidate passes probe dry-run but the live verify() returns
+        REFUTED (e.g. lease expired, race condition, flaky check), submit_candidates
+        must NOT declare victory:
+          - witnessed MUST be False
+          - winner MUST be None
+          - All candidates (including the winner) must be recorded as refused lessons
+          - Track record must count the refutation
+        NEGATIVE CONTROL:
+          - If submit_candidates unconditionally sets witnessed=True without checking
+            win_verdict, this test turns RED.
+        """
+        import unittest.mock
+        self._setup_v1_and_earlier_instance()
+
+        repo = DataRepo(Path(self.tmp.name) / "instance_flaky_winner")
+        self.ax.register_check(
+            "receipts",
+            repo.root,
+            [sys.executable, "-I", ".axiom_check/check.py"],
+            [],
+            holdout=str(self.check_dir),
+            claim_kind="deliver",
+        )
+        self.ax.post_task("operator", "Flaky winner task", check_id="receipts")
+        task = self.ax.take_task("agent-1")
+
+        wt = Path(self.tmp.name) / "wt_flaky"
+        repo.git("worktree", "add", "-q", "--detach", str(wt), "main")
+        ws = Workspace(str(wt), LocalSandbox())
+        ws.install_engines()
+        session = FakeSession(self.ax, "agent-1")
+
+        def mock_proposer(messages, tools):
+            return {
+                "role": "assistant",
+                "content": json.dumps({
+                    "invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+                    "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY},
+                }),
+            }
+
+        # Intercept verify on the Axiom instance so the winner's real verify returns REFUTED
+        def mock_refuting_verify(claim_id):
+            c = self.ax.db.execute("SELECT * FROM claims WHERE id=?", (claim_id,)).fetchone()
+            check = self.ax.db.execute("SELECT * FROM checks WHERE id=?", (c["check_id"],)).fetchone()
+            return self.ax._record_verdict(
+                c,
+                claim_id,
+                "refuted",
+                "flaky check failed on live verification run",
+                {},
+                {},
+                check,
+            )
+
+        with unittest.mock.patch.object(self.ax, "verify", side_effect=mock_refuting_verify):
+            res = asyncio.run(
+                repair_ppc(
+                    "agent-1",
+                    task,
+                    {"note": "strayed"},
+                    mock_proposer,
+                    ws,
+                    session,
+                    repo.base,
+                    log=lambda *_: None,
+                )
+            )
+
+        self.assertFalse(res["witnessed"], "Must not be witnessed if live verify refutes")
+        self.assertIsNone(res["winner"])
+        # All candidates refused (winner + other candidate)
+        self.assertEqual(len(res["refused"]), 2)
+        # Winner refused entry is present
+        self.assertTrue(any(r["kind"] == "invariant" for r in res["refused"]))
+        # Lessons recorded in lessons table
+        task_lessons = self.ax._lessons_for("Flaky winner task")
+        self.assertTrue(any("refuted during verification" in l["lesson"] or "live verification" in l["lesson"]
+                            for l in task_lessons))
+        # Track record counts the refutation!
+        tr = self.ax.track_record("agent-1")
+        self.assertGreater(tr["refuted"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

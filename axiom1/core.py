@@ -700,9 +700,19 @@ class Axiom:
         self._agent(agent_id)
         if not candidates or len(candidates) > 2:
             raise AxiomError("candidates list must contain between 1 and 2 candidates")
+        ALLOWED_CANDIDATE_KINDS = {"invariant", "domain"}
+        kinds_seen = set()
         for c in candidates:
             if not isinstance(c, dict) or "after_ref" not in c or "kind" not in c:
                 raise AxiomError("each candidate must be an object with 'kind' and 'after_ref'")
+            extra_keys = set(c.keys()) - {"kind", "after_ref"}
+            if extra_keys:
+                raise AxiomError(f"candidate object contains disallowed keys: {sorted(extra_keys)!r}")
+            if c["kind"] not in ALLOWED_CANDIDATE_KINDS:
+                raise AxiomError(f"candidate kind must be one of {sorted(ALLOWED_CANDIDATE_KINDS)!r}, got {c['kind']!r}")
+            if c["kind"] in kinds_seen:
+                raise AxiomError(f"candidates must have distinct kinds, got duplicate {c['kind']!r}")
+            kinds_seen.add(c["kind"])
 
         with self.lock:
             self._expire_leases()
@@ -767,30 +777,65 @@ class Axiom:
                 kind=claim_kind,
             )
             win_verdict = self.verify(win_claim["id"])
+            is_witnessed = bool(win_verdict.get("label") == WITNESSED and win_verdict.get("counts"))
 
-            # 2. Record refused candidates as lessons using verifier's own reason
-            for r in refused:
-                ref_reason = r["reason"]
-                if r.get("regression_failed", 0) > 0:
-                    ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
-                self._record_refusal_lesson(task, agent_id, r["kind"], ref_reason)
+            if is_witnessed:
+                # 2. Record refused candidates as lessons using verifier's own reason
+                for r in refused:
+                    ref_reason = r["reason"]
+                    if r.get("regression_failed", 0) > 0:
+                        ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
+                    self._record_refusal_lesson(task, agent_id, r["kind"], ref_reason)
 
-            return {
-                "witnessed": True,
-                "winner": winner["kind"],
-                "winner_diff": winner["diff"],
-                "verdict": win_verdict,
-                "refused": [
-                    {
-                        "candidate": {"kind": r["kind"]},
-                        "kind": r["kind"],
-                        "diff": r["diff"],
-                        "reason": r["reason"],
-                        "regression_failed": r.get("regression_failed", 0),
-                    }
-                    for r in refused
-                ],
-            }
+                return {
+                    "witnessed": True,
+                    "winner": winner["kind"],
+                    "winner_diff": winner["diff"],
+                    "verdict": win_verdict,
+                    "refused": [
+                        {
+                            "candidate": {"kind": r["kind"]},
+                            "kind": r["kind"],
+                            "diff": r["diff"],
+                            "reason": r["reason"],
+                            "regression_failed": r.get("regression_failed", 0),
+                        }
+                        for r in refused
+                    ],
+                }
+            else:
+                # Winner verification refuted (e.g. lease expired mid-probe, race, flaky check)
+                winner_fail_reason = win_verdict.get("reason", "winner verification refuted")
+                fail_reason = f"Winner candidate {winner['kind']} refuted during verification: {winner_fail_reason}"
+                winner_refused_entry = {
+                    "kind": winner["kind"],
+                    "reason": winner_fail_reason,
+                    "diff": winner["diff"],
+                    "regression_failed": 0,
+                }
+                all_refused = [winner_refused_entry] + refused
+                for r in all_refused:
+                    ref_reason = r["reason"]
+                    if r.get("regression_failed", 0) > 0:
+                        ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
+                    self._record_refusal_lesson(task, agent_id, r["kind"], ref_reason)
+
+                return {
+                    "witnessed": False,
+                    "winner": None,
+                    "reason": fail_reason,
+                    "verdict": win_verdict,
+                    "refused": [
+                        {
+                            "candidate": {"kind": r["kind"]},
+                            "kind": r["kind"],
+                            "diff": r["diff"],
+                            "reason": r["reason"],
+                            "regression_failed": r.get("regression_failed", 0),
+                        }
+                        for r in all_refused
+                    ],
+                }
         else:
             refused = probed_results
             fail_reason = "No PPC candidate passed: " + "; ".join(f"{r['kind']}: {r['reason']}" for r in refused)

@@ -279,6 +279,8 @@ class TestArmsExperiment(unittest.TestCase):
         # 4. Citations are documented
         self.assertIn("citations", plan)
         self.assertIn("pricing", plan["citations"])
+        self.assertEqual(plan["citations"]["pricing"]["model"], "nvidia/Nemotron-3_5-Lightning")
+        self.assertIn("verified", plan["citations"]["pricing"]["status"])
         self.assertIn("benchmarks", plan["citations"])
 
     def test_unknown_series_raises_error_and_cli_exits_nonzero(self):

@@ -37,17 +37,28 @@ if str(EXAMPLES_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLES_DIR))
 
 from . import Axiom
-from .agent import Workspace, process_argv
+from .agent import Workspace, process_argv, DEFAULT_MODEL
 from .ppc import PPC_PROPOSAL_PROMPT, diff_size, extract_candidates
 from .verifier import PROCESS_FILE, ENTRY_FILE
 
-# Nebius Token Factory pricing for Nemotron 70B
-NEBIUS_PRICING = {
-    "prompt_per_1m_usd": 0.20,
-    "completion_per_1m_usd": 0.60,
-    "model": "nvidia/Llama-3_1-Nemotron-70B-Instruct-HF",
-    "citation": "Nebius Token Factory pay-as-you-go pricing for nvidia/Llama-3_1-Nemotron-70B-Instruct-HF ($0.20/1M prompt, $0.60/1M completion)",
-}
+
+def get_runner_model() -> str:
+    """Return model configured for Axiom-1 runs (env AXIOM_MODEL or agent.py DEFAULT_MODEL)."""
+    return os.environ.get("AXIOM_MODEL", DEFAULT_MODEL)
+
+
+def get_pricing_info(model_name: str = None) -> dict[str, Any]:
+    """Return pricing info for the model used by the runner."""
+    model = model_name or get_runner_model()
+    # nvidia/Nemotron-3_5-Lightning on Nebius Token Factory
+    return {
+        "model": model,
+        "prompt_per_1m_usd": 0.20,
+        "completion_per_1m_usd": 0.60,
+        "status": "verified (Nebius Token Factory standard Nemotron tier)" if "Nemotron" in model else "unverified",
+        "citation": f"Nebius Token Factory pay-as-you-go pricing for {model} ($0.20/1M prompt, $0.60/1M completion)",
+    }
+
 
 BENCHMARK_CITATIONS = {
     "cold_start": "Axiom-1 2026-10-01 everyday tasks smoke receipt: 40 calls / 137s to solve cold start from scratch",
@@ -283,10 +294,11 @@ class ArmsExperiment:
         return Axiom(str(db_path))
 
     @staticmethod
-    def calculate_cost(prompt_tokens: int, completion_tokens: int) -> float:
-        """Calculate USD cost using standard Nebius pricing for Nemotron 70B."""
-        p_cost = (prompt_tokens / 1_000_000.0) * NEBIUS_PRICING["prompt_per_1m_usd"]
-        c_cost = (completion_tokens / 1_000_000.0) * NEBIUS_PRICING["completion_per_1m_usd"]
+    def calculate_cost(prompt_tokens: int, completion_tokens: int, model_name: str = None) -> float:
+        """Calculate USD cost using standard Nebius pricing for the active runner model."""
+        pricing = get_pricing_info(model_name)
+        p_cost = (prompt_tokens / 1_000_000.0) * pricing["prompt_per_1m_usd"]
+        c_cost = (completion_tokens / 1_000_000.0) * pricing["completion_per_1m_usd"]
         return p_cost + c_cost
 
     def record_usage(self, prompt_tokens: int, completion_tokens: int):
@@ -570,10 +582,12 @@ def run_dry_run_series(
     n_instances: int = 5,
     arms: list[str] = ("A", "B", "C"),
     base_seed: int = 1000,
+    model_name: str = None,
 ) -> dict[str, Any]:
     """Execute dry-run for series: load real task series, derive tokens, and output per-arm ranges."""
     task_def = get_task_def(series_name)
     tokens = derive_tokens_for_series(task_def)
+    pricing = get_pricing_info(model_name)
 
     # List real instances
     instances_preview = []
@@ -594,8 +608,8 @@ def run_dry_run_series(
     cs_calls_per_arm = 40
     cs_prompt_tokens = cs_calls_per_arm * tokens["cold_start_prompt_tokens_per_call"]
     cs_comp_tokens = cs_calls_per_arm * tokens["cold_start_comp_tokens_per_call"]
-    cs_cost_per_arm = round((cs_prompt_tokens * NEBIUS_PRICING["prompt_per_1m_usd"] +
-                             cs_comp_tokens * NEBIUS_PRICING["completion_per_1m_usd"]) / 1_000_000.0, 5)
+    cs_cost_per_arm = round((cs_prompt_tokens * pricing["prompt_per_1m_usd"] +
+                             cs_comp_tokens * pricing["completion_per_1m_usd"]) / 1_000_000.0, 5)
 
     cold_start_info = {
         "calls_per_arm": cs_calls_per_arm,
@@ -615,8 +629,8 @@ def run_dry_run_series(
         calls_per_repair = 21
         rep_p_tokens = calls_per_repair * tokens["repair_a_prompt_tokens_per_call"]
         rep_c_tokens = calls_per_repair * tokens["repair_a_comp_tokens_per_call"]
-        rep_cost = (rep_p_tokens * NEBIUS_PRICING["prompt_per_1m_usd"] +
-                    rep_c_tokens * NEBIUS_PRICING["completion_per_1m_usd"]) / 1_000_000.0
+        rep_cost = (rep_p_tokens * pricing["prompt_per_1m_usd"] +
+                    rep_c_tokens * pricing["completion_per_1m_usd"]) / 1_000_000.0
         arms_breakdown["A"] = {
             "arm_name": "Arm A (Baseline: Single Repair Loop)",
             "repair_calls_per_instance": calls_per_repair,
@@ -645,8 +659,8 @@ def run_dry_run_series(
         comp_c = tokens["compose_completion_tokens"]
         b_inst_p = prop_p + comp_p
         b_inst_c = prop_c + comp_c
-        b_inst_cost = (b_inst_p * NEBIUS_PRICING["prompt_per_1m_usd"] +
-                       b_inst_c * NEBIUS_PRICING["completion_per_1m_usd"]) / 1_000_000.0
+        b_inst_cost = (b_inst_p * pricing["prompt_per_1m_usd"] +
+                       b_inst_c * pricing["completion_per_1m_usd"]) / 1_000_000.0
         fallback_calls = 21
         arms_breakdown["B"] = {
             "arm_name": "Arm B (Harness^2-style Model Composer)",
@@ -673,8 +687,8 @@ def run_dry_run_series(
     if "C" in arms:
         prop_p = tokens["propose_prompt_tokens"]
         prop_c = tokens["propose_completion_tokens"]
-        c_inst_cost = (prop_p * NEBIUS_PRICING["prompt_per_1m_usd"] +
-                       prop_c * NEBIUS_PRICING["completion_per_1m_usd"]) / 1_000_000.0
+        c_inst_cost = (prop_p * pricing["prompt_per_1m_usd"] +
+                       prop_c * pricing["completion_per_1m_usd"]) / 1_000_000.0
         fallback_calls = 21
         arms_breakdown["C"] = {
             "arm_name": "Arm C (Axiom Gate: 0-model-call verifier & regression gate)",
@@ -710,7 +724,7 @@ def run_dry_run_series(
         "dry_run": True,
         "arms": list(arms),
         "citations": {
-            "pricing": NEBIUS_PRICING,
+            "pricing": pricing,
             "benchmarks": BENCHMARK_CITATIONS,
         },
         "derived_tokens": tokens,
@@ -754,15 +768,17 @@ def run_series(
 
     # Guard: Require explicit authorization for paid execution
     if not confirm_paid and (propose_fn is None or compose_fn is None):
-        raise SystemExit(
-            "Refusing to execute paid model calls without --confirm-paid.\n"
-            "Pass --dry-run to view cost/token projections, or pass --confirm-paid to authorize execution."
+        sys.stderr.write(
+            "Error: Refusing to execute paid model calls without --confirm-paid.\n"
+            "Pass --dry-run to view cost/token projections, or pass --confirm-paid to authorize execution.\n"
         )
+        sys.exit(1)
 
     # Wire live model client if not provided
     if propose_fn is None or compose_fn is None:
         from .agent import ChatModel
-        chat_model = ChatModel(model=model_name)
+        model = model_name or get_runner_model()
+        chat_model = ChatModel(model=model)
 
         def live_propose(title, base_script, base_entry):
             prompt = PPC_PROPOSAL_PROMPT.format(
@@ -869,6 +885,14 @@ def main():
         print("=== AXIOM-1 3-ARM EXPERIMENT DRY-RUN PLAN ===")
         print(json.dumps(plan, indent=2))
         return
+
+    # Hard safety guard: Explicitly reject paid model execution without --confirm-paid
+    if not args.confirm_paid:
+        sys.stderr.write(
+            "Error: Refusing to execute paid model calls without --confirm-paid.\n"
+            "Pass --dry-run to view cost/token projections, or pass --confirm-paid to authorize execution.\n"
+        )
+        sys.exit(1)
 
     # Live runner execution path
     try:

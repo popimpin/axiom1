@@ -94,12 +94,25 @@ def extract_candidates(reply_content: str | dict) -> dict[str, dict[str, str]]:
     if isinstance(reply_content, dict):
         data = reply_content
     else:
-        text = reply_content.strip()
-        if "```json" in text:
-            text = text.split("```json", 1)[1].split("```", 1)[0].strip()
-        elif "```" in text:
-            text = text.split("```", 1)[1].split("```", 1)[0].strip()
-        data = json.loads(text)
+        raw_text = str(reply_content).strip()
+        if "```json" in raw_text:
+            text = raw_text.split("```json", 1)[1].split("```", 1)[0].strip()
+        elif "```" in raw_text:
+            text = raw_text.split("```", 1)[1].split("```", 1)[0].strip()
+        else:
+            text = raw_text
+        try:
+            data = json.loads(text)
+        except Exception:
+            import re
+            m = re.search(r"\{.*\}", text, re.DOTALL)
+            if m:
+                try:
+                    data = json.loads(m.group(0))
+                except Exception:
+                    data = {}
+            else:
+                data = {}
 
     candidates = {}
     for kind in ("invariant", "domain"):

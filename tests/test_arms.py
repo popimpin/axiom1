@@ -26,6 +26,7 @@ from axiom1.arms import (
     build_composer_prompt,
     parse_composer_decision,
     run_dry_run_series,
+    run_series,
 )
 from test_deliver import CHECK, GOOD, DataRepo
 from test_ppc import PROCESS_V1, PROCESS_INVARIANT, PROCESS_REGRESSING, ENTRY
@@ -315,6 +316,33 @@ class TestArmsExperiment(unittest.TestCase):
         )
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("--confirm-paid", proc.stderr + proc.stdout)
+
+    def test_local_endpoint_exempt_from_confirm_paid_and_records_zero_cost(self):
+        """
+        Local endpoint exemption: When endpoint is private network (e.g. Bee / 100.64.0.0/10),
+        --confirm-paid is NOT required, pricing reports $0, and receipt records $0 cost.
+        """
+        from axiom1.arms import get_pricing_info
+        pricing = get_pricing_info("test-model", base_url="http://100.100.157.46:11435/v1")
+        self.assertEqual(pricing["prompt_per_1m_usd"], 0.0)
+        self.assertEqual(pricing["completion_per_1m_usd"], 0.0)
+        self.assertIn("local", pricing["status"])
+
+        receipt_file = Path(self.tmp.name) / "test_local_receipt.json"
+        res = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=1,
+            arms=["B", "C"],
+            db_dir=Path(self.tmp.name) / "run_local_db",
+            receipt_path=receipt_file,
+            confirm_paid=False,  # NOT set, but running on local endpoint!
+            base_url="http://100.100.157.46:11435/v1",
+            propose_fn=lambda *_: {"invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY}, "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY}},
+            compose_fn=lambda *_: {"decision": "adopt_invariant", "observation": "ok"},
+        )
+        self.assertTrue(res["is_local"])
+        self.assertEqual(res["endpoint"], "http://100.100.157.46:11435/v1")
+        self.assertEqual(res["accumulated_cost_usd"], 0.0)
 
     def test_max_cost_stops_mid_series_and_resumes(self):
         """

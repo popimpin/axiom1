@@ -37,7 +37,7 @@ if str(EXAMPLES_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLES_DIR))
 
 from . import Axiom
-from .agent import Workspace, process_argv, DEFAULT_MODEL
+from .agent import Workspace, process_argv, DEFAULT_MODEL, DEFAULT_BASE_URL, endpoint_is_local
 from .ppc import PPC_PROPOSAL_PROMPT, diff_size, extract_candidates
 from .verifier import PROCESS_FILE, ENTRY_FILE
 
@@ -47,12 +47,28 @@ def get_runner_model() -> str:
     return os.environ.get("AXIOM_MODEL", DEFAULT_MODEL)
 
 
-def get_pricing_info(model_name: str = None) -> dict[str, Any]:
-    """Return pricing info for the model used by the runner."""
+def get_runner_endpoint(base_url: str = None) -> str:
+    """Return endpoint configured for Axiom-1 runs (env NEBIUS_BASE_URL or agent.py DEFAULT_BASE_URL)."""
+    return (base_url or os.environ.get("NEBIUS_BASE_URL", DEFAULT_BASE_URL)).rstrip("/")
+
+
+def get_pricing_info(model_name: str = None, base_url: str = None) -> dict[str, Any]:
+    """Return pricing info for the model and endpoint used by the runner."""
     model = model_name or get_runner_model()
-    # nvidia/Nemotron-3_5-Lightning on Nebius Token Factory
+    endpoint = get_runner_endpoint(base_url)
+    is_local = endpoint_is_local(endpoint)
+    if is_local:
+        return {
+            "model": model,
+            "endpoint": endpoint,
+            "prompt_per_1m_usd": 0.0,
+            "completion_per_1m_usd": 0.0,
+            "status": "local (private network, cost $0.00)",
+            "citation": f"Local endpoint {endpoint} ({model}): $0.00 / free",
+        }
     return {
         "model": model,
+        "endpoint": endpoint,
         "prompt_per_1m_usd": 0.20,
         "completion_per_1m_usd": 0.60,
         "status": "verified (Nebius Token Factory standard Nemotron tier)" if "Nemotron" in model else "unverified",
@@ -275,6 +291,8 @@ class ArmsExperiment:
         max_cost: float = 1.0,
         call_cap: int = 100,
         receipt_path: Path | str = None,
+        model_name: str = None,
+        base_url: str = None,
     ):
         self.db_dir = Path(db_dir)
         self.db_dir.mkdir(parents=True, exist_ok=True)
@@ -282,6 +300,8 @@ class ArmsExperiment:
         self.max_cost = float(max_cost)
         self.call_cap = int(call_cap)
         self.receipt_path = Path(receipt_path) if receipt_path else None
+        self.model = model_name or get_runner_model()
+        self.base_url = base_url or get_runner_endpoint()
         self.call_count = 0
         self.token_usage = {"prompt_tokens": 0, "completion_tokens": 0}
         self.accumulated_cost_usd = 0.0
@@ -294,9 +314,9 @@ class ArmsExperiment:
         return Axiom(str(db_path))
 
     @staticmethod
-    def calculate_cost(prompt_tokens: int, completion_tokens: int, model_name: str = None) -> float:
+    def calculate_cost(prompt_tokens: int, completion_tokens: int, model_name: str = None, base_url: str = None) -> float:
         """Calculate USD cost using standard Nebius pricing for the active runner model."""
-        pricing = get_pricing_info(model_name)
+        pricing = get_pricing_info(model_name, base_url)
         p_cost = (prompt_tokens / 1_000_000.0) * pricing["prompt_per_1m_usd"]
         c_cost = (completion_tokens / 1_000_000.0) * pricing["completion_per_1m_usd"]
         return p_cost + c_cost
@@ -305,7 +325,7 @@ class ArmsExperiment:
         """Record token usage and enforce max_cost ceiling."""
         self.token_usage["prompt_tokens"] += prompt_tokens
         self.token_usage["completion_tokens"] += completion_tokens
-        cost = self.calculate_cost(prompt_tokens, completion_tokens)
+        cost = self.calculate_cost(prompt_tokens, completion_tokens, self.model, self.base_url)
         self.accumulated_cost_usd += cost
         if self.accumulated_cost_usd >= self.max_cost:
             self.stopped_early = True
@@ -343,6 +363,7 @@ class ArmsExperiment:
         propose_fn: Callable,
         compose_fn: Callable,
         repair_a_fn: Callable = None,
+        check_id: str = None,
     ) -> dict[str, Any]:
         """
         Run one task instance through active arms.
@@ -378,7 +399,7 @@ class ArmsExperiment:
                     repo, check_dir, base_sha, claim_kind = repo_builder()
             else:
                 repo, check_dir, base_sha, claim_kind = repo_builder
-            check_name = f"chk_{task_id}"
+            check_name = check_id or f"chk_{task_id}"
             repo_path = repo.root if hasattr(repo, "root") and not isinstance(repo, Path) else Path(repo)
             ax.register_check(
                 check_name,
@@ -405,8 +426,27 @@ class ArmsExperiment:
         base_script = proc["script"] if proc else ""
         base_entry = proc.get("entry_example", "") if proc else ""
 
+        # Collect sample input files for proposal context
+        input_files_text = ""
+        c_repo = arm_contexts.get("C", {}).get("repo") or arm_contexts.get("B", {}).get("repo")
+        if c_repo:
+            repo_root = c_repo.root if hasattr(c_repo, "root") and not isinstance(c_repo, Path) else Path(c_repo)
+            samples = []
+            for p in sorted(repo_root.glob("receipts/*.txt")):
+                try:
+                    samples.append(f"--- {p.relative_to(repo_root)}\n{p.read_text(encoding='utf-8').strip()}")
+                except Exception:
+                    pass
+            if samples:
+                input_files_text = "\n".join(samples[:4])
+
         # Step 1: Shared Propose Call for B & C (Rule 1)
-        proposal_reply = propose_fn(task_title, base_script, base_entry)
+        import inspect
+        sig = inspect.signature(propose_fn)
+        if "input_files" in sig.parameters:
+            proposal_reply = propose_fn(task_title, base_script, base_entry, input_files=input_files_text)
+        else:
+            proposal_reply = propose_fn(task_title, base_script, base_entry)
         self.call_count += 1
         prop_content = proposal_reply.get("content") if isinstance(proposal_reply, dict) and "content" in proposal_reply else proposal_reply
         raw_candidates = extract_candidates(prop_content)
@@ -583,11 +623,12 @@ def run_dry_run_series(
     arms: list[str] = ("A", "B", "C"),
     base_seed: int = 1000,
     model_name: str = None,
+    base_url: str = None,
 ) -> dict[str, Any]:
     """Execute dry-run for series: load real task series, derive tokens, and output per-arm ranges."""
     task_def = get_task_def(series_name)
     tokens = derive_tokens_for_series(task_def)
-    pricing = get_pricing_info(model_name)
+    pricing = get_pricing_info(model_name, base_url)
 
     # List real instances
     instances_preview = []
@@ -760,32 +801,38 @@ def run_series(
     compose_fn: Callable = None,
     repair_a_fn: Callable = None,
     model_name: str = None,
+    base_url: str = None,
     base_seed: int = 1000,
 ) -> dict[str, Any]:
     """Execute series runner across instances with resumable receipts and paid-run authorization guard."""
     task_def = get_task_def(series_name)
     import everyday_tasks as et
 
-    # Guard: Require explicit authorization for paid execution
-    if not confirm_paid and (propose_fn is None or compose_fn is None):
+    endpoint = get_runner_endpoint(base_url)
+    is_local = endpoint_is_local(endpoint)
+
+    # Guard: Require explicit authorization for paid execution (local endpoints exempt)
+    if not is_local and not confirm_paid and (propose_fn is None or compose_fn is None):
         sys.stderr.write(
             "Error: Refusing to execute paid model calls without --confirm-paid.\n"
             "Pass --dry-run to view cost/token projections, or pass --confirm-paid to authorize execution.\n"
         )
         sys.exit(1)
 
+    model = model_name or get_runner_model()
+
     # Wire live model client if not provided
     if propose_fn is None or compose_fn is None:
         from .agent import ChatModel
-        model = model_name or get_runner_model()
-        chat_model = ChatModel(model=model)
+        chat_model = ChatModel(model=model, base_url=endpoint)
+        chat_model.thinking = False
 
-        def live_propose(title, base_script, base_entry):
+        def live_propose(title, base_script, base_entry, input_files="(see workspace)"):
             prompt = PPC_PROPOSAL_PROMPT.format(
                 base_script=base_script,
                 entry_example=base_entry,
                 replay_note=f"Task: {title}",
-                input_files="(see workspace)",
+                input_files=input_files or "(see workspace)",
                 witnessed_lessons="(none yet)",
                 declared_lessons="(none yet)",
             )
@@ -812,13 +859,19 @@ def run_series(
         max_cost=max_cost,
         call_cap=call_cap,
         receipt_path=receipt_path,
+        model_name=model,
+        base_url=endpoint,
     )
 
     receipt = exp.load_receipt()
+    model = model_name or get_runner_model()
     receipt.update({
         "series": series_name,
         "instances_requested": n_instances,
         "arms": list(arms),
+        "endpoint": endpoint,
+        "model": model,
+        "is_local": is_local,
     })
 
     completed_ids = {inst["task_id"] for inst in receipt.get("completed_instances", [])}
@@ -846,6 +899,7 @@ def run_series(
             propose_fn=propose_fn,
             compose_fn=compose_fn,
             repair_a_fn=repair_a_fn,
+            check_id=f"chk_{series_name}",
         )
 
         receipt["completed_instances"].append(inst_res)
@@ -886,8 +940,11 @@ def main():
         print(json.dumps(plan, indent=2))
         return
 
-    # Hard safety guard: Explicitly reject paid model execution without --confirm-paid
-    if not args.confirm_paid:
+    endpoint = get_runner_endpoint()
+    is_local = endpoint_is_local(endpoint)
+
+    # Hard safety guard: Explicitly reject paid model execution without --confirm-paid (local endpoints exempt)
+    if not is_local and not args.confirm_paid:
         sys.stderr.write(
             "Error: Refusing to execute paid model calls without --confirm-paid.\n"
             "Pass --dry-run to view cost/token projections, or pass --confirm-paid to authorize execution.\n"

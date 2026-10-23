@@ -247,15 +247,140 @@ class TestArmsExperiment(unittest.TestCase):
         """
         Rule (5): Dry-run produces accurate call, token, and cost projections
         for pilot series without executing any models.
+        Includes Arm A breakdown, cold-start benchmarks, and instance previews.
+        NEGATIVE CONTROL: Dropping Arm A or cold-start from the plan turns test RED.
         """
         plan = run_dry_run_series("receipts-to-spreadsheet", n_instances=5)
         self.assertTrue(plan["dry_run"])
         self.assertEqual(plan["instances"], 5)
-        self.assertEqual(plan["total_model_calls"], 8)  # 4 propose + 4 compose
-        self.assertGreater(plan["projected_prompt_tokens"], 10000)
-        self.assertGreater(plan["projected_completion_tokens"], 2000)
-        # Pilot cost estimate should be well under $0.05
-        self.assertLess(plan["estimated_cost_usd"], 0.05)
+        self.assertEqual(len(plan["instances_preview"]), 5)
+
+        # 1. Arm A breakdown exists and captures baseline single repair loop
+        self.assertIn("A", plan["arms_breakdown"])
+        arm_a = plan["arms_breakdown"]["A"]
+        self.assertEqual(arm_a["repair_calls_per_instance"], 21)
+        self.assertEqual(arm_a["best_case"]["calls"], 0)
+        self.assertEqual(arm_a["worst_case"]["calls"], 84)  # 4 * 21
+        self.assertGreater(arm_a["worst_case"]["cost_usd"], 0.01)
+
+        # 2. Cold-start breakdown exists and captures instance #0 benchmark
+        self.assertIn("cold_start", plan)
+        cs = plan["cold_start"]
+        self.assertEqual(cs["calls_per_arm"], 40)
+        self.assertEqual(cs["total_calls_all_arms"], 120)  # 40 * 3
+        self.assertGreater(cs["total_cost_usd_all_arms"], 0.02)
+
+        # 3. Arms B and C capture best vs worst case ranges
+        self.assertIn("B", plan["arms_breakdown"])
+        self.assertIn("C", plan["arms_breakdown"])
+        self.assertEqual(plan["arms_breakdown"]["B"]["best_case"]["calls"], 8)  # 4 * 2
+        self.assertEqual(plan["arms_breakdown"]["C"]["best_case"]["calls"], 4)  # 4 * 1
+
+        # 4. Citations are documented
+        self.assertIn("citations", plan)
+        self.assertIn("pricing", plan["citations"])
+        self.assertIn("benchmarks", plan["citations"])
+
+    def test_unknown_series_raises_error_and_cli_exits_nonzero(self):
+        """
+        Series validation: unknown series names must be rejected immediately,
+        preventing bogus dry-run plans or runs.
+        """
+        # Python API raises ValueError
+        with self.assertRaises(ValueError) as ctx:
+            run_dry_run_series("nonexistent-series", n_instances=5)
+        self.assertIn("Unknown series 'nonexistent-series'", str(ctx.exception))
+
+        # CLI exits with non-zero code
+        import subprocess
+        proc = subprocess.run(
+            [sys.executable, "-m", "axiom1.arms", "--series", "nonexistent-series", "--dry-run"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("Unknown series 'nonexistent-series'", proc.stderr + proc.stdout)
+
+    def test_cli_refuses_paid_run_without_confirm_paid(self):
+        """
+        Paid Execution Guard: CLI must refuse to run models without explicit --confirm-paid.
+        """
+        import subprocess
+        proc = subprocess.run(
+            [sys.executable, "-m", "axiom1.arms", "--series", "receipts-to-spreadsheet"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("--confirm-paid", proc.stderr + proc.stdout)
+
+    def test_max_cost_stops_mid_series_and_resumes(self):
+        """
+        Rule (6): --max-cost halts execution when budget ceiling is exceeded,
+        saving a partial resumable receipt that resumes on the next invocation.
+        """
+        from axiom1.arms import run_series
+        receipt_file = Path(self.tmp.name) / "test_resumable_receipt.json"
+
+        call_log = []
+
+        def mock_proposer(title, base_script, base_entry):
+            call_log.append(f"propose_{title}")
+            return {
+                "role": "assistant",
+                "content": json.dumps({
+                    "invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+                    "domain": {"script": PROCESS_REGRESSING, "entry": ENTRY},
+                }),
+                "usage": {"prompt_tokens": 4000, "completion_tokens": 800},
+            }
+
+        def mock_composer(prompt):
+            call_log.append("compose")
+            return {
+                "decision": "adopt_invariant",
+                "observation": "Adopt invariant.",
+                "usage": {"prompt_tokens": 3000, "completion_tokens": 500},
+            }
+
+        # 1. First run with ultra-low max_cost ($0.0015):
+        # 1 instance cost = (4000+3000)*0.20/1e6 + (800+500)*0.60/1e6 = 0.00140 + 0.00078 = $0.00218
+        # Since $0.00218 > $0.0015, it will complete 1 instance and stop early!
+        receipt1 = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=3,
+            arms=["B", "C"],
+            db_dir=Path(self.tmp.name) / "run_resume_db",
+            receipt_path=receipt_file,
+            max_cost=0.0015,
+            confirm_paid=True,
+            propose_fn=mock_proposer,
+            compose_fn=mock_composer,
+        )
+
+        self.assertTrue(receipt1["stopped_early"])
+        self.assertEqual(receipt1["instances_completed"], 1)
+        self.assertEqual(receipt1["status"], "partial")
+        self.assertTrue(receipt_file.exists())
+
+        # 2. Second run pointing to the same receipt with higher max_cost ($1.0):
+        # Should resume from instance 1 and finish all 3 instances!
+        receipt2 = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=3,
+            arms=["B", "C"],
+            db_dir=Path(self.tmp.name) / "run_resume_db",
+            receipt_path=receipt_file,
+            max_cost=1.0,
+            confirm_paid=True,
+            propose_fn=mock_proposer,
+            compose_fn=mock_composer,
+        )
+
+        self.assertFalse(receipt2["stopped_early"])
+        self.assertEqual(receipt2["instances_completed"], 3)
+        self.assertEqual(receipt2["status"], "complete")
+        self.assertEqual(len(receipt2["completed_instances"]), 3)
 
 
 if __name__ == "__main__":

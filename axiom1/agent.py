@@ -302,7 +302,7 @@ def _openai_tool(name, description, parameters):
 
 
 async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=print, hub_url=None,
-                    token=None, shell=None, thinking="auto"):
+                    token=None, shell=None, thinking="auto", enable_ppc=True):
     """Run one agent until it gives a final answer or runs out of steps. Returns the transcript.
 
     With `hub_url` the agent connects to a hub over HTTP and is whoever `token` says it is; `db` and
@@ -365,14 +365,15 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
             if replay["witnessed"]:
                 state["witnessed"] = True
                 return replay["messages"]
-            # The input strayed from the locked process: Harness^2 PPC parallel K=2 repair
-            from .ppc import repair_ppc
-            ppc = await repair_ppc(agent_id, task, replay, model, ws, session, start_sha, log)
-            if ppc["witnessed"]:
-                state["ppc_arm"] = "ppc_winner"
-                state["ppc_failed"] = False
-                state["witnessed"] = True
-                return ppc["messages"]
+            if enable_ppc:
+                # The input strayed from the locked process: Harness^2 PPC parallel K=2 repair
+                from .ppc import repair_ppc
+                ppc = await repair_ppc(agent_id, task, replay, model, ws, session, start_sha, log)
+                if ppc["witnessed"]:
+                    state["ppc_arm"] = "ppc_winner"
+                    state["ppc_failed"] = False
+                    state["witnessed"] = True
+                    return ppc["messages"]
             # The input strayed from the locked process: the model repairs it, with thinking on.
             state["ppc_arm"] = "ppc_fallback_interactive"
             state["ppc_failed"] = True

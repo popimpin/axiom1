@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -551,6 +552,204 @@ class TestArmsExperiment(unittest.TestCase):
         self.assertEqual(receipt["completed_instances"][0]["reason"], "lease expired")
         self.assertNotIn("refuted", receipt["completed_instances"][0]["reason"])
         self.assertIn("lease expired", receipt["stop_reason"])
+
+
+
+    def test_passing_replay_skips_repairs_and_records_zero_repair_calls(self):
+        """
+        Claude Test 1: When locked process v1 succeeds on a new input instance,
+        replay runs first, records passed: True, and skips proposal/repair (0 repair calls).
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_replay_exp", arms=["B", "C"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_replay")
+        check_name = "chk_replay_pass"
+
+        # Lock in process v1 in Arm C that writes GOOD deliverable
+        ax_c = exp.get_axiom("C")
+        ax_c.join("agent-1")
+        ax_c.join("operator")
+        ax_c.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                            holdout=str(self.check_dir), claim_kind="deliver")
+        ax_c.post_task("operator", "Replay pass task", check_id=check_name)
+        t = ax_c.take_task("agent-1")
+        s = repo.branch("b_lock_v1", {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD})
+        c = ax_c.claim("agent-1", "lock v1", check_name, repo.base, s, task_id=t["id"])
+        ax_c.verify(c["id"])
+        self.assertIsNotNone(ax_c.process_for(check_name))
+
+        # Instance 2 has same receipts format (repo.base), so replay of PROCESS_V1 will pass!
+        propose_called = []
+        def mock_propose(*args, **kwargs):
+            propose_called.append(True)
+            return {}
+
+        results = exp.evaluate_instance_arms(
+            task_id="replay_inst_1",
+            task_title="Replay pass instance",
+            repo_builder=lambda arm="": (repo, self.check_dir, repo.base, "deliver"),
+            propose_fn=mock_propose,
+            compose_fn=lambda *_: {},
+            check_id=check_name,
+        )
+
+        self.assertTrue(results["replay"]["passed"])
+        self.assertEqual(len(propose_called), 0, "Propose MUST NOT be called when replay passes!")
+        self.assertTrue(results["arm_c"]["witnessed"])
+        self.assertEqual(results["arm_c"]["winner"], "replay")
+        self.assertEqual(results["agree"], "AGREE")
+        self.assertIsNone(results["k_effective"])
+
+    def test_proposer_prompt_contains_replay_failure_text(self):
+        """
+        Claude Test 2: When replay fails, the proposer prompt receives the exact replay failure note.
+        NEGATIVE CONTROL: Stripping replay_note or hardcoding generic text turns test RED.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_replay_fail_exp", arms=["B", "C"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_replay_fail")
+        check_name = "chk_replay_fail"
+
+        # Lock in process v1 that expects clean numbers
+        ax_c = exp.get_axiom("C")
+        ax_c.join("agent-1")
+        ax_c.join("operator")
+        ax_c.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                            holdout=str(self.check_dir), claim_kind="deliver")
+        ax_c.post_task("operator", "Lock v1 task", check_id=check_name)
+        t = ax_c.take_task("agent-1")
+        s = repo.branch("b_lock_v1", {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD})
+        c = ax_c.claim("agent-1", "lock v1", check_name, repo.base, s, task_id=t["id"])
+        ax_c.verify(c["id"])
+        self.assertIsNotNone(ax_c.process_for(check_name))
+
+        # Now Instance 2 has strayed receipts ($12.50), causing PROCESS_V1 to crash during replay
+        repo_strayed, check_dir, strayed_base, kind = self._setup_repo_with_earlier_instance("repo_fail_inst")
+
+        captured_replay_notes = []
+        def mock_propose(title, base_script, base_entry, replay_note="", **kwargs):
+            captured_replay_notes.append(replay_note)
+            return {
+                "invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+                "domain": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+            }
+
+        results = exp.evaluate_instance_arms(
+            task_id="replay_fail_inst",
+            task_title="Replay fail instance",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=mock_propose,
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "both fail"},
+            check_id=check_name,
+        )
+
+        self.assertFalse(results["replay"]["passed"])
+        self.assertTrue(len(captured_replay_notes) > 0)
+        self.assertIn("could not convert string to float", captured_replay_notes[0])
+
+    def test_lessons_from_refused_round_appear_in_next_proposer_prompt(self):
+        """
+        Claude Test 3: Refused candidate lessons from round N appear in round N+1's proposer prompt.
+        NEGATIVE CONTROL: Hardcoding '(none yet)' turns this test RED.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_lessons_exp", arms=["B", "C"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_lessons")
+        check_name = "chk_lessons"
+
+        ax_c = exp.get_axiom("C")
+        ax_c.join("agent-1")
+        ax_c.join("operator")
+        ax_c.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                            holdout=str(self.check_dir), claim_kind="deliver")
+
+        # Lock in process v1
+        ax_c.post_task("operator", "Round 0 Task", check_id=check_name)
+        t0 = ax_c.take_task("agent-1")
+        s = repo.branch("b_lock_v1", {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD})
+        c = ax_c.claim("agent-1", "lock v1", check_name, repo.base, s, task_id=t0["id"])
+        ax_c.verify(c["id"])
+
+        # Refusal in round 1:
+        ax_c.post_task("operator", "Round 1 Task", check_id=check_name)
+        t1 = ax_c.take_task("agent-1")
+        s_bad = repo.branch("b_bad", {"process.py": "exit(1)"})
+        res = ax_c.submit_candidates("agent-1", t1["id"], [{"kind": "invariant", "after_ref": s_bad}], before_ref=repo.base)
+        self.assertFalse(res["witnessed"])
+
+        # Round 2: take task yields the refused lesson from round 1
+        repo_strayed, check_dir, strayed_base, kind = self._setup_repo_with_earlier_instance("repo_lessons_strayed")
+        captured_witnessed = []
+        captured_declared = []
+        def mock_propose(title, base_script, base_entry, witnessed_lessons="", declared_lessons="", **kwargs):
+            captured_witnessed.append(witnessed_lessons)
+            captured_declared.append(declared_lessons)
+            return {
+                "invariant": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+                "domain": {"script": PROCESS_INVARIANT, "entry": ENTRY},
+            }
+
+        results = exp.evaluate_instance_arms(
+            task_id="round_2_inst",
+            task_title="Round 2 Task",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=mock_propose,
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "refused"},
+            check_id=check_name,
+        )
+
+        all_lessons_text = (captured_witnessed[0] if captured_witnessed else "") + (captured_declared[0] if captured_declared else "")
+        self.assertIn("refused", all_lessons_text.lower())
+        self.assertNotEqual(all_lessons_text.strip(), "(no verified lessons yet)\n(no unverified attempts)")
+
+    def test_identical_candidates_flagged_k_effective_1(self):
+        """
+        Claude Test 4: When invariant and domain candidate scripts are byte-identical,
+        k_effective is logged as 1; when they differ, k_effective is logged as 2.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_k_eff_exp", arms=["B", "C"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_k_eff")
+        check_name = "chk_k_eff"
+
+        ax_c = exp.get_axiom("C")
+        ax_c.join("agent-1")
+        ax_c.join("operator")
+        ax_c.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                            holdout=str(self.check_dir), claim_kind="deliver")
+
+        # Lock in process v1
+        ax_c.post_task("operator", "Lock v1", check_id=check_name)
+        t = ax_c.take_task("agent-1")
+        s = repo.branch("b_lock_v1", {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD})
+        c = ax_c.claim("agent-1", "lock v1", check_name, repo.base, s, task_id=t["id"])
+        ax_c.verify(c["id"])
+
+        repo_strayed, check_dir, strayed_base, kind = self._setup_repo_with_earlier_instance("repo_keff_strayed")
+
+        # 1. Identical candidate scripts -> k_effective == 1
+        res1 = exp.evaluate_instance_arms(
+            task_id="k_eff_inst_1",
+            task_title="K Eff 1",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=lambda *args, **kwargs: {
+                "invariant": {"script": "# identical code\nprint(1)", "entry": ""},
+                "domain": {"script": "# identical code\nprint(1)", "entry": ""},
+            },
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "same"},
+            check_id=check_name,
+        )
+        self.assertEqual(res1["k_effective"], 1)
+
+        # 2. Distinct candidate scripts -> k_effective == 2
+        res2 = exp.evaluate_instance_arms(
+            task_id="k_eff_inst_2",
+            task_title="K Eff 2",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=lambda *args, **kwargs: {
+                "invariant": {"script": "# candidate 1: invariant\nprint(1)", "entry": ""},
+                "domain": {"script": "# candidate 2: domain\nprint(2)", "entry": ""},
+            },
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "diff"},
+            check_id=check_name,
+        )
+        self.assertEqual(res2["k_effective"], 2)
 
 
 if __name__ == "__main__":

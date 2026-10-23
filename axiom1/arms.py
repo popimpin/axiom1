@@ -38,7 +38,8 @@ if str(EXAMPLES_DIR) not in sys.path:
 
 from . import Axiom
 from .agent import Workspace, process_argv, DEFAULT_MODEL, DEFAULT_BASE_URL, endpoint_is_local
-from .ppc import PPC_PROPOSAL_PROMPT, diff_size, extract_candidates
+from .ppc import PPC_PROPOSAL_PROMPT, PPC_INVARIANT_PROMPT, PPC_DOMAIN_PROMPT, diff_size, extract_candidates, extract_single_candidate, format_memory
+import hashlib
 from .verifier import PROCESS_FILE, ENTRY_FILE
 
 
@@ -359,6 +360,67 @@ class ArmsExperiment:
             self.receipt_path.parent.mkdir(parents=True, exist_ok=True)
             self.receipt_path.write_text(json.dumps(receipt_data, indent=2), encoding="utf-8")
 
+    def replay_locked_process(
+        self,
+        arm_contexts: dict[str, Any],
+        check_id: str,
+        base_script: str,
+        base_entry: str = "",
+    ) -> dict[str, Any]:
+        """
+        Replay the locked reference process v1 on the instance files before attempting repair.
+        Returns:
+            {"passed": bool, "note": str, "calls": int, "wall_time_seconds": float}
+        """
+        if not base_script:
+            return {"passed": False, "note": "no locked process to replay", "calls": 0, "wall_time_seconds": 0.0}
+
+        ref_ctx = arm_contexts.get("C") or list(arm_contexts.values())[0]
+        wt_path = Path(tempfile.mkdtemp(prefix="replay_", dir=str(self.db_dir)))
+        git_run(ref_ctx["repo"], "worktree", "add", "-q", "--detach", str(wt_path), ref_ctx["base_sha"])
+
+        from .sandbox import LocalSandbox
+        ws = Workspace(str(wt_path), LocalSandbox())
+        ws.install_engines()
+        ws.write_file(PROCESS_FILE, base_script)
+
+        calls = 0
+        t0 = time.time()
+        if base_entry:
+            ws.write_file(ENTRY_FILE, base_entry if isinstance(base_entry, str) else json.dumps(base_entry))
+
+        ran = ws.run(" ".join(process_argv("python")))
+        sha = ws.commit("replay locked process")["sha"]
+
+        ref_ax = ref_ctx["ax"]
+        ref_check = ref_ax.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone()
+        probe_res = ref_ax._probe(
+            "agent-1",
+            ref_check,
+            ref_ctx["base_sha"],
+            sha,
+            kind=ref_ctx["claim_kind"],
+        )
+
+        wall_time = round(time.time() - t0, 1)
+        passed = probe_res.get("passed", False)
+        if passed:
+            note = ""
+        else:
+            feedback = " ".join((probe_res.get("evidence") or {}).get("after", {}).get("feedback") or [])
+            reason = probe_res.get("reason", "the delivered files do not pass the acceptance check")
+            err_tail = ran.get("output", "")[-300:].strip() if ran.get("exit") != 0 else ""
+            note = f"{reason}. {feedback}".strip()
+            if err_tail:
+                note += f" Process exited {ran.get('exit')}: {err_tail}"
+
+        return {
+            "passed": passed,
+            "note": note,
+            "calls": calls,
+            "wall_time_seconds": wall_time,
+        }
+
     def evaluate_instance_arms(
         self,
         task_id: str,
@@ -430,6 +492,34 @@ class ArmsExperiment:
         base_script = (proc.get("script") or "") if proc else ""
         base_entry = (proc.get("entry_example") or "") if proc else ""
 
+        # Step 0: REPLAY
+        # Replay the locked reference process v1 on the instance files before attempting repair.
+        replay = self.replay_locked_process(
+            arm_contexts=arm_contexts,
+            check_id=arm_contexts["C"]["check_id"] if "C" in arm_contexts else check_name,
+            base_script=base_script,
+            base_entry=base_entry,
+        )
+        results["replay"] = replay
+
+        if replay.get("passed", False):
+            # Process v1 replayed successfully on new input files without modification!
+            # 0 repair calls, 0 proposals.
+            results["k_effective"] = None
+            if "A" in self.arms:
+                results["arm_a"] = {"strategy": "replay", "calls": replay.get("calls", 0), "witnessed": True}
+            results["arm_b"] = {"composer_pick": "replay", "witnessed": True, "shipped_by_harness2": True}
+            results["arm_c"] = {"witnessed": True, "winner": "replay", "calls": 0, "refused": []}
+            results["agree"] = "AGREE"
+            results["disagree_reason"] = None
+            return results
+
+        replay_note = replay.get("note", "")
+
+        # Extract verified and unverified lessons from Arm C task
+        c_task = arm_contexts.get("C", {}).get("task") or {}
+        w_mem, d_mem = format_memory(c_task.get("lessons"))
+
         # Collect sample input files for proposal context
         input_files_text = ""
         c_repo = arm_contexts.get("C", {}).get("repo") or arm_contexts.get("B", {}).get("repo")
@@ -447,13 +537,38 @@ class ArmsExperiment:
         # Step 1: Shared Propose Call for B & C (Rule 1)
         import inspect
         sig = inspect.signature(propose_fn)
+        kwargs = {}
+        if "replay_note" in sig.parameters:
+            kwargs["replay_note"] = replay_note
         if "input_files" in sig.parameters:
-            proposal_reply = propose_fn(task_title, base_script, base_entry, input_files=input_files_text)
+            kwargs["input_files"] = input_files_text
+        if "witnessed_lessons" in sig.parameters:
+            kwargs["witnessed_lessons"] = w_mem
+        if "declared_lessons" in sig.parameters:
+            kwargs["declared_lessons"] = d_mem
+
+        if kwargs:
+            proposal_reply = propose_fn(task_title, base_script, base_entry, **kwargs)
         else:
             proposal_reply = propose_fn(task_title, base_script, base_entry)
         self.call_count += 1
-        prop_content = proposal_reply.get("content") if isinstance(proposal_reply, dict) and "content" in proposal_reply else proposal_reply
-        raw_candidates = extract_candidates(prop_content)
+        if isinstance(proposal_reply, dict) and "candidates" in proposal_reply:
+            raw_candidates = proposal_reply["candidates"]
+        else:
+            prop_content = proposal_reply.get("content") if isinstance(proposal_reply, dict) and "content" in proposal_reply else proposal_reply
+            raw_candidates = extract_candidates(prop_content)
+            if not raw_candidates.get("invariant") or not raw_candidates.get("domain"):
+                c_inv = extract_single_candidate(prop_content, "invariant")
+                c_dom = extract_single_candidate(prop_content, "domain")
+                raw_candidates = {"invariant": c_inv, "domain": c_dom}
+
+        # Track effective K: K=2 vs K=1 (when candidate scripts are identical)
+        inv_script = raw_candidates.get("invariant", {}).get("script", "")
+        dom_script = raw_candidates.get("domain", {}).get("script", "")
+        sha_inv = hashlib.sha256(inv_script.encode("utf-8")).hexdigest()
+        sha_dom = hashlib.sha256(dom_script.encode("utf-8")).hexdigest()
+        k_effective = 1 if sha_inv == sha_dom else 2
+        results["k_effective"] = k_effective
 
         # Track real usage: if missing, record as 'missing' (NEVER a guess or default)
         u = proposal_reply.get("usage") if isinstance(proposal_reply, dict) else None
@@ -729,6 +844,14 @@ class ArmsExperiment:
             results["token_usage"] = {"prompt_tokens": p_used, "completion_tokens": c_used}
             if locked_v1:
                 results["version"] = proc.get("version", 1)
+                for arm in self.arms:
+                    if arm != "C" and arm in arm_contexts:
+                        ax_other = arm_contexts[arm]["ax"]
+                        ax_other.db.execute(
+                            "INSERT OR REPLACE INTO processes VALUES (?,?,?,?,?,?)",
+                            (check_name, proc["version"], proc["script"], proc.get("entry_example"), proc["locked_at"], proc.get("claim_id"))
+                        )
+                        ax_other.db.commit()
             else:
                 # Distinguish exact failure reason:
                 # 1. Lease expired under agent
@@ -962,25 +1085,56 @@ def run_series(
         chat_model = ChatModel(model=model, base_url=endpoint)
         chat_model.thinking = False
 
-        def live_propose(title, base_script, base_entry, input_files="(see workspace)"):
+        def live_propose(title, base_script, base_entry, replay_note="", input_files="(see workspace)",
+                         witnessed_lessons="(no verified lessons yet)", declared_lessons="(no unverified attempts)"):
             u0 = dict(chat_model.usage)
-            prompt = PPC_PROPOSAL_PROMPT.format(
+            inv_prompt = PPC_INVARIANT_PROMPT.format(
                 base_script=base_script,
                 entry_example=base_entry,
-                replay_note=f"Task: {title}",
+                replay_note=replay_note or "(process failed acceptance check on new files)",
                 input_files=input_files or "(see workspace)",
-                witnessed_lessons="(none yet)",
-                declared_lessons="(none yet)",
+                witnessed_lessons=witnessed_lessons or "(no verified lessons yet)",
+                declared_lessons=declared_lessons or "(no unverified attempts)",
             )
-            msg = chat_model([
-                {"role": "system", "content": "You are a software repair engine for verified processes."},
-                {"role": "user", "content": prompt},
+            inv_msg = chat_model([
+                {"role": "system", "content": "You are the Invariant Proposer repairing a locked process for an AI task."},
+                {"role": "user", "content": inv_prompt},
             ], [])
-            p_used = chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
-            c_used = chat_model.usage["completion_tokens"] - u0["completion_tokens"]
-            res = dict(msg) if isinstance(msg, dict) else {"content": str(msg)}
-            if p_used > 0 or c_used > 0:
-                res["usage"] = {"prompt_tokens": p_used, "completion_tokens": c_used}
+            p1 = chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
+            c1 = chat_model.usage["completion_tokens"] - u0["completion_tokens"]
+
+            u1 = dict(chat_model.usage)
+            dom_prompt = PPC_DOMAIN_PROMPT.format(
+                base_script=base_script,
+                entry_example=base_entry,
+                replay_note=replay_note or "(process failed acceptance check on new files)",
+                input_files=input_files or "(see workspace)",
+                witnessed_lessons=witnessed_lessons or "(no verified lessons yet)",
+                declared_lessons=declared_lessons or "(no unverified attempts)",
+            )
+            dom_msg = chat_model([
+                {"role": "system", "content": "You are the Domain Proposer repairing a locked process for an AI task."},
+                {"role": "user", "content": dom_prompt},
+            ], [])
+            p2 = chat_model.usage["prompt_tokens"] - u1["prompt_tokens"]
+            c2 = chat_model.usage["completion_tokens"] - u1["completion_tokens"]
+
+            c_inv = extract_single_candidate(inv_msg.get("content") if isinstance(inv_msg, dict) else str(inv_msg), "invariant")
+            c_dom = extract_single_candidate(dom_msg.get("content") if isinstance(dom_msg, dict) else str(dom_msg), "domain")
+
+            p_total = p1 + p2
+            c_total = c1 + c2
+
+            res = {
+                "candidates": {
+                    "invariant": c_inv,
+                    "domain": c_dom,
+                },
+                "inv_prompt": inv_prompt,
+                "dom_prompt": dom_prompt,
+            }
+            if p_total > 0 or c_total > 0:
+                res["usage"] = {"prompt_tokens": p_total, "completion_tokens": c_total}
             return res
 
         def live_compose(prompt):
@@ -999,6 +1153,58 @@ def run_series(
 
         propose_fn = live_propose
         compose_fn = live_compose
+
+    if repair_a_fn is None:
+        def live_repair_a(a_ctx):
+            from .agent import run_agent, ChatModel
+            from .sandbox import LocalSandbox
+            wt_a = Path(tempfile.mkdtemp(prefix="inst_arm_a_", dir=str(exp.db_dir)))
+            git_run(a_ctx["repo"], "worktree", "add", "-q", "--detach", str(wt_a), a_ctx["base_sha"])
+
+            ws_a = Workspace(str(wt_a), LocalSandbox())
+            ws_a.install_engines()
+            proc = a_ctx["ax"].process_for(a_ctx["check_id"])
+            if proc and proc.get("script"):
+                ws_a.write_file(PROCESS_FILE, proc["script"])
+            if proc and proc.get("entry_example"):
+                ws_a.write_file(ENTRY_FILE, proc["entry_example"])
+
+            model_a = ChatModel(model=model, base_url=endpoint)
+            model_a.thinking = False
+            u0_a = dict(model_a.usage)
+            t0_a = time.time()
+            try:
+                import asyncio
+                asyncio.run(run_agent(
+                    "agent-1",
+                    wt_a,
+                    str(exp.db_dir / "arm_a.db"),
+                    model_a,
+                    max_steps=25,
+                    log=lambda *_: None,
+                    shell=LocalSandbox(),
+                    thinking="off",
+                    enable_ppc=False,
+                ))
+            except Exception as e:
+                pass
+
+            calls_a = model_a.usage["calls"] - u0_a["calls"]
+            p_a = model_a.usage["prompt_tokens"] - u0_a["prompt_tokens"]
+            c_a = model_a.usage["completion_tokens"] - u0_a["completion_tokens"]
+            wall_a = round(time.time() - t0_a, 1)
+
+            claims_a = a_ctx["ax"].db.execute("SELECT * FROM claims WHERE agent='agent-1' AND label='witnessed'").fetchall()
+            a_witnessed = len(claims_a) > 0
+
+            return {
+                "strategy": "single_repair",
+                "witnessed": a_witnessed,
+                "model_calls": calls_a,
+                "wall_time_seconds": wall_a,
+                "token_usage": {"prompt_tokens": p_a, "completion_tokens": c_a},
+            }
+        repair_a_fn = live_repair_a
 
     exp = ArmsExperiment(
         db_dir=db_dir,
@@ -1020,6 +1226,20 @@ def run_series(
         "model": model,
         "is_local": is_local,
     })
+
+    # If resuming with instance 0 already locked, ensure all active arms have process v1
+    c_ax = exp.get_axiom("C")
+    proc = c_ax.process_for(f"chk_{series_name}")
+    if proc:
+        for arm in exp.arms:
+            if arm != "C":
+                ax_other = exp.get_axiom(arm)
+                if not ax_other.process_for(f"chk_{series_name}"):
+                    ax_other.db.execute(
+                        "INSERT OR REPLACE INTO processes VALUES (?,?,?,?,?,?)",
+                        (f"chk_{series_name}", proc["version"], proc["script"], proc.get("entry_example"), proc["locked_at"], proc.get("claim_id"))
+                    )
+                    ax_other.db.commit()
 
     completed_ids = {inst["task_id"] for inst in receipt.get("completed_instances", [])}
     if f"{series_name}_0" in completed_ids and not receipt.get("instance_0_locked_v1", False):
@@ -1093,6 +1313,10 @@ def run_series(
         receipt["token_usage"] = dict(exp.token_usage)
         receipt["stopped_early"] = exp.stopped_early
         receipt["stop_reason"] = exp.stop_reason
+        receipt["k_effective_summary"] = {
+            "k1_count": sum(1 for inst in receipt["completed_instances"] if inst.get("k_effective") == 1),
+            "k2_count": sum(1 for inst in receipt["completed_instances"] if inst.get("k_effective") == 2),
+        }
         receipt["status"] = "partial" if exp.stopped_early or receipt["instances_completed"] < n_instances else "complete"
 
         exp.save_receipt(receipt)

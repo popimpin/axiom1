@@ -365,7 +365,7 @@ class Axiom:
                                     (agent_id, self.clock() + lease_s, t["id"]))
                     self._event("take_task", agent_id, t["id"])
                 out = {"id": t["id"], "title": t["title"], "lease_s": lease_s,
-                       "lessons": self._lessons_for(t["title"])}
+                       "lessons": self._lessons_for(t["title"], check_id=t["check_id"])}
                 if t["check_id"]:
                     out["check_id"] = t["check_id"]
                     proc = self._process_for(t["check_id"])
@@ -459,13 +459,17 @@ class Axiom:
         return self._process_for(check_id)
 
     # ---- lessons: what the collective learned, written by the server from its own verdicts ----
-    def _lessons_for(self, task_title, limit=5):
+    def _lessons_for(self, task_title, limit=5, check_id=None):
         """Earlier attempts at a task with this title, newest first: what failed and why, what worked.
         Empty when sharing is off. Agents cannot write these; they come only from verdicts."""
         if not self.share_lessons:
             return []
-        rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
-                               "WHERE task_title=? ORDER BY at DESC LIMIT ?", (task_title, limit)).fetchall()
+        if check_id:
+            rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
+                                   "WHERE check_id=? OR task_title=? ORDER BY at DESC LIMIT ?", (check_id, task_title, limit)).fetchall()
+        else:
+            rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
+                                   "WHERE task_title=? ORDER BY at DESC LIMIT ?", (task_title, limit)).fetchall()
         return [{"kind": r["kind"], "label": r["label"], "by": r["agent"], "reason": r["reason"],
                  "changed": json.loads(r["changed"]), "lesson": r["body"]} for r in rows]
 

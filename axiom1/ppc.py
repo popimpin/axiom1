@@ -25,6 +25,101 @@ from typing import Any, Callable
 from .verifier import ENTRY_FILE, PROCESS_FILE, process_argv
 
 
+
+PPC_INVARIANT_PROMPT = """You are the Invariant Proposer repairing a locked process for an AI task that failed on new input files.
+Focus on structural robustness across instances (handling formatting variances, defensive parsing, fallback defaults). Must preserve compatibility with earlier tasks.
+
+CURRENT LOCKED PROCESS (process.py):
+```python
+{base_script}
+```
+
+EXAMPLE ENTRY (entry.json):
+```json
+{entry_example}
+```
+
+FAILURE FEEDBACK FROM REPLAY:
+{replay_note}
+
+THIS TASK'S INPUT FILES:
+{input_files}
+
+VERIFIED MEMORY (Proven Skills / Witnessed Facts):
+{witnessed_lessons}
+
+UNVERIFIED ATTEMPTS (Declared Only):
+{declared_lessons}
+
+Return ONLY a JSON object with this shape:
+{{
+  "script": "<repaired python code for process.py>",
+  "entry": "<repaired entry.json content or empty string>"
+}}
+"""
+
+PPC_DOMAIN_PROMPT = """You are the Domain Proposer repairing a locked process for an AI task that failed on new input files.
+Focus on domain-specific extraction rules tailored specifically to this job's inputs and observed receipt formats.
+
+CURRENT LOCKED PROCESS (process.py):
+```python
+{base_script}
+```
+
+EXAMPLE ENTRY (entry.json):
+```json
+{entry_example}
+```
+
+FAILURE FEEDBACK FROM REPLAY:
+{replay_note}
+
+THIS TASK'S INPUT FILES:
+{input_files}
+
+VERIFIED MEMORY (Proven Skills / Witnessed Facts):
+{witnessed_lessons}
+
+UNVERIFIED ATTEMPTS (Declared Only):
+{declared_lessons}
+
+Return ONLY a JSON object with this shape:
+{{
+  "script": "<repaired python code for process.py>",
+  "entry": "<repaired entry.json content or empty string>"
+}}
+"""
+
+
+def extract_single_candidate(reply_content: str | dict, default_kind: str = "invariant") -> dict[str, str]:
+    """Parse a single candidate proposal (script and entry) from model reply."""
+    if isinstance(reply_content, dict):
+        data = reply_content
+    else:
+        raw_text = str(reply_content).strip()
+        if "```json" in raw_text:
+            text = raw_text.split("```json", 1)[1].split("```", 1)[0].strip()
+        elif "```" in raw_text:
+            text = raw_text.split("```", 1)[1].split("```", 1)[0].strip()
+        else:
+            text = raw_text
+        try:
+            data = json.loads(text)
+        except Exception:
+            import re
+            m = re.search(r"\{.*\}", text, re.DOTALL)
+            data = json.loads(m.group(0)) if m else {}
+
+    if default_kind in data and isinstance(data[default_kind], dict):
+        return {
+            "script": str(data[default_kind].get("script", "")),
+            "entry": str(data[default_kind].get("entry", "")),
+        }
+    return {
+        "script": str(data.get("script", "")),
+        "entry": str(data.get("entry", "")),
+    }
+
 PPC_PROPOSAL_PROMPT = """You are repairing a locked process for an AI task that failed on new input files.
 
 CURRENT LOCKED PROCESS (process.py):

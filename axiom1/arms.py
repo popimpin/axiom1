@@ -28,6 +28,7 @@ import random
 import sys
 import tempfile
 import time
+import uuid
 from pathlib import Path
 from typing import Any, Callable
 
@@ -281,6 +282,83 @@ def parse_composer_decision(reply: str | dict) -> dict[str, str]:
     observation = str(data.get("observation", "")).strip()
     return {"decision": decision, "observation": observation}
 
+JUDGE_SYSTEM_PROMPT = """You are the Senior Axiom Judge. You are called ONLY on escalation when the deterministic gate cannot decide alone (e.g. both candidates passed acceptance tests without regression, or an unseen input scenario).
+Your role is to evaluate candidate artifacts, execution outputs, and witnessed system memory to pick the best candidate or retain the current baseline.
+You MUST NOT see proposer self-assessments or proposer rationales.
+Base your judgement strictly on code diffs, runtime exit codes, stdout/stderr outputs, deliverable files, and witnessed memory.
+
+Output ONLY a JSON object:
+{
+  "decision": "adopt_invariant" | "adopt_domain" | "keep_current",
+  "observation": "<your rigorous technical reasoning based on artifacts, outputs, and witnessed memory>"
+}"""
+
+
+def build_judge_prompt(
+    reference_script: str,
+    reference_entry: str,
+    cand1: dict[str, Any],
+    cand2: dict[str, Any],
+    trigger: str,
+    witnessed_memory: str = "",
+) -> str:
+    """
+    Construct Escalation Judge prompt from artifacts, run observations, and witnessed memory.
+    Rule: MUST NOT contain proposer's rationale or self-assessment (Anti-Contamination).
+    """
+    # Enforce contamination guard: Proposer rationale must NEVER enter judge prompt
+    for forbidden_key in ("proposer_rationale", "rationale", "self_assessment", "proposer_thought"):
+        if forbidden_key in cand1 or forbidden_key in cand2:
+            raise ValueError(f"Contamination error: judge prompt must not contain proposer rationale: {forbidden_key!r}")
+
+    FORBIDDEN_GATE_TERMS = [
+        "universal guard", "private:",
+    ]
+    c1_out = str(cand1.get("run", {}).get("output", ""))
+    c2_out = str(cand2.get("run", {}).get("output", ""))
+    for forbidden in FORBIDDEN_GATE_TERMS:
+        if forbidden in c1_out.lower() or forbidden in c2_out.lower():
+            raise ValueError(f"Verifier gate secret leaked into candidate output: {forbidden!r}")
+
+    diff1 = compute_unified_diff(reference_script, cand1.get("script", ""))
+    diff2 = compute_unified_diff(reference_script, cand2.get("script", ""))
+
+    prompt = f"""ESCALATION TRIGGER: {trigger}
+
+WITNESSED MEMORY (Proven Skills / Facts):
+{witnessed_memory or "(no verified lessons yet)"}
+
+CURRENT REFERENCE BASELINE:
+```python
+{(reference_script or "").strip() or "(empty process.py)"}
+```
+
+CANDIDATE 1 (INVARIANT):
+Unified Diff:
+```diff
+{diff1}
+```
+Exit code: {cand1.get("run", {}).get("exit", 0)}
+Output:
+{c1_out.strip() or "(no stdout/stderr)"}
+Deliverables: {", ".join(cand1.get("deliverables", [])) or "(none)"}
+
+CANDIDATE 2 (DOMAIN):
+Unified Diff:
+```diff
+{diff2}
+```
+Exit code: {cand2.get("run", {}).get("exit", 0)}
+Output:
+{c2_out.strip() or "(no stdout/stderr)"}
+Deliverables: {", ".join(cand2.get("deliverables", [])) or "(none)"}
+
+Evaluate the technical merits of both candidates under this escalation trigger ({trigger}).
+Return JSON with "decision" ("adopt_invariant", "adopt_domain", or "keep_current") and "observation".
+"""
+    return prompt
+
+
 
 class ArmsExperiment:
     """Manages 3-arm comparison runs across isolated databases, shared proposals, and cost tracking."""
@@ -294,24 +372,32 @@ class ArmsExperiment:
         receipt_path: Path | str = None,
         model_name: str = None,
         base_url: str = None,
+        judge_model_name: str = None,
+        judge_base_url: str = None,
     ):
         self.db_dir = Path(db_dir)
         self.db_dir.mkdir(parents=True, exist_ok=True)
-        self.arms = arms or ["A", "B", "C"]
+        raw_arms = arms or ["A", "B", "C"]
+        self.arms = [("C+J" if a.upper() in ("CJ", "C+J") else a.upper()) for a in raw_arms]
         self.max_cost = float(max_cost)
         self.call_cap = int(call_cap)
         self.receipt_path = Path(receipt_path) if receipt_path else None
         self.model = model_name or get_runner_model()
         self.base_url = base_url or get_runner_endpoint()
+        self.judge_model = judge_model_name
+        self.judge_base_url = judge_base_url or self.base_url
         self.call_count = 0
+        self.judge_call_count = 0
         self.token_usage = {"prompt_tokens": 0, "completion_tokens": 0}
         self.accumulated_cost_usd = 0.0
         self.stopped_early = False
         self.stop_reason = None
+        self.escalation_counts = {"no_check": 0, "both_pass_tie": 0, "unseen_scenario": 0}
 
     def get_axiom(self, arm: str) -> Axiom:
         """Returns isolated Axiom instance for a specific arm."""
-        db_path = self.db_dir / f"arm_{arm.lower()}.db"
+        safe_arm = arm.lower().replace("+", "_")
+        db_path = self.db_dir / f"arm_{safe_arm}.db"
         return Axiom(str(db_path))
 
     @staticmethod
@@ -393,17 +479,21 @@ class ArmsExperiment:
         sha = ws.commit("replay locked process")["sha"]
 
         ref_ax = ref_ctx["ax"]
-        ref_check = ref_ax.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone()
-        probe_res = ref_ax._probe(
-            "agent-1",
-            ref_check,
-            ref_ctx["base_sha"],
-            sha,
-            kind=ref_ctx["claim_kind"],
-        )
+        ref_check = ref_ax.db.execute("SELECT * FROM checks WHERE id=?", (check_id,)).fetchone() if check_id else None
+        if ref_check is not None:
+            probe_res = ref_ax._probe(
+                "agent-1",
+                ref_check,
+                ref_ctx["base_sha"],
+                sha,
+                kind=ref_ctx["claim_kind"],
+            )
+            passed = probe_res.get("passed", False)
+        else:
+            probe_res = {"passed": False, "reason": "no registered check"}
+            passed = False
 
         wall_time = round(time.time() - t0, 1)
-        passed = probe_res.get("passed", False)
         if passed:
             note = ""
         else:
@@ -429,7 +519,9 @@ class ArmsExperiment:
         propose_fn: Callable,
         compose_fn: Callable,
         repair_a_fn: Callable = None,
+        judge_fn: Callable = None,
         check_id: str = None,
+        unseen: bool = False,
     ) -> dict[str, Any]:
         """
         Run one task instance through active arms.
@@ -465,16 +557,23 @@ class ArmsExperiment:
                     repo, check_dir, base_sha, claim_kind = repo_builder()
             else:
                 repo, check_dir, base_sha, claim_kind = repo_builder
-            check_name = check_id or f"chk_{task_id}"
-            repo_path = repo.root if hasattr(repo, "root") and not isinstance(repo, Path) else Path(repo)
-            ax.register_check(
-                check_name,
-                repo_path,
-                [sys.executable, "-I", ".axiom_check/check.py"],
-                [],
-                holdout=str(check_dir),
-                claim_kind=claim_kind,
-            )
+            if check_id == "no_check":
+                check_name = None
+            elif check_id:
+                check_name = check_id
+            else:
+                check_name = f"chk_{task_id}"
+
+            if check_name is not None and check_dir:
+                repo_path = repo.root if hasattr(repo, "root") and not isinstance(repo, Path) else Path(repo)
+                ax.register_check(
+                    check_name,
+                    repo_path,
+                    [sys.executable, "-I", ".axiom_check/check.py"],
+                    [],
+                    holdout=str(check_dir),
+                    claim_kind=claim_kind,
+                )
             task_info = ax.post_task("operator", task_title, check_id=check_name)
             task = ax.take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 14400)), task_id=task_info.get("id"))
             arm_contexts[arm] = {
@@ -486,9 +585,14 @@ class ArmsExperiment:
                 "claim_kind": claim_kind,
             }
 
-        # Reference baseline from Arm C (or B)
-        c_ax = arm_contexts["C"]["ax"] if "C" in arm_contexts else self.get_axiom("C")
-        proc = c_ax.process_for(arm_contexts["C"]["check_id"]) if "C" in arm_contexts else None
+        # Reference baseline from Arm C, C+J, B, or any active arm
+        ref_ctx = arm_contexts.get("C") or arm_contexts.get("C+J") or arm_contexts.get("B") or list(arm_contexts.values())[0]
+        c_ax = ref_ctx["ax"]
+        proc = c_ax.process_for(ref_ctx["check_id"]) if ref_ctx.get("check_id") else None
+        if not proc:
+            latest = c_ax.db.execute("SELECT * FROM processes ORDER BY version DESC LIMIT 1").fetchone()
+            if latest:
+                proc = dict(latest)
         base_script = (proc.get("script") or "") if proc else ""
         base_entry = (proc.get("entry_example") or "") if proc else ""
 
@@ -496,7 +600,7 @@ class ArmsExperiment:
         # Replay the locked reference process v1 on the instance files before attempting repair.
         replay = self.replay_locked_process(
             arm_contexts=arm_contexts,
-            check_id=arm_contexts["C"]["check_id"] if "C" in arm_contexts else check_name,
+            check_id=ref_ctx.get("check_id"),
             base_script=base_script,
             base_entry=base_entry,
         )
@@ -508,21 +612,25 @@ class ArmsExperiment:
             results["k_effective"] = None
             if "A" in self.arms:
                 results["arm_a"] = {"strategy": "replay", "calls": replay.get("calls", 0), "witnessed": True}
-            results["arm_b"] = {"composer_pick": "replay", "witnessed": True, "shipped_by_harness2": True}
-            results["arm_c"] = {"witnessed": True, "winner": "replay", "calls": 0, "refused": []}
+            if "B" in self.arms:
+                results["arm_b"] = {"composer_pick": "replay", "witnessed": True, "shipped_by_harness2": True}
+            if "C" in self.arms:
+                results["arm_c"] = {"witnessed": True, "winner": "replay", "calls": 0, "refused": []}
+            if "C+J" in self.arms:
+                results["arm_c_j"] = {"escalated": False, "escalation_trigger": None, "winner": "replay", "witnessed": True, "judge_calls": 0}
             results["agree"] = "AGREE"
             results["disagree_reason"] = None
             return results
 
         replay_note = replay.get("note", "")
 
-        # Extract verified and unverified lessons from Arm C task
-        c_task = arm_contexts.get("C", {}).get("task") or {}
+        # Extract verified and unverified lessons from active reference task
+        c_task = ref_ctx.get("task") or {}
         w_mem, d_mem = format_memory(c_task.get("lessons"))
 
         # Collect sample input files for proposal context
         input_files_text = ""
-        c_repo = arm_contexts.get("C", {}).get("repo") or arm_contexts.get("B", {}).get("repo")
+        c_repo = ref_ctx.get("repo")
         if c_repo:
             repo_root = c_repo.root if hasattr(c_repo, "root") and not isinstance(c_repo, Path) else Path(c_repo)
             samples = []
@@ -589,7 +697,6 @@ class ArmsExperiment:
             cand_entry = cand.get("entry", "")
 
             # Execute candidate in an isolated scratch worktree to obtain execution outputs (Rule 2)
-            c_repo = arm_contexts.get("C", {}).get("repo") or arm_contexts["B"]["repo"]
             wt_path = Path(tempfile.mkdtemp(prefix=f"scratch_{task_id}_{kind}_", dir=str(self.db_dir)))
             git_run(c_repo, "worktree", "add", "-q", "--detach", str(wt_path), "main")
             from .sandbox import LocalSandbox
@@ -615,17 +722,20 @@ class ArmsExperiment:
         # Step 2: Shadow Evaluation (Rule 3)
         # Compute ground truth verdicts for both candidates using private side-effect-free probe
         shadow_verdicts = {}
-        ref_ax = arm_contexts.get("C", {}).get("ax") or arm_contexts["B"]["ax"]
-        ref_check = ref_ax.db.execute("SELECT * FROM checks WHERE id=?", (arm_contexts["C"]["check_id"],)).fetchone()
+        ref_ax = ref_ctx["ax"]
+        ref_check = ref_ax.db.execute("SELECT * FROM checks WHERE id=?", (ref_ctx.get("check_id") or "",)).fetchone() if ref_ctx.get("check_id") else None
         for kind in ("invariant", "domain"):
             cd = cand_details[kind]
-            probe_res = ref_ax._probe(
-                "agent-1",
-                ref_check,
-                arm_contexts["C"]["base_sha"],
-                cd["after_ref"],
-                kind=arm_contexts["C"]["claim_kind"],
-            )
+            if ref_check is not None:
+                probe_res = ref_ax._probe(
+                    "agent-1",
+                    ref_check,
+                    ref_ctx["base_sha"],
+                    cd["after_ref"],
+                    kind=ref_ctx["claim_kind"],
+                )
+            else:
+                probe_res = {"passed": False, "reason": "no registered check"}
             ev = probe_res.get("evidence") or {}
             p_ev = ev.get("process") or {}
             reproduced = p_ev.get("reproduced", False)
@@ -696,27 +806,198 @@ class ArmsExperiment:
         # Step 5: Arm C - Axiom Gate (Rule 1 & 3)
         if "C" in self.arms:
             c_ctx = arm_contexts["C"]
-            candidates_payload = [
-                {"kind": "invariant", "after_ref": cand_details["invariant"]["after_ref"]},
-                {"kind": "domain", "after_ref": cand_details["domain"]["after_ref"]},
-            ]
-            # Ensure lease on c_ctx task is active before submitting candidates
-            with c_ctx["ax"].db:
-                c_ctx["ax"].db.execute(
-                    "UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
-                    ("agent-1", time.time() + 7200, c_ctx["task"]["id"])
+            if not c_ctx.get("check_id"):
+                results["arm_c"] = {
+                    "witnessed": False,
+                    "winner": None,
+                    "refused": ["no registered check to evaluate candidates"],
+                }
+            else:
+                candidates_payload = [
+                    {"kind": "invariant", "after_ref": cand_details["invariant"]["after_ref"]},
+                    {"kind": "domain", "after_ref": cand_details["domain"]["after_ref"]},
+                ]
+                # Ensure lease on c_ctx task is active before submitting candidates
+                with c_ctx["ax"].db:
+                    c_ctx["ax"].db.execute(
+                        "UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
+                        ("agent-1", time.time() + 7200, c_ctx["task"]["id"])
+                    )
+                gate_res = c_ctx["ax"].submit_candidates(
+                    "agent-1",
+                    c_ctx["task"]["id"],
+                    candidates_payload,
+                    c_ctx["base_sha"],
                 )
-            gate_res = c_ctx["ax"].submit_candidates(
-                "agent-1",
-                c_ctx["task"]["id"],
-                candidates_payload,
-                c_ctx["base_sha"],
-            )
-            results["arm_c"] = {
-                "witnessed": gate_res.get("witnessed", False),
-                "winner": gate_res.get("winner"),
-                "refused": gate_res.get("refused", []),
-            }
+                results["arm_c"] = {
+                    "witnessed": gate_res.get("witnessed", False),
+                    "winner": gate_res.get("winner"),
+                    "refused": gate_res.get("refused", []),
+                }
+
+        # Step 5b: Arm C+J - Axiom Gate + Escalation Judge
+        if "C+J" in self.arms:
+            cj_ctx = arm_contexts.get("C+J")
+            cj_check = None
+            if cj_ctx and cj_ctx.get("ax") and cj_ctx.get("check_id"):
+                cj_check = cj_ctx["ax"].db.execute("SELECT * FROM checks WHERE id=?", (cj_ctx["check_id"],)).fetchone()
+
+            no_check = (check_id == "no_check" or cj_ctx is None or not cj_ctx.get("check_id") or cj_check is None or cj_ctx.get("claim_kind") == "unverifiable")
+            valid_winners = [
+                k for k, sv in shadow_verdicts.items()
+                if sv.get("passed") and sv.get("reproduced") and sv.get("regression_failed", 0) == 0
+            ]
+
+            escalation_trigger = None
+            if no_check:
+                escalation_trigger = "no_check"
+            elif len(valid_winners) == 2:
+                escalation_trigger = "both_pass_tie"
+            elif unseen:
+                escalation_trigger = "unseen_scenario"
+
+            if escalation_trigger:
+                self.escalation_counts[escalation_trigger] = self.escalation_counts.get(escalation_trigger, 0) + 1
+                if judge_fn is None:
+                    raise ValueError(f"Escalation judge required for Arm C+J under trigger {escalation_trigger!r} but judge_fn is None")
+
+                judge_prompt = build_judge_prompt(
+                    base_script,
+                    base_entry,
+                    cand_details.get("invariant", {}),
+                    cand_details.get("domain", {}),
+                    trigger=escalation_trigger,
+                    witnessed_memory=w_mem,
+                )
+                judge_reply = judge_fn(judge_prompt)
+                self.call_count += 1
+                self.judge_call_count += 1
+
+                u = judge_reply.get("usage") if isinstance(judge_reply, dict) else None
+                if u and (u.get("prompt_tokens") or u.get("completion_tokens")):
+                    p_tok = u.get("prompt_tokens")
+                    c_tok = u.get("completion_tokens")
+                    rec = self.record_usage(p_tok, c_tok)
+                    results["judge_token_usage"] = rec
+
+                j_dec = parse_composer_decision(judge_reply)
+                dec = j_dec["decision"]
+                j_pick = "invariant" if dec == "adopt_invariant" else ("domain" if dec == "adopt_domain" else None)
+                obs = j_dec["observation"]
+
+                if escalation_trigger == "both_pass_tie":
+                    gate_winner = min(valid_winners, key=lambda k: diff_size(base_script, cand_details[k]["script"]))
+                    chosen_winner = j_pick if (j_pick and j_pick in valid_winners) else gate_winner
+
+                    if cj_ctx and cj_ctx.get("task") and cj_check:
+                        with cj_ctx["ax"].db:
+                            cj_ctx["ax"].db.execute(
+                                "UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
+                                ("agent-1", time.time() + 7200, cj_ctx["task"]["id"])
+                            )
+                        win_cand = cand_details[chosen_winner]
+                        win_claim = cj_ctx["ax"].claim(
+                            "agent-1",
+                            f"PPC winner ({chosen_winner})",
+                            cj_check["id"],
+                            cj_ctx["base_sha"],
+                            win_cand["after_ref"],
+                            task_id=cj_ctx["task"]["id"],
+                            kind=cj_ctx["claim_kind"],
+                        )
+                        cj_ctx["ax"].verify(win_claim["id"])
+
+                    results["arm_c_j"] = {
+                        "escalated": True,
+                        "escalation_trigger": "both_pass_tie",
+                        "gate_smallest_diff_winner": gate_winner,
+                        "judge_tie_break_winner": j_pick,
+                        "winner": chosen_winner,
+                        "witnessed": True,
+                        "observation": obs,
+                        "judge_calls": 1,
+                    }
+                else:
+                    # no_check or unseen_scenario:
+                    # RULE: A judge-only pick is DECLARED, NEVER WITNESSED!
+                    if cj_ctx and cj_ctx.get("task"):
+                        claim_id = uuid.uuid4().hex[:12]
+                        cand_sha = cand_details[j_pick]["after_ref"] if (j_pick and j_pick in cand_details) else ""
+                        with cj_ctx["ax"].db:
+                            cj_ctx["ax"].db.execute(
+                                "INSERT INTO claims (id, agent, statement, check_id, before_sha, after_sha, "
+                                "task_id, label, reason, evidence, made_at, verified_at, kind, anchored) "
+                                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                                (claim_id, "agent-1", f"Judge escalation pick ({j_pick})",
+                                 cj_ctx.get("check_id") or "", cj_ctx.get("base_sha") or "", cand_sha,
+                                 cj_ctx["task"]["id"], "declared", f"Judge pick under {escalation_trigger}: {obs}",
+                                 json.dumps({}), time.time(), time.time(), "deliver", 1),
+                            )
+                            lesson_id = uuid.uuid4().hex[:12]
+                            cj_ctx["ax"].db.execute(
+                                "INSERT INTO lessons VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                                (lesson_id, "lesson", f"refusal-{cj_ctx['task']['id']}-{j_pick}",
+                                 cj_ctx.get("check_id") or "", cj_ctx["task"].get("title", ""),
+                                 "agent-1", "declared", f"Judge pick under {escalation_trigger}: {obs}",
+                                 json.dumps([]), f"[DECLARED] Judge pick under {escalation_trigger}: {obs}", time.time())
+                            )
+
+                    results["arm_c_j"] = {
+                        "escalated": True,
+                        "escalation_trigger": escalation_trigger,
+                        "winner": j_pick,
+                        "witnessed": False,
+                        "claim_label": "declared",
+                        "observation": obs,
+                        "judge_calls": 1,
+                    }
+            else:
+                # Deterministic gate decides. Judge is NOT CALLED! (0 judge calls)
+                if len(valid_winners) == 1:
+                    winner = valid_winners[0]
+                    if cj_ctx and cj_ctx.get("task") and cj_check:
+                        with cj_ctx["ax"].db:
+                            cj_ctx["ax"].db.execute(
+                                "UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
+                                ("agent-1", time.time() + 7200, cj_ctx["task"]["id"])
+                            )
+                        win_cand = cand_details[winner]
+                        win_claim = cj_ctx["ax"].claim(
+                            "agent-1",
+                            f"PPC winner ({winner})",
+                            cj_check["id"],
+                            cj_ctx["base_sha"],
+                            win_cand["after_ref"],
+                            task_id=cj_ctx["task"]["id"],
+                            kind=cj_ctx["claim_kind"],
+                        )
+                        cj_ctx["ax"].verify(win_claim["id"])
+
+                    results["arm_c_j"] = {
+                        "escalated": False,
+                        "escalation_trigger": None,
+                        "winner": winner,
+                        "witnessed": True,
+                        "judge_calls": 0,
+                    }
+                else:
+                    if cj_ctx and cj_ctx.get("task"):
+                        for k, cd in cand_details.items():
+                            cj_ctx["ax"]._record_refusal_lesson(
+                                cj_ctx["task"], "agent-1", k,
+                                shadow_verdicts[k].get("reason", "the delivered files do not pass the acceptance check")
+                            )
+                    results["arm_c_j"] = {
+                        "escalated": False,
+                        "escalation_trigger": None,
+                        "winner": None,
+                        "witnessed": False,
+                        "judge_calls": 0,
+                        "refused": [
+                            {"kind": k, "reason": shadow_verdicts[k].get("reason")}
+                            for k in ("invariant", "domain")
+                        ],
+                    }
 
         # Step 6: Comparison & Agreement (Rule 4)
         if "B" in self.arms and "C" in self.arms:
@@ -1066,7 +1347,7 @@ def run_dry_run_series(
 def run_series(
     series_name: str,
     n_instances: int = 5,
-    arms: list[str] = ("A", "B", "C"),
+    arms: list[str] = ("A", "B", "C", "C+J"),
     db_dir: Path | str = ".axiom_arms_run",
     receipt_path: Path | str = "arms_receipt.json",
     max_cost: float = 1.0,
@@ -1075,9 +1356,12 @@ def run_series(
     propose_fn: Callable = None,
     compose_fn: Callable = None,
     repair_a_fn: Callable = None,
+    judge_fn: Callable = None,
     cold_start_fn: Callable = None,
     model_name: str = None,
     base_url: str = None,
+    judge_model_name: str = None,
+    judge_base_url: str = None,
     base_seed: int = 1000,
 ) -> dict[str, Any]:
     """Execute series runner across instances with resumable receipts and paid-run authorization guard."""
@@ -1172,6 +1456,29 @@ def run_series(
         propose_fn = live_propose
         compose_fn = live_compose
 
+    if judge_fn is None and any(a in ("C+J", "CJ") for a in (arms or [])):
+        from .agent import ChatModel
+        j_model = judge_model_name or os.environ.get("AXIOM_JUDGE_MODEL") or model
+        j_url = judge_base_url or os.environ.get("AXIOM_JUDGE_URL") or endpoint
+        judge_chat_model = ChatModel(model=j_model, base_url=j_url)
+        judge_chat_model.thinking = False
+
+        def live_judge(prompt):
+            u0 = dict(judge_chat_model.usage)
+            msg = judge_chat_model([
+                {"role": "system", "content": JUDGE_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ], [])
+            p_used = judge_chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
+            c_used = judge_chat_model.usage["completion_tokens"] - u0["completion_tokens"]
+            content = msg.get("content", "") if isinstance(msg, dict) else str(msg)
+            res = parse_composer_decision(content)
+            if p_used > 0 or c_used > 0:
+                res["usage"] = {"prompt_tokens": p_used, "completion_tokens": c_used}
+            return res
+
+        judge_fn = live_judge
+
     if repair_a_fn is None:
         def live_repair_a(a_ctx):
             from .agent import run_agent, ChatModel
@@ -1232,6 +1539,8 @@ def run_series(
         receipt_path=receipt_path,
         model_name=model,
         base_url=endpoint,
+        judge_model_name=judge_model_name,
+        judge_base_url=judge_base_url,
     )
 
     receipt = exp.load_receipt()
@@ -1321,6 +1630,7 @@ def run_series(
             propose_fn=propose_fn,
             compose_fn=compose_fn,
             repair_a_fn=repair_a_fn,
+            judge_fn=judge_fn,
             check_id=f"chk_{series_name}",
         )
 
@@ -1335,6 +1645,19 @@ def run_series(
             "k1_count": sum(1 for inst in receipt["completed_instances"] if inst.get("k_effective") == 1),
             "k2_count": sum(1 for inst in receipt["completed_instances"] if inst.get("k_effective") == 2),
         }
+        total_repairs = sum(1 for inst in receipt["completed_instances"] if not inst.get("cold_start") and not inst.get("replay", {}).get("passed"))
+        escalations = sum(1 for inst in receipt["completed_instances"] if inst.get("arm_c_j", {}).get("escalated"))
+        esc_rate = (escalations / total_repairs) if total_repairs > 0 else 0.0
+        receipt["arm_c_j_summary"] = {
+            "repair_instances": total_repairs,
+            "escalation_count": escalations,
+            "escalations_by_trigger": {
+                "no_check": sum(1 for inst in receipt["completed_instances"] if inst.get("arm_c_j", {}).get("escalation_trigger") == "no_check"),
+                "both_pass_tie": sum(1 for inst in receipt["completed_instances"] if inst.get("arm_c_j", {}).get("escalation_trigger") == "both_pass_tie"),
+                "unseen_scenario": sum(1 for inst in receipt["completed_instances"] if inst.get("arm_c_j", {}).get("escalation_trigger") == "unseen_scenario"),
+            },
+            "escalation_rate": round(esc_rate, 4),
+        }
         receipt["status"] = "partial" if exp.stopped_early or receipt["instances_completed"] < n_instances else "complete"
 
         exp.save_receipt(receipt)
@@ -1346,7 +1669,11 @@ def main():
     parser = argparse.ArgumentParser(description="Axiom-1 3-Arm Experiment Runner (Harness^2 vs Gate)")
     parser.add_argument("--series", default="receipts-to-spreadsheet", help="Task series name from everyday_tasks")
     parser.add_argument("--instances", type=int, default=5, help="Number of instances in series")
-    parser.add_argument("--arms", default="A,B,C", help="Comma-separated arms to run (e.g. A,B,C)")
+    parser.add_argument("--arms", default="A,B,C,C+J", help="Comma-separated arms to run (e.g. A,B,C,C+J)")
+    parser.add_argument("--propose-model", default=None, help="Model name for candidate proposals")
+    parser.add_argument("--propose-url", default=None, help="Base URL for proposal model endpoint")
+    parser.add_argument("--judge-model", default=None, help="Model name for senior escalation judge")
+    parser.add_argument("--judge-url", default=None, help="Base URL for judge endpoint")
     parser.add_argument("--db-dir", default=".axiom_arms_run", help="Directory for arm database files")
     parser.add_argument("--dry-run", action="store_true", help="Print experiment plan and cost estimate without running models")
     parser.add_argument("--max-cost", type=float, default=1.0, help="Max cost cap in USD")
@@ -1388,6 +1715,10 @@ def main():
             max_cost=args.max_cost,
             call_cap=args.call_cap,
             confirm_paid=args.confirm_paid,
+            model_name=args.propose_model,
+            base_url=args.propose_url,
+            judge_model_name=args.judge_model,
+            judge_base_url=args.judge_url,
         )
         print("=== AXIOM-1 3-ARM EXPERIMENT RECEIPT ===")
         print(json.dumps(receipt, indent=2))

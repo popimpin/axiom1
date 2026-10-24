@@ -22,9 +22,11 @@ import unittest
 from pathlib import Path
 
 from axiom1 import Axiom
+from unittest.mock import MagicMock
 from axiom1.arms import (
     ArmsExperiment,
     build_composer_prompt,
+    build_judge_prompt,
     parse_composer_decision,
     run_dry_run_series,
     run_series,
@@ -750,6 +752,201 @@ class TestArmsExperiment(unittest.TestCase):
             check_id=check_name,
         )
         self.assertEqual(res2["k_effective"], 2)
+
+
+    def test_judge_prompt_rejects_proposer_rationale(self):
+        """
+        Adrian / Claude Rule 3: Share but don't contaminate.
+        The judge sees artifacts + run outputs + witnessed memory, NEVER the proposer's rationale.
+        NEGATIVE CONTROL: If cand1 or cand2 includes proposer rationale, build_judge_prompt MUST raise ValueError.
+        If this guard is bypassed, this test turns RED.
+        """
+        cand_clean = {"script": "print(1)", "run": {"output": "1", "exit": 0}, "deliverables": []}
+        cand_contaminated = {"script": "print(2)", "run": {"output": "2", "exit": 0}, "deliverables": [], "proposer_rationale": "I think this candidate is better because of X"}
+
+        # Clean prompt succeeds
+        prompt = build_judge_prompt("print(0)", "", cand_clean, cand_clean, trigger="both_pass_tie")
+        self.assertIn("ESCALATION TRIGGER: both_pass_tie", prompt)
+
+        # Contaminated candidate raises ValueError
+        with self.assertRaises(ValueError) as ctx:
+            build_judge_prompt("print(0)", "", cand_clean, cand_contaminated, trigger="both_pass_tie")
+        self.assertIn("Contamination error", str(ctx.exception))
+
+    def test_judge_only_pick_cannot_be_witnessed(self):
+        """
+        Adrian / Claude Rule 3: A judge's pick is DECLARED, never WITNESSED.
+        With no check it locks nothing as witnessed (provisional until a check confirms).
+        NEGATIVE CONTROL: Marking a judge pick under no_check as 'witnessed' turns this test RED.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_judge_declared_exp", arms=["C+J"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_no_check")
+
+        repo_strayed, check_dir, strayed_base, kind = self._setup_repo_with_earlier_instance("repo_no_chk_strayed")
+
+        mock_judge = lambda prompt: {"decision": "adopt_invariant", "observation": "Invariant looks cleaner"}
+
+        res = exp.evaluate_instance_arms(
+            task_id="no_check_inst",
+            task_title="No check task",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=lambda *args, **kwargs: {
+                "invariant": {"script": "print('inv')", "entry": ""},
+                "domain": {"script": "print('dom')", "entry": ""},
+            },
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "none"},
+            judge_fn=mock_judge,
+            check_id="no_check", # NO CHECK!
+        )
+
+        cj_res = res["arm_c_j"]
+        self.assertTrue(cj_res["escalated"])
+        self.assertEqual(cj_res["escalation_trigger"], "no_check")
+        self.assertEqual(cj_res["winner"], "invariant")
+        # Critical negative control: MUST NOT BE WITNESSED!
+        self.assertFalse(cj_res["witnessed"], "A judge-only pick without a check MUST NEVER be witnessed!")
+        self.assertEqual(cj_res["claim_label"], "declared")
+
+        # Verify in DB: process is NOT locked as witnessed
+        ax_cj = exp.get_axiom("C+J")
+        proc = ax_cj.process_for("chk_no_check_inst")
+        self.assertIsNone(proc, "Judge pick without check must not lock in processes table!")
+
+    def test_judge_called_on_case_gate_decided_fails(self):
+        """
+        Adrian / Claude Rule 2: C is default, Judge is ONLY on escalation.
+        When the deterministic gate can decide (e.g. 0 candidates pass or 1 candidate passes),
+        the Judge MUST NOT be called (0 judge calls).
+        NEGATIVE CONTROL: Calling the judge when the gate already decided turns this test RED.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_gate_decided_exp", arms=["C+J"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_gate_decided")
+        check_name = "chk_gate_decided"
+
+        ax_cj = exp.get_axiom("C+J")
+        ax_cj.join("agent-1")
+        ax_cj.join("operator")
+        ax_cj.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                             holdout=str(self.check_dir), claim_kind="deliver")
+
+        repo_strayed, check_dir, strayed_base, kind = self._setup_repo_with_earlier_instance("repo_gate_decided_strayed")
+
+        mock_judge = MagicMock()
+
+        # Both candidates fail check (exit 1) -> Gate can decide (0 pass, refused).
+        res = exp.evaluate_instance_arms(
+            task_id="gate_decided_inst",
+            task_title="Gate decided task",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=lambda *args, **kwargs: {
+                "invariant": {"script": "exit(1)", "entry": ""},
+                "domain": {"script": "exit(1)", "entry": ""},
+            },
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "none"},
+            judge_fn=mock_judge,
+            check_id=check_name,
+        )
+
+        cj_res = res["arm_c_j"]
+        self.assertFalse(cj_res["escalated"])
+        self.assertIsNone(cj_res["escalation_trigger"])
+        self.assertEqual(cj_res["judge_calls"], 0)
+        self.assertFalse(cj_res["witnessed"])
+        # NEGATIVE CONTROL: judge was NOT called
+        mock_judge.assert_not_called()
+
+    def test_judge_breaks_tie_on_both_pass_and_logs_both(self):
+        """
+        Adrian / Claude Rule 2(b): When both candidates pass acceptance check without regression,
+        Judge breaks the tie instead of only smallest-diff.
+        Receipt logs BOTH: gate_smallest_diff_winner AND judge_tie_break_winner.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_tie_break_exp", arms=["C+J"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_tie_break")
+        check_name = "chk_tie_break"
+
+        ax_cj = exp.get_axiom("C+J")
+        ax_cj.join("agent-1")
+        ax_cj.join("operator")
+        ax_cj.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                             holdout=str(self.check_dir), claim_kind="deliver")
+
+        # Base lock
+        ax_cj.post_task("operator", "Lock v1", check_id=check_name)
+        t = ax_cj.take_task("agent-1")
+        s = repo.branch("b_lock_v1", {"process.py": PROCESS_V1, "entry.json": ENTRY, "summary.csv": GOOD})
+        c = ax_cj.claim("agent-1", "lock v1", check_name, repo.base, s, task_id=t["id"])
+        ax_cj.verify(c["id"])
+
+        # Strayed receipts in the same repo so commits resolve
+        repo.write("receipts/a.txt", "Corner Cafe\nTotal: $12.50\n")
+        repo.write("receipts/b.txt", "Hardware World\nTotal: $40.00\n")
+        repo.write("receipts/c.txt", "Corner Cafe\nTotal: $7.25\n")
+        strayed_base = repo.commit("strayed receipts with total $")
+
+        # Both candidates pass and write GOOD summary.csv
+        cand_inv_script = PROCESS_INVARIANT
+        cand_dom_script = PROCESS_INVARIANT + "\n# much longer domain comment with extra code\n"
+
+        mock_judge = lambda prompt: {"decision": "adopt_domain", "observation": "Domain implementation is cleaner"}
+
+        res = exp.evaluate_instance_arms(
+            task_id="tie_break_inst",
+            task_title="Tie break task",
+            repo_builder=lambda arm="": (repo, self.check_dir, strayed_base, "deliver"),
+            propose_fn=lambda *args, **kwargs: {
+                "invariant": {"script": cand_inv_script, "entry": ENTRY},
+                "domain": {"script": cand_dom_script, "entry": ENTRY},
+            },
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "none"},
+            judge_fn=mock_judge,
+            check_id=check_name,
+        )
+
+        cj_res = res["arm_c_j"]
+        self.assertTrue(cj_res["escalated"])
+        self.assertEqual(cj_res["escalation_trigger"], "both_pass_tie")
+        self.assertEqual(cj_res["gate_smallest_diff_winner"], "invariant")
+        self.assertEqual(cj_res["judge_tie_break_winner"], "domain")
+        self.assertEqual(cj_res["winner"], "domain")
+        self.assertTrue(cj_res["witnessed"])
+        self.assertEqual(cj_res["judge_calls"], 1)
+
+    def test_escalation_rate_summary_in_receipt(self):
+        """
+        Adrian / Claude Rule 2: Escalation rate (escalations / total repairs) is computed and recorded in receipt.
+        """
+        receipt_file = Path(self.tmp.name) / "test_esc_rate_receipt.json"
+
+        # Mock cold start succeeds
+        mock_cs = lambda arm_contexts: {
+            "locked_v1": True,
+            "version": 1,
+            "model_calls": 10,
+            "token_usage": {"prompt_tokens": 1000, "completion_tokens": 100},
+        }
+
+        # Mock judge only called on tie-break
+        mock_judge = lambda prompt: {"decision": "adopt_invariant", "observation": "ok"}
+
+        receipt = run_series(
+            series_name="receipts-to-spreadsheet",
+            n_instances=2,
+            arms=["C+J"],
+            db_dir=Path(self.tmp.name) / "esc_rate_dbs",
+            receipt_path=receipt_file,
+            confirm_paid=True,
+            propose_fn=lambda *_: {"invariant": {"script": PROCESS_V1, "entry": ENTRY}, "domain": {"script": PROCESS_V1, "entry": ENTRY}},
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "none"},
+            judge_fn=mock_judge,
+            cold_start_fn=mock_cs,
+        )
+
+        self.assertIn("arm_c_j_summary", receipt)
+        summary = receipt["arm_c_j_summary"]
+        self.assertIn("escalation_rate", summary)
+        self.assertIn("escalation_count", summary)
+        self.assertIn("escalations_by_trigger", summary)
 
 
 if __name__ == "__main__":

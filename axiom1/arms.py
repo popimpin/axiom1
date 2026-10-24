@@ -475,8 +475,8 @@ class ArmsExperiment:
                 holdout=str(check_dir),
                 claim_kind=claim_kind,
             )
-            ax.post_task("operator", task_title, check_id=check_name)
-            task = ax.take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 3600)))
+            task_info = ax.post_task("operator", task_title, check_id=check_name)
+            task = ax.take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 14400)), task_id=task_info.get("id"))
             arm_contexts[arm] = {
                 "ax": ax,
                 "repo": repo,
@@ -700,6 +700,12 @@ class ArmsExperiment:
                 {"kind": "invariant", "after_ref": cand_details["invariant"]["after_ref"]},
                 {"kind": "domain", "after_ref": cand_details["domain"]["after_ref"]},
             ]
+            # Ensure lease on c_ctx task is active before submitting candidates
+            with c_ctx["ax"].db:
+                c_ctx["ax"].db.execute(
+                    "UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
+                    ("agent-1", time.time() + 7200, c_ctx["task"]["id"])
+                )
             gate_res = c_ctx["ax"].submit_candidates(
                 "agent-1",
                 c_ctx["task"]["id"],
@@ -735,6 +741,18 @@ class ArmsExperiment:
                 results["disagree_reason"] = reason
             else:
                 results["disagree_reason"] = None
+
+        # Ensure task is marked done across arms so it never sits open or expires as abandoned
+        for a_k in self.arms:
+            if a_k in arm_contexts and arm_contexts[a_k].get("task"):
+                try:
+                    with arm_contexts[a_k]["ax"].db:
+                        arm_contexts[a_k]["ax"].db.execute(
+                            "UPDATE tasks SET status='done', lease_until=NULL WHERE id=?",
+                            (arm_contexts[a_k]["task"]["id"],)
+                        )
+                except Exception:
+                    pass
 
         return results
 

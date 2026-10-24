@@ -354,11 +354,13 @@ class Axiom:
         return {"id": task_id, "status": "open"}
 
     @_locked
-    def take_task(self, agent_id, lease_s=DEFAULT_LEASE_S):
-        """Lease the oldest open task this agent is capable of, or None."""
+    def take_task(self, agent_id, lease_s=DEFAULT_LEASE_S, task_id=None):
+        """Lease the oldest open task this agent is capable of (or a specific task_id if given), or None."""
         caps = set(json.loads(self._agent(agent_id)["caps"]))
         self._expire_leases()
-        for t in self.db.execute("SELECT * FROM tasks WHERE status='open' ORDER BY at").fetchall():
+        query = "SELECT * FROM tasks WHERE id=? AND status='open'" if task_id else "SELECT * FROM tasks WHERE status='open' ORDER BY at"
+        params = (task_id,) if task_id else ()
+        for t in self.db.execute(query, params).fetchall():
             if set(json.loads(t["caps"])) <= caps:
                 with self.db:
                     self.db.execute("UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",

@@ -160,7 +160,7 @@ def get_task_def(series_name: str) -> dict[str, Any]:
 def derive_tokens_for_series(task_def: dict[str, Any]) -> dict[str, int]:
     """Derive token counts from real formatted prompts built for the series."""
     from .engines import manual as engines_manual_fn
-    eng_manual = engines_manual_fn(examples=False)
+    eng_manual = engines_manual_fn(examples=True)
     files, _ = task_def["data"](random.Random(1000))
     sample_inputs = "\n".join(f"=== {k} ===\n{v[:300]}" for k, v in sorted(files.items())[:4])
     sample_prop = PPC_PROPOSAL_PROMPT.format(
@@ -1396,7 +1396,7 @@ def run_series(
         def live_propose(title, base_script, base_entry, replay_note="", input_files="(see workspace)",
                          witnessed_lessons="(no verified lessons yet)", declared_lessons="(no unverified attempts)"):
             from .engines import manual as engines_manual_fn
-            eng_manual_text = engines_manual_fn(examples=False)
+            eng_manual_text = engines_manual_fn(examples=True)
             u0 = dict(chat_model.usage)
             inv_prompt = PPC_INVARIANT_PROMPT.format(
                 base_script=base_script,
@@ -1650,6 +1650,21 @@ def run_series(
                 exp.save_receipt(receipt)
                 continue
 
+        # Dynamic unseen scenario detection across instances
+        unseen = False
+        try:
+            inst_files, _ = task_def["data"](random.Random(seed))
+            inst_exts = {Path(f).suffix for f in inst_files.keys()} if isinstance(inst_files, dict) else set()
+        except Exception:
+            inst_exts = set()
+
+        if i > 0 and hasattr(exp, "_seen_extensions"):
+            if not inst_exts.issubset(exp._seen_extensions):
+                unseen = True
+        if not hasattr(exp, "_seen_extensions"):
+            exp._seen_extensions = set()
+        exp._seen_extensions.update(inst_exts)
+
         inst_res = exp.evaluate_instance_arms(
             task_id=task_id,
             task_title=f"{task_def.get('ask', series_name)} (instance {i})",
@@ -1659,6 +1674,7 @@ def run_series(
             repair_a_fn=repair_a_fn,
             judge_fn=judge_fn,
             check_id=f"chk_{series_name}",
+            unseen=unseen,
         )
 
         receipt["completed_instances"].append(inst_res)

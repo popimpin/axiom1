@@ -912,6 +912,54 @@ class TestArmsExperiment(unittest.TestCase):
         self.assertTrue(cj_res["witnessed"])
         self.assertEqual(cj_res["judge_calls"], 1)
 
+    def test_judge_escalates_on_unseen_scenario(self):
+        """
+        Adrian / Claude Rule 2(c): When input scenario is flagged as unseen,
+        Arm C+J escalates to Judge with trigger 'unseen_scenario'.
+        Judge pick is labeled DECLARED and NEVER WITNESSED.
+        NEGATIVE CONTROL: If unseen is False and gate can decide, judge is NOT called.
+        """
+        exp = ArmsExperiment(Path(self.tmp.name) / "test_unseen_exp", arms=["C+J"])
+        repo = DataRepo(Path(self.tmp.name) / "repo_unseen")
+        check_name = "chk_unseen"
+
+        ax_cj = exp.get_axiom("C+J")
+        ax_cj.join("agent-1")
+        ax_cj.join("operator")
+        ax_cj.register_check(check_name, repo.root, [sys.executable, "-I", ".axiom_check/check.py"], [],
+                             holdout=str(self.check_dir), claim_kind="deliver")
+
+        repo_strayed, check_dir, strayed_base, kind = self._setup_repo_with_earlier_instance("repo_unseen_strayed")
+
+        captured_judge_prompts = []
+        def mock_judge(prompt):
+            captured_judge_prompts.append(prompt)
+            return {"decision": "adopt_invariant", "observation": "novel input format parsed gracefully"}
+
+        # Candidate that fails check (exit 1)
+        res = exp.evaluate_instance_arms(
+            task_id="unseen_inst",
+            task_title="Unseen task",
+            repo_builder=lambda arm="": (repo_strayed, check_dir, strayed_base, kind),
+            propose_fn=lambda *args, **kwargs: {
+                "invariant": {"script": "exit(1)", "entry": ""},
+                "domain": {"script": "exit(1)", "entry": ""},
+            },
+            compose_fn=lambda *_: {"decision": "keep_current", "observation": "none"},
+            judge_fn=mock_judge,
+            check_id=check_name,
+            unseen=True, # Flagged as novel unseen scenario!
+        )
+
+        cj_res = res["arm_c_j"]
+        self.assertTrue(cj_res["escalated"])
+        self.assertEqual(cj_res["escalation_trigger"], "unseen_scenario")
+        self.assertEqual(cj_res["winner"], "invariant")
+        self.assertFalse(cj_res["witnessed"], "Unseen scenario pick must not be witnessed!")
+        self.assertEqual(cj_res["claim_label"], "declared")
+        self.assertEqual(len(captured_judge_prompts), 1)
+        self.assertIn("ESCALATION TRIGGER: unseen_scenario", captured_judge_prompts[0])
+
     def test_escalation_rate_summary_in_receipt(self):
         """
         Adrian / Claude Rule 2: Escalation rate (escalations / total repairs) is computed and recorded in receipt.

@@ -1617,8 +1617,14 @@ def run_series(
 
     receipt = exp.load_receipt()
     model = model_name or get_runner_model()
+    try:
+        import subprocess
+        commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(Path(__file__).parent), text=True).strip()
+    except Exception:
+        commit_sha = "unknown"
     receipt.update({
         "series": series_name,
+        "commit_sha": commit_sha,
         "instances_requested": n_instances,
         "arms": list(arms),
         "endpoint": endpoint,

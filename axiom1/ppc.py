@@ -23,6 +23,7 @@ import json
 from typing import Any, Callable
 
 from .verifier import ENTRY_FILE, PROCESS_FILE, process_argv
+from . import engines
 
 
 
@@ -269,6 +270,7 @@ async def repair_ppc(
         entry_example=entry_example,
         replay_note=replay.get("note", ""),
         input_files=input_files_text,
+        engines_manual=engines.manual(examples=True),
         witnessed_lessons=w_mem,
         declared_lessons=d_mem,
     )

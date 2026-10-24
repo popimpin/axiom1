@@ -426,7 +426,7 @@ class TestPPCRepair(unittest.TestCase):
 
         # NEGATIVE CONTROL 3A: Disabling memory write-back leaves Round 2 blind
         # Create a fresh task where refusal was NOT recorded -> lessons is empty / missing refusal
-        self.ax.post_task("operator", "Unrecorded task", check_id="receipts")
+        self.ax.post_task("operator", "Unrecorded task", check_id="unrecorded")
         blind_task = self.ax.take_task("agent-1")
         blind_refusals = [l for l in blind_task.get("lessons", []) if "PPC candidate" in l.get("lesson", "")]
         self.assertEqual(len(blind_refusals), 0, "Negative control: without record_refusal, lessons has 0 entries")

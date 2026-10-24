@@ -255,8 +255,10 @@ class ChatModel:
 
     def __call__(self, messages, tools):
         check_local(self.base_url)                     # and on every call: a host that re-resolves elsewhere is caught
-        body = {"model": self.model, "messages": messages, "tools": tools,
+        body = {"model": self.model, "messages": messages,
                 "temperature": self.temperature, "max_tokens": self.max_tokens}
+        if tools:
+            body["tools"] = tools
         if self.thinking is not None and self.thinking_switch == "chat_template_kwargs":
             body["chat_template_kwargs"] = {"enable_thinking": bool(self.thinking)}
         elif self.thinking is False:                       # reasoning_effort: thinking on = the model's default
@@ -280,7 +282,7 @@ class ChatModel:
                 if e.code < 500 and e.code != 429 or attempt == 4:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
                                        f"{e.read()[:300].decode(errors='replace')}") from None
-            except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException) as e:
+            except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException, json.decoder.JSONDecodeError) as e:
                 # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes; seen on
                 # Nebius 2026-10-04: "ConnectionResetError 10054" while READING the reply, which is not a URLError,
                 # ended a mailbox run - ConnectionError and http.client errors are retried too)

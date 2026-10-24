@@ -115,6 +115,9 @@ Execution output:
 {cand2_output}
 Deliverable files produced: {cand2_files}
 
+AVAILABLE DETERMINISTIC ENGINES (API Reference):
+{engines_manual}
+
 Instructions:
 Evaluate the two candidates based solely on their code changes and execution outputs.
 Decide between:
@@ -129,6 +132,47 @@ Respond with valid JSON:
   "observation": "detailed rationale explaining the code quality and run output differences"
 }}
 ```"""
+
+
+def get_imported_engine_manual(script: str = "") -> str:
+    """Return engines.manual() tailored to the engines imported by the script (or all engines if unspecified)."""
+    from . import engines
+    known = ["time", "money", "table", "matcher", "merge", "quote", "sorter", "ledger"]
+    found = [k for k in known if k in script]
+    names = found if found else None
+    return engines.manual(names=names, examples=True)
+
+
+def extract_input_shape_signatures(files: Any) -> set[str]:
+    """Extract structural input shape signatures (date patterns, currency formats, delimiters) from files."""
+    import re
+    signatures = set()
+    sample = ""
+    if isinstance(files, dict):
+        for k, v in files.items():
+            signatures.add(f"ext:{Path(k).suffix}")
+            sample += str(v)[:2000] + "\n"
+    elif isinstance(files, (list, tuple)):
+        for f in files:
+            sample += str(f)[:2000] + "\n"
+            
+    if re.search(r'\b\d{4}-\d{2}-\d{2}\b', sample):
+        signatures.add("shape:date_iso_ymd")
+    if re.search(r'\b\d{1,2}/\d{1,2}/\d{2,4}\b', sample):
+        signatures.add("shape:date_slash_numeric")
+    if re.search(r'\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2}\b', sample, re.I):
+        signatures.add("shape:date_month_name")
+    if re.search(r'\$\s*\d+', sample):
+        signatures.add("shape:currency_dollar_symbol")
+    if re.search(r'\b\d+\.\d{2}\s*(USD|EUR|GBP)\b', sample, re.I):
+        signatures.add("shape:currency_code_suffix")
+    if re.search(r'\b\d+,\d{2}\b', sample):
+        signatures.add("shape:comma_decimal")
+    if "\t" in sample:
+        signatures.add("shape:tab_delimited")
+    if "," in sample:
+        signatures.add("shape:comma_delimited")
+    return signatures
 
 
 def get_available_series() -> list[str]:
@@ -183,6 +227,7 @@ def derive_tokens_for_series(task_def: dict[str, Any]) -> dict[str, int]:
         cand2_exit=0,
         cand2_output="Processed files",
         cand2_files="summary.csv",
+        engines_manual=eng_manual,
     )
     # Character-based approximation: ~3.8 chars per token
     propose_prompt_tokens = max(1500, int(len(sample_prop) / 3.8))
@@ -227,6 +272,7 @@ def build_composer_prompt(
     reference_entry: str,
     cand1: dict[str, Any],
     cand2: dict[str, Any],
+    engines_manual: str = None,
 ) -> str:
     """
     Construct Model Composer prompt from reference script and candidate run observations.
@@ -258,6 +304,7 @@ def build_composer_prompt(
         cand2_exit=cand2.get("run", {}).get("exit", 0),
         cand2_output=c2_out.strip() or "(no stdout/stderr)",
         cand2_files=", ".join(cand2.get("deliverables", [])) or "(none)",
+        engines_manual=engines_manual if engines_manual is not None else get_imported_engine_manual(reference_script),
     )
     return prompt
 
@@ -304,6 +351,7 @@ def build_judge_prompt(
     cand2: dict[str, Any],
     trigger: str,
     witnessed_memory: str = "",
+    engines_manual: str = None,
 ) -> str:
     """
     Construct Escalation Judge prompt from artifacts, run observations, and witnessed memory.
@@ -355,6 +403,9 @@ Exit code: {cand2.get("run", {}).get("exit", 0)}
 Output:
 {c2_out.strip() or "(no stdout/stderr)"}
 Deliverables: {", ".join(cand2.get("deliverables", [])) or "(none)"}
+
+AVAILABLE DETERMINISTIC ENGINES (API Reference):
+{engines_manual if engines_manual is not None else get_imported_engine_manual(reference_script)}
 
 Evaluate the technical merits of both candidates under this escalation trigger ({trigger}).
 Return JSON with "decision" ("adopt_invariant", "adopt_domain", or "keep_current") and "observation".
@@ -766,6 +817,8 @@ class ArmsExperiment:
             a_ctx = arm_contexts["A"]
             if repair_a_fn:
                 a_res = repair_a_fn(a_ctx)
+                if isinstance(a_res, dict) and a_res.get("model_calls") == 0 and not a_res.get("witnessed"):
+                    raise RuntimeError("Arm A made 0 model calls! Arm A must never report a repair it did not attempt.")
                 results["arm_a"] = a_res
             else:
                 results["arm_a"] = "NOT_RUN"
@@ -1395,8 +1448,7 @@ def run_series(
 
         def live_propose(title, base_script, base_entry, replay_note="", input_files="(see workspace)",
                          witnessed_lessons="(no verified lessons yet)", declared_lessons="(no unverified attempts)"):
-            from .engines import manual as engines_manual_fn
-            eng_manual_text = engines_manual_fn(examples=True)
+            eng_manual_text = get_imported_engine_manual(base_script)
             u0 = dict(chat_model.usage)
             inv_prompt = PPC_INVARIANT_PROMPT.format(
                 base_script=base_script,
@@ -1532,12 +1584,22 @@ def run_series(
             claims_a = a_ctx["ax"].db.execute("SELECT * FROM claims WHERE agent='agent-1' AND label='witnessed'").fetchall()
             a_witnessed = len(claims_a) > 0
 
+            reason = None
+            if not a_witnessed:
+                if calls_a >= 40:
+                    reason = "step cap reached"
+                elif calls_a == 0:
+                    raise RuntimeError(f"Arm A made 0 model calls in {wall_a}s! Arm A must never report a repair it did not attempt.")
+                else:
+                    reason = "repair did not pass acceptance check"
+
             return {
                 "strategy": "single_repair",
                 "witnessed": a_witnessed,
                 "model_calls": calls_a,
                 "wall_time_seconds": wall_a,
                 "token_usage": {"prompt_tokens": p_a, "completion_tokens": c_a},
+                "reason": reason,
             }
         repair_a_fn = live_repair_a
 
@@ -1637,12 +1699,16 @@ def run_series(
                 inst_res = {
                     "task_id": task_id,
                     "task_title": f"{task_def.get('ask', series_name)} (instance {i})",
-                    "cold_start": True,
+                    "cold_start": "reused",
+                    "reused": True,
+                    "reused_from": f"{exp.db_dir}/arm_c.db",
+                    "source": f"locked process v{proc['version']} from {exp.db_dir}/arm_c.db",
                     "locked_v1": True,
                     "version": proc["version"],
                     "model_calls": 0,
+                    "cost_usd": 0.0,
                     "token_usage": {"prompt_tokens": 0, "completion_tokens": 0},
-                    "reason": "Process v1 already locked in reference DB",
+                    "reason": "Process v1 already locked in reference DB (reused)",
                 }
                 receipt["completed_instances"].append(inst_res)
                 receipt["instances_completed"] = len(receipt["completed_instances"])
@@ -1654,16 +1720,16 @@ def run_series(
         unseen = False
         try:
             inst_files, _ = task_def["data"](random.Random(seed))
-            inst_exts = {Path(f).suffix for f in inst_files.keys()} if isinstance(inst_files, dict) else set()
+            inst_shapes = extract_input_shape_signatures(inst_files)
         except Exception:
-            inst_exts = set()
+            inst_shapes = set()
 
-        if i > 0 and hasattr(exp, "_seen_extensions"):
-            if not inst_exts.issubset(exp._seen_extensions):
+        if i > 0 and hasattr(exp, "_seen_shapes"):
+            if not inst_shapes.issubset(exp._seen_shapes):
                 unseen = True
-        if not hasattr(exp, "_seen_extensions"):
-            exp._seen_extensions = set()
-        exp._seen_extensions.update(inst_exts)
+        if not hasattr(exp, "_seen_shapes"):
+            exp._seen_shapes = set()
+        exp._seen_shapes.update(inst_shapes)
 
         inst_res = exp.evaluate_instance_arms(
             task_id=task_id,

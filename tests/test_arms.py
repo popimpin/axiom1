@@ -997,5 +997,106 @@ class TestArmsExperiment(unittest.TestCase):
         self.assertIn("escalations_by_trigger", summary)
 
 
+    def test_proposer_prompt_contains_engines_manual(self):
+        """
+        Claude Rule 1: The PPC proposer prompt MUST contain the engine manual with examples
+        for the engines imported by the script.
+        NEGATIVE CONTROL: Removing the engine manual from the prompt turns this test RED.
+        """
+        from axiom1.arms import get_imported_engine_manual, PPC_INVARIANT_PROMPT, PPC_DOMAIN_PROMPT
+        base_script = "from axiom_engines import time, money, table\nimport csv\n"
+        m = get_imported_engine_manual(base_script)
+        self.assertIn("time.parse_date", m)
+        self.assertIn("money.parse", m)
+        self.assertIn("table.read_csv", m)
+
+        inv_prompt = PPC_INVARIANT_PROMPT.format(
+            base_script=base_script,
+            entry_example="{}",
+            replay_note="ValueError: No date found",
+            input_files="receipts/1.txt",
+            engines_manual=m,
+            witnessed_lessons="(none)",
+            declared_lessons="(none)",
+        )
+        self.assertIn("time.parse_date", inv_prompt)
+        self.assertIn("AVAILABLE DETERMINISTIC ENGINES", inv_prompt)
+
+        # NEGATIVE CONTROL: Empty manual causes assertion failure
+        bad_prompt = PPC_INVARIANT_PROMPT.format(
+            base_script=base_script,
+            entry_example="{}",
+            replay_note="ValueError: No date found",
+            input_files="receipts/1.txt",
+            engines_manual="",
+            witnessed_lessons="(none)",
+            declared_lessons="(none)",
+        )
+        self.assertNotIn("time.parse_date", bad_prompt)
+
+    def test_composer_and_judge_prompts_contain_engines_manual(self):
+        """
+        Claude Rule 1: Composer and Judge prompts contain engine API reference so they can identify API misuse.
+        NEGATIVE CONTROL: Stripping engine manual turns this test RED.
+        """
+        cand = {"script": "print(1)", "run": {"output": "1", "exit": 0}, "deliverables": []}
+        comp_prompt = build_composer_prompt("from axiom_engines import time\n", "{}", cand, cand)
+        self.assertIn("AVAILABLE DETERMINISTIC ENGINES", comp_prompt)
+        self.assertIn("time.parse_date", comp_prompt)
+
+        judge_prompt = build_judge_prompt("from axiom_engines import time\n", "{}", cand, cand, trigger="both_pass_tie")
+        self.assertIn("AVAILABLE DETERMINISTIC ENGINES", judge_prompt)
+        self.assertIn("time.parse_date", judge_prompt)
+
+    def test_arm_a_zero_calls_raises_error(self):
+        """
+        Claude Rule 2: Arm A must never report a repair it did not attempt (0 model calls).
+        NEGATIVE CONTROL: An Arm A repair returning 0 calls and not witnessed MUST raise RuntimeError.
+        """
+        exp = ArmsExperiment(self.db_dir, arms=["A", "B", "C"])
+        fake_unattempted_repair = lambda a_ctx: {
+            "strategy": "single_repair",
+            "witnessed": False,
+            "model_calls": 0,
+            "wall_time_seconds": 1.7,
+            "token_usage": {"prompt_tokens": 0, "completion_tokens": 0},
+        }
+        with self.assertRaises(RuntimeError) as ctx:
+            exp.evaluate_instance_arms(
+                task_id="arm_a_zero_calls_inst",
+                task_title="Test Arm A zero calls",
+                repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_arm_a_zero", arm=arm),
+                propose_fn=lambda *args, **kwargs: {},
+                compose_fn=lambda *_: {},
+                repair_a_fn=fake_unattempted_repair,
+            )
+        self.assertIn("Arm A made 0 model calls", str(ctx.exception))
+
+    def test_arm_a_step_cap_reached_records_exact_reason(self):
+        """
+        Claude Rule 2: When Arm A hits the step cap mid-repair without a witnessed claim,
+        reason must be 'step cap reached'.
+        """
+        fake_capped_repair = lambda a_ctx: {
+            "strategy": "single_repair",
+            "witnessed": False,
+            "model_calls": 40,
+            "wall_time_seconds": 95.0,
+            "token_usage": {"prompt_tokens": 10000, "completion_tokens": 2000},
+            "reason": "step cap reached",
+        }
+        exp = ArmsExperiment(self.db_dir, arms=["A", "B", "C"])
+        res = exp.evaluate_instance_arms(
+            task_id="arm_a_capped_inst",
+            task_title="Test Arm A step cap",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_arm_a_capped", arm=arm),
+            propose_fn=lambda *args, **kwargs: {},
+            compose_fn=lambda *_: {},
+            repair_a_fn=fake_capped_repair,
+        )
+        self.assertEqual(res["arm_a"]["reason"], "step cap reached")
+        self.assertFalse(res["arm_a"]["witnessed"])
+
+
 if __name__ == "__main__":
     unittest.main()

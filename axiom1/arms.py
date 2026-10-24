@@ -159,6 +159,8 @@ def get_task_def(series_name: str) -> dict[str, Any]:
 
 def derive_tokens_for_series(task_def: dict[str, Any]) -> dict[str, int]:
     """Derive token counts from real formatted prompts built for the series."""
+    from .engines import manual as engines_manual_fn
+    eng_manual = engines_manual_fn(examples=False)
     files, _ = task_def["data"](random.Random(1000))
     sample_inputs = "\n".join(f"=== {k} ===\n{v[:300]}" for k, v in sorted(files.items())[:4])
     sample_prop = PPC_PROPOSAL_PROMPT.format(
@@ -166,6 +168,7 @@ def derive_tokens_for_series(task_def: dict[str, Any]) -> dict[str, int]:
         entry_example='{"output": "summary.csv"}',
         replay_note=f"Task: {task_def.get('ask', '')[:200]}",
         input_files=sample_inputs,
+        engines_manual=eng_manual,
         witnessed_lessons="- [WITNESSED] sample verified rule",
         declared_lessons="- [UNVERIFIED] sample unverified attempt",
     )
@@ -1389,12 +1392,15 @@ def run_series(
 
         def live_propose(title, base_script, base_entry, replay_note="", input_files="(see workspace)",
                          witnessed_lessons="(no verified lessons yet)", declared_lessons="(no unverified attempts)"):
+            from .engines import manual as engines_manual_fn
+            eng_manual_text = engines_manual_fn(examples=False)
             u0 = dict(chat_model.usage)
             inv_prompt = PPC_INVARIANT_PROMPT.format(
                 base_script=base_script,
                 entry_example=base_entry,
                 replay_note=replay_note or "(process failed acceptance check on new files)",
                 input_files=input_files or "(see workspace)",
+                engines_manual=eng_manual_text,
                 witnessed_lessons=witnessed_lessons or "(no verified lessons yet)",
                 declared_lessons=declared_lessons or "(no unverified attempts)",
             )
@@ -1411,6 +1417,7 @@ def run_series(
                 entry_example=base_entry,
                 replay_note=replay_note or "(process failed acceptance check on new files)",
                 input_files=input_files or "(see workspace)",
+                engines_manual=eng_manual_text,
                 witnessed_lessons=witnessed_lessons or "(no verified lessons yet)",
                 declared_lessons=declared_lessons or "(no unverified attempts)",
             )
@@ -1505,7 +1512,7 @@ def run_series(
                     wt_a,
                     str(exp.db_dir / "arm_a.db"),
                     model_a,
-                    max_steps=25,
+                    max_steps=40,
                     log=lambda *_: None,
                     shell=LocalSandbox(),
                     thinking="off",

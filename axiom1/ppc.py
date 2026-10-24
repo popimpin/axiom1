@@ -45,6 +45,9 @@ FAILURE FEEDBACK FROM REPLAY:
 THIS TASK'S INPUT FILES:
 {input_files}
 
+AVAILABLE DETERMINISTIC ENGINES (import from axiom_engines or use directly):
+{engines_manual}
+
 VERIFIED MEMORY (Proven Skills / Witnessed Facts):
 {witnessed_lessons}
 
@@ -76,6 +79,9 @@ FAILURE FEEDBACK FROM REPLAY:
 
 THIS TASK'S INPUT FILES:
 {input_files}
+
+AVAILABLE DETERMINISTIC ENGINES (import from axiom_engines or use directly):
+{engines_manual}
 
 VERIFIED MEMORY (Proven Skills / Witnessed Facts):
 {witnessed_lessons}
@@ -137,6 +143,9 @@ FAILURE FEEDBACK FROM REPLAY:
 
 THIS TASK'S INPUT FILES:
 {input_files}
+
+AVAILABLE DETERMINISTIC ENGINES (import from axiom_engines or use directly):
+{engines_manual}
 
 VERIFIED MEMORY (Proven Skills / Witnessed Facts):
 {witnessed_lessons}

@@ -578,7 +578,10 @@ class ArmsExperiment:
                     claim_kind=claim_kind,
                 )
             task_info = ax.post_task("operator", task_title, check_id=check_name)
-            task = ax.take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 14400)), task_id=task_info.get("id"))
+            if arm == "A":
+                task = task_info
+            else:
+                task = ax.take_task("agent-1", lease_s=int(os.environ.get("AXIOM_LEASE_SECONDS", 14400)), task_id=task_info.get("id"))
             arm_contexts[arm] = {
                 "ax": ax,
                 "repo": repo,
@@ -1627,6 +1630,23 @@ def run_series(
                     exp.save_receipt(receipt)
                     break
 
+                exp.save_receipt(receipt)
+                continue
+            else:
+                # Existing locked process found in reference DB
+                inst_res = {
+                    "task_id": task_id,
+                    "task_title": f"{task_def.get('ask', series_name)} (instance {i})",
+                    "cold_start": True,
+                    "locked_v1": True,
+                    "version": proc["version"],
+                    "model_calls": 0,
+                    "token_usage": {"prompt_tokens": 0, "completion_tokens": 0},
+                    "reason": "Process v1 already locked in reference DB",
+                }
+                receipt["completed_instances"].append(inst_res)
+                receipt["instances_completed"] = len(receipt["completed_instances"])
+                receipt["instance_0_locked_v1"] = True
                 exp.save_receipt(receipt)
                 continue
 

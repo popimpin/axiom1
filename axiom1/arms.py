@@ -1440,6 +1440,16 @@ def run_series(
 
     model = model_name or get_runner_model()
 
+    # Initialize senior judge model if specified (used for Arm B composer and Arm C+J escalation judge)
+    judge_chat_model = None
+    if any(a in ("B", "C+J", "CJ") for a in (arms or [])):
+        if judge_model_name or os.environ.get("AXIOM_JUDGE_MODEL"):
+            from .agent import ChatModel
+            j_model = judge_model_name or os.environ.get("AXIOM_JUDGE_MODEL")
+            j_url = judge_base_url or os.environ.get("AXIOM_JUDGE_URL") or endpoint
+            judge_chat_model = ChatModel(model=j_model, base_url=j_url)
+            judge_chat_model.thinking = False
+
     # Wire live model client if not provided
     if propose_fn is None or compose_fn is None:
         from .agent import ChatModel
@@ -1502,8 +1512,9 @@ def run_series(
             return res
 
         def live_compose(prompt):
-            u0 = dict(chat_model.usage)
-            msg = chat_model([
+            comp_model = judge_chat_model if (judge_chat_model is not None) else chat_model
+            u0 = dict(comp_model.usage)
+            msg = comp_model([
                 {"role": "system", "content": COMPOSER_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ], [])
@@ -1519,11 +1530,12 @@ def run_series(
         compose_fn = live_compose
 
     if judge_fn is None and any(a in ("C+J", "CJ") for a in (arms or [])):
-        from .agent import ChatModel
-        j_model = judge_model_name or os.environ.get("AXIOM_JUDGE_MODEL") or model
-        j_url = judge_base_url or os.environ.get("AXIOM_JUDGE_URL") or endpoint
-        judge_chat_model = ChatModel(model=j_model, base_url=j_url)
-        judge_chat_model.thinking = False
+        if judge_chat_model is None:
+            from .agent import ChatModel
+            j_model = judge_model_name or os.environ.get("AXIOM_JUDGE_MODEL") or model
+            j_url = judge_base_url or os.environ.get("AXIOM_JUDGE_URL") or endpoint
+            judge_chat_model = ChatModel(model=j_model, base_url=j_url)
+            judge_chat_model.thinking = False
 
         def live_judge(prompt):
             u0 = dict(judge_chat_model.usage)

@@ -267,7 +267,7 @@ class ChatModel:
                                      headers={"Authorization": f"Bearer {self.api_key}",
                                               "Content-Type": "application/json"})
         timeout = int(os.environ.get("AXIOM_HTTP_TIMEOUT", 600))
-        for attempt in range(5):
+        for attempt in range(8):
             try:
                 with urllib.request.urlopen(req, timeout=timeout) as r:
                     data = json.load(r)
@@ -279,16 +279,16 @@ class ChatModel:
                 self.usage["cut_off"] += data["choices"][0].get("finish_reason") == "length"
                 return data["choices"][0]["message"]
             except urllib.error.HTTPError as e:
-                if e.code < 500 and e.code != 429 or attempt == 4:
+                if (e.code < 500 and e.code != 429) or attempt == 7:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
                                        f"{e.read()[:300].decode(errors='replace')}") from None
             except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException, json.decoder.JSONDecodeError) as e:
                 # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes; seen on
                 # Nebius 2026-10-04: "ConnectionResetError 10054" while READING the reply, which is not a URLError,
                 # ended a mailbox run - ConnectionError and http.client errors are retried too)
-                if attempt == 4:
+                if attempt == 7:
                     raise RuntimeError(f"model endpoint did not answer: {e}") from None
-            time.sleep(2 ** attempt * 2)     # 2, 4, 8, 16 s: rides out a brief network drop (seen on Bee)
+            time.sleep(min(30, 2 ** attempt * 2))     # rides out a brief network drop or server 503
 
 
 def _looks_like_a_tool_call(content):

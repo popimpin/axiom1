@@ -115,7 +115,19 @@ def extract_single_candidate(reply_content: str | dict, default_kind: str = "inv
         except Exception:
             import re
             m = re.search(r"\{.*\}", text, re.DOTALL)
-            data = json.loads(m.group(0)) if m else {}
+            if m:
+                try:
+                    data = json.loads(m.group(0))
+                except Exception:
+                    data = {}
+            else:
+                data = {}
+        if not data.get("script") and "```python" in raw_text:
+            try:
+                script_block = raw_text.split("```python", 1)[1].split("```", 1)[0].strip()
+                data["script"] = script_block
+            except Exception:
+                pass
 
     if default_kind in data and isinstance(data[default_kind], dict):
         return {

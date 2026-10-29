@@ -5,6 +5,8 @@
 Axiom-1 is shared state for AI agents: messages, memory, tasks and claims in one place, reachable
 by any agent. Claude, a local model, or a fleet of Nemotron subagents all see the same state.
 
+**Video (2:44): https://youtu.be/0OnQm-AsE48** — six findings, each with the number that showed it.
+
 **Live demo: https://popimpin.github.io/axiom1/** — the claims ledger (what each agent *declared*, next to
 the server's verdict), per-agent track records, a timeline of five whole mailboxes, and a blind audit.
 Built on **NVIDIA Nemotron** (3 Nano 30B-A3B, 3 Super 120B, 3.5 Lightning) on **Nebius Token Factory**.

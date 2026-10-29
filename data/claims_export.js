@@ -1,0 +1,2663 @@
+window.AXIOM_CLAIMS_DATA = {
+  "metadata": {
+    "title": "Axiom-1 The Mind Made Visible",
+    "db_name": "arm_c.db",
+    "run_label": "Nebius Token Factory Paid Run 3 (Arm C: Locked Process Reproduction + PPC Checks)",
+    "commit": "16b53667721e9c84e5bb06d22e67991cab1c23c8",
+    "total_claims": 15,
+    "witnessed_claims": 1,
+    "refuted_claims": 14,
+    "total_tasks": 20,
+    "total_events": 128,
+    "everyday_series": {
+      "total": 40,
+      "witnessed": 31,
+      "replays": 21,
+      "avg_replay_calls": 0.4,
+      "avg_fresh_calls": 29.0
+    }
+  },
+  "track_records": {
+    "agent-1": {
+      "agent": "agent-1",
+      "caps": [],
+      "witnessed": 0,
+      "refuted": 14,
+      "pending": 0,
+      "unanchored": 0,
+      "leases_expired": 6,
+      "released": 0
+    },
+    "operator": {
+      "agent": "operator",
+      "caps": [],
+      "witnessed": 0,
+      "refuted": 0,
+      "pending": 0,
+      "unanchored": 0,
+      "leases_expired": 0,
+      "released": 0
+    },
+    "agent-cold": {
+      "agent": "agent-cold",
+      "caps": [],
+      "witnessed": 1,
+      "refuted": 0,
+      "pending": 0,
+      "unanchored": 0,
+      "leases_expired": 1,
+      "released": 0
+    }
+  },
+  "claims": [
+    {
+      "id": "335c0f7b3e7e",
+      "agent": "agent-cold",
+      "statement": "All 12 March receipts are captured in march_expenses.csv with date, shop, amount, and category (food/transport/home/other), sorted by date. The process.py reads each receipt file, extracts the shop name, parses the date via time engines, extracts the total amount via money engine, categorizes by shop type, and writes a CSV with table.write_csv.",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "8c6d748b2da57cc90983d64c9919b19b4ede0a14",
+      "after_sha": "ad3e5e3c6205e57f9c789845489b8ed6edee0b7e",
+      "task_id": null,
+      "label": "witnessed",
+      "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files (process locked in as v1)",
+      "evidence": "{\"sandbox\": {\"kind\": \"local\", \"isolated\": false}, \"kind\": \"deliver\", \"guards\": {\"checked\": [\"nothing lost\", \"well-formed csv/json\"], \"problems\": []}, \"before\": {\"sha\": \"8c6d748b2da57cc90983d64c9919b19b4ede0a14\", \"exit\": 1, \"feedback\": [\"march_expenses.csv was not found in the workspace\"]}, \"after\": {\"sha\": \"ad3e5e3c6205e57f9c789845489b8ed6edee0b7e\", \"exit\": 0, \"feedback\": [\"every receipt is in the spreadsheet with the right date, amount and category\"]}, \"process\": {\"present\": true, \"ran\": true, \"reproduced\": true, \"run_tail\": \"\", \"feedback\": [\"every receipt is in the spreadsheet with the right date, amount and category\"], \"outcome\": \"process locked in as v1\"}}",
+      "made_at": 1792790663.8826425,
+      "verified_at": 1792790678.6895301,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {
+        "sandbox": {
+          "kind": "local",
+          "isolated": false
+        },
+        "kind": "deliver",
+        "guards": {
+          "checked": [
+            "nothing lost",
+            "well-formed csv/json"
+          ],
+          "problems": []
+        },
+        "before": {
+          "sha": "8c6d748b2da57cc90983d64c9919b19b4ede0a14",
+          "exit": 1,
+          "feedback": [
+            "march_expenses.csv was not found in the workspace"
+          ]
+        },
+        "after": {
+          "sha": "ad3e5e3c6205e57f9c789845489b8ed6edee0b7e",
+          "exit": 0,
+          "feedback": [
+            "every receipt is in the spreadsheet with the right date, amount and category"
+          ]
+        },
+        "process": {
+          "present": true,
+          "ran": true,
+          "reproduced": true,
+          "run_tail": "",
+          "feedback": [
+            "every receipt is in the spreadsheet with the right date, amount and category"
+          ],
+          "outcome": "process locked in as v1"
+        }
+      },
+      "rel_time_sec": 0.0
+    },
+    {
+      "id": "d86790e49387",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "5bd6bba37e0ee50d109d7dfd067c6844ae1a38ee",
+      "after_sha": "622417c90a17ac84e4b9b452b69f0205b7183320",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792797330.139055,
+      "verified_at": 1792797330.139056,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 6666.3
+    },
+    {
+      "id": "a95e3f3d092e",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "740dbded429c2827d45a345ea3ff6b283df791f5",
+      "after_sha": "aff95f20183b92744b9e2dd28fd1bb0c214c95d1",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792798166.3585496,
+      "verified_at": 1792798166.35855,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 7502.5
+    },
+    {
+      "id": "352200d9b241",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "b6bf05f2a86c89db5e08d8b0533a4ab3176e0710",
+      "after_sha": "4b46219d5c544efc22ab5a06d41950d877a04e54",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792798970.2227917,
+      "verified_at": 1792798970.2227921,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 8306.3
+    },
+    {
+      "id": "a90a39db75aa",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "5689d49f1dce77912361d85f5f1f9fd52e27e430",
+      "after_sha": "8038cf408571543f7d4b27018fdd872b3d570cda",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792815338.2662864,
+      "verified_at": 1792815338.2662866,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 24674.4
+    },
+    {
+      "id": "002a54d521ae",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "9c3c90c19c157134a01288c806de170fa6712066",
+      "after_sha": "e7550e72cc5b418135d2cae0ce91b0bb33b81e99",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792817413.0965014,
+      "verified_at": 1792817413.0965016,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 26749.2
+    },
+    {
+      "id": "430e927b3f08",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "d6854fbf7aad3d844bfb2989e956ec34a2f26394",
+      "after_sha": "c3301749b7a32b05ca710be0f2629f6934f72e82",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792820699.0863419,
+      "verified_at": 1792820699.0863419,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 30035.2
+    },
+    {
+      "id": "8f671712bb47",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "66c19cba73cd6a995d8319de9a9a0ffeb913261a",
+      "after_sha": "4f75fe80ca6b156eb5222dfc672611d549f368bb",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792847555.1322603,
+      "verified_at": 1792847555.1322603,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 56891.2
+    },
+    {
+      "id": "e2b56623909d",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "bd7faac1a0af9c89e51b9f867d3660baf2cb1d47",
+      "after_sha": "85b040f859a3549f327354176a911250b49a35ee",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792847739.3124788,
+      "verified_at": 1792847739.3124795,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 57075.4
+    },
+    {
+      "id": "45cb777ea46f",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "045cb3d221da5446937b1a9b64bebcc6fedc13b1",
+      "after_sha": "3f2f8551ef77b0e17abc801c0f684f3043c4a0a9",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792847786.4810457,
+      "verified_at": 1792847786.4810464,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 57122.6
+    },
+    {
+      "id": "d9ddf4c37a21",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "0456b86b9b70675fe6bb96d07ca6ed694a878a91",
+      "after_sha": "30de918155b70b3a6c5697bea46948914cbfe9ac",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792847841.1755357,
+      "verified_at": 1792847841.1755364,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 57177.3
+    },
+    {
+      "id": "12cbeb6675d1",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "8c0c82087756924778f12497016da9f87fb62d9d",
+      "after_sha": "0baed19238f5a3590399288079f05626a19e7976",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792853333.7237794,
+      "verified_at": 1792853333.7237797,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 62669.8
+    },
+    {
+      "id": "1495198b3325",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "025330b0793cf9f327b8852127de282f4efa76f0",
+      "after_sha": "cbc53f2f0c900ef2bc9fcae8e9f833f45735aad2",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792853557.0219314,
+      "verified_at": 1792853557.0219314,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 62893.1
+    },
+    {
+      "id": "cc40994c87fc",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "1dc9f8f5056d3440ee1dc3b9dd75b94add43cb8d",
+      "after_sha": "2ad4fa7c39dd84ab5df9c3f21d33a470b671b0c5",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792853582.5485852,
+      "verified_at": 1792853582.5485852,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 62918.7
+    },
+    {
+      "id": "1cd0be0c7fe7",
+      "agent": "agent-1",
+      "statement": "PPC batch (invariant, domain)",
+      "check_id": "chk_receipts-to-spreadsheet",
+      "before_sha": "a4af3b986ccd0adca0dd62f648a18f923b1949bc",
+      "after_sha": "4d81951fef27e51d92451470442226847c5acd8a",
+      "task_id": null,
+      "label": "refuted",
+      "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check",
+      "evidence": "{}",
+      "made_at": 1792853615.2012427,
+      "verified_at": 1792853615.2012427,
+      "kind": "deliver",
+      "anchored": 1,
+      "evidence_parsed": {},
+      "rel_time_sec": 62951.3
+    }
+  ],
+  "processes": [
+    {
+      "check_id": "chk_receipts-to-spreadsheet",
+      "version": 1,
+      "script": "#!/usr/bin/env python3\n\"\"\"Read March receipts from the receipts/ folder and produce march_expenses.csv.\"\"\"\n\nimport os\nimport re\nimport glob\n\nfrom axiom_engines import time, money, table\n\n\ndef categorize_shop(shop: str) -> str:\n    \"\"\"Decide the category for a receipt based on the shop name. This is judgement.\"\"\"\n    s = shop.strip().lower()\n    if any(w in s for w in (\"grocer\", \"food\", \"market\", \"deli\")):\n        return \"food\"\n    if any(w in s for w in (\"transit\", \"metro\", \"bus\", \"train\", \"taxi\", \"uber\", \"rail\")):\n        return \"transport\"\n    if any(w in s for w in (\"hardware\", \"home\", \"furniture\", \"linen\", \"lamp\", \"garden\", \"plumb\")):\n        return \"home\"\n    return \"other\"\n\n\ndef parse_date_line(text: str, year: int) -> str:\n    \"\"\"Extract and parse the date from a receipt's text.\"\"\"\n    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]\n    for ln in lines:\n        low = ln.lower()\n        if \"march\" in low:\n            idx = low.find(\"march\")\n            snippet = ln[idx:]\n            m = re.search(r'March\\s+(\\d{1,2}),?\\s+(\\d{4})', snippet)\n            if m:\n                return time.parse_date(f\"March {m.group(1)}, {m.group(2)}\", year)\n        m = re.search(r'(\\d{1,2})/(\\d{1,2})/(\\d{4})', ln)\n        if m:\n            return time.parse_numeric_date(m.group(0), \"MDY\")\n    raise ValueError(f\"No date found in receipt text:\\n{text}\")\n\n\ndef parse_amount(text: str) -> str:\n    \"\"\"Extract the total amount from a receipt.\"\"\"\n    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]\n    # Look for a line that is specifically \"Total\" (not subtotal/tax)\n    for ln in lines:\n        low = ln.lower().strip()\n        if re.match(r'^total\\s*[\\$]?[\\d,]+\\.\\d{2}$', low) or re.match(r'^total$', low):\n            m = re.search(r'[\\$]?([\\d,]+\\.\\d{2})', ln)\n            if m:\n                return money.parse_amount(m.group(1))\n    # Otherwise the last numeric line (the grand total)\n    for ln in reversed(lines):\n        m = re.search(r'[\\$]?([\\d,]+\\.\\d{2})', ln)\n        if m:\n            return money.parse_amount(m.group(1))\n    raise ValueError(f\"No amount found in receipt text:\\n{text}\")\n\n\ndef parse_shop(text: str) -> str:\n    \"\"\"Extract the shop name (first meaningful line).\"\"\"\n    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]\n    for ln in lines:\n        low = ln.lower()\n        if low.startswith(\"***\"):\n            return ln.strip(\"*\").strip()\n        if re.search(r'(\\d{1,2})/(\\d{1,2})/(\\d{4})', ln):\n            continue\n        if \"march\" in low or \"paid on\" in low:\n            continue\n        if re.search(r'(subtotal|tax|total|thank you|by card)', low):\n            continue\n        return ln\n    return lines[0] if lines else \"\"\n\n\ndef main():\n    receipts_dir = os.path.join(os.path.dirname(__file__), \"receipts\")\n    year = 2026\n\n    rows = []\n    for path in sorted(glob.glob(os.path.join(receipts_dir, \"*.txt\"))):\n        base = os.path.basename(path)\n        if base.lower() == \"readme.txt\":\n            continue\n        with open(path) as f:\n            text = f.read()\n        shop = parse_shop(text)\n        date = parse_date_line(text, year)\n        amount = parse_amount(text)\n        category = categorize_shop(shop)\n        rows.append({\n            \"date\": date,\n            \"shop\": shop,\n            \"amount\": money.format_amount(amount),\n            \"category\": category,\n        })\n\n    rows.sort(key=lambda r: (r[\"date\"], r[\"shop\"]))\n\n    table.write_csv(\"march_expenses.csv\", [\"date\", \"shop\", \"amount\", \"category\"], rows)\n    print(f\"Wrote {len(rows)} rows to march_expenses.csv\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+      "entry": null,
+      "claim_id": "335c0f7b3e7e",
+      "agent": "agent-cold",
+      "at": 1792790678.7834022,
+      "fits": null,
+      "proven": "[]"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "03e348af7809",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 0)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": null,
+      "lease_until": null,
+      "at": 1792789458.221655,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "28e889cd39a9",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": null,
+      "lease_until": null,
+      "at": 1792796618.9801993,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "ed284e18b0ce",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": null,
+      "lease_until": null,
+      "at": 1792797331.2152004,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "3748c1217510",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": null,
+      "lease_until": null,
+      "at": 1792798167.3993275,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "01aa1d7e69bf",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792815059.9964378,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "92f7901d97f0",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792817048.8391006,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "70d0db1927ea",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792818683.7538307,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "6e95dd47535b",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "open",
+      "holder": null,
+      "lease_until": null,
+      "at": 1792820699.9889393,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "8b4cad97903e",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "leased",
+      "holder": "agent-1",
+      "lease_until": 1792861428.9758193,
+      "at": 1792847028.9744444,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "e14ec649d7dc",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "leased",
+      "holder": "agent-1",
+      "lease_until": 1792861468.956233,
+      "at": 1792847068.9550993,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "cc91a1831e4b",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792847315.4532404,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "e8e453583d62",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "leased",
+      "holder": "agent-1",
+      "lease_until": 1792861956.0990539,
+      "at": 1792847556.0981517,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "948f2904cdfc",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "leased",
+      "holder": "agent-1",
+      "lease_until": 1792861977.1579237,
+      "at": 1792847577.1567116,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "167c1d964e32",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792847647.168481,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "e6d30d879169",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792847740.3972914,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "bd79368df59f",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792847787.588937,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "d31f427231d7",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792852947.2925212,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "1e59c3cfefe1",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792853334.606031,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "056c991664ab",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792853557.8905609,
+      "check_id": "chk_receipts-to-spreadsheet"
+    },
+    {
+      "id": "60bea6cf684d",
+      "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)",
+      "caps": "[]",
+      "posted_by": "operator",
+      "status": "done",
+      "holder": "agent-1",
+      "lease_until": null,
+      "at": 1792853583.4364016,
+      "check_id": "chk_receipts-to-spreadsheet"
+    }
+  ],
+  "events": [
+    {
+      "id": 4,
+      "at": 1792789458.2203696,
+      "kind": "join",
+      "agent": "agent-cold",
+      "subject": null,
+      "detail": "{\"caps\": [\"shell\"]}",
+      "detail_parsed": {
+        "caps": [
+          "shell"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "at": 1792789459.745518,
+      "kind": "join",
+      "agent": "agent-cold",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 7,
+      "at": 1792789459.7989357,
+      "kind": "take_task",
+      "agent": "agent-cold",
+      "subject": "03e348af7809",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 8,
+      "at": 1792790663.882821,
+      "kind": "claim",
+      "agent": "agent-cold",
+      "subject": "335c0f7b3e7e",
+      "detail": "{\"statement\": \"All 12 March receipts are captured in march_expenses.csv with date, shop, amount, and category (food/transport/home/other), sorted by date. The process.py reads each receipt file, extracts the shop name, parses the date via time engines, extracts the total amount via money engine, categorizes by shop type, and writes a CSV with table.write_csv.\", \"claim_kind\": \"deliver\", \"anchored\": true}",
+      "detail_parsed": {
+        "statement": "All 12 March receipts are captured in march_expenses.csv with date, shop, amount, and category (food/transport/home/other), sorted by date. The process.py reads each receipt file, extracts the shop name, parses the date via time engines, extracts the total amount via money engine, categorizes by shop type, and writes a CSV with table.write_csv.",
+        "claim_kind": "deliver",
+        "anchored": true
+      }
+    },
+    {
+      "id": 9,
+      "at": 1792790678.6897357,
+      "kind": "witnessed",
+      "agent": "agent-cold",
+      "subject": "335c0f7b3e7e",
+      "detail": "{\"reason\": \"the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files\"}",
+      "detail_parsed": {
+        "reason": "the acceptance check failed before the work and passes on what was delivered, and process.py reproduces it from the original files"
+      }
+    },
+    {
+      "id": 10,
+      "at": 1792790678.783468,
+      "kind": "process_locked",
+      "agent": "agent-cold",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{\"version\": 1, \"claim\": \"335c0f7b3e7e\"}",
+      "detail_parsed": {
+        "version": 1,
+        "claim": "335c0f7b3e7e"
+      }
+    },
+    {
+      "id": 11,
+      "at": 1792790678.7835195,
+      "kind": "check_output",
+      "agent": "agent-cold",
+      "subject": "335c0f7b3e7e",
+      "detail": "{\"tail\": \"PUBLIC: every receipt is in the spreadsheet with the right date, amount and category\\n\"}",
+      "detail_parsed": {
+        "tail": "PUBLIC: every receipt is in the spreadsheet with the right date, amount and category\n"
+      }
+    },
+    {
+      "id": 35,
+      "at": 1792793293.3017135,
+      "kind": "lease_expired",
+      "agent": "agent-cold",
+      "subject": "03e348af7809",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 58,
+      "at": 1792796618.6981668,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 59,
+      "at": 1792796618.7013693,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 60,
+      "at": 1792796618.9791555,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 61,
+      "at": 1792796618.9802418,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "28e889cd39a9",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 62,
+      "at": 1792796618.9809933,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "28e889cd39a9",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 63,
+      "at": 1792797330.1901038,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "d86790e49387",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 64,
+      "at": 1792797330.8850346,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 65,
+      "at": 1792797330.8879876,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 66,
+      "at": 1792797331.213696,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 67,
+      "at": 1792797331.2153356,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "ed284e18b0ce",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)"
+      }
+    },
+    {
+      "id": 68,
+      "at": 1792797331.2168024,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "ed284e18b0ce",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 69,
+      "at": 1792798166.360133,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "a95e3f3d092e",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 70,
+      "at": 1792798167.0652544,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 71,
+      "at": 1792798167.068583,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 72,
+      "at": 1792798167.3967066,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 73,
+      "at": 1792798167.3994677,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "3748c1217510",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)"
+      }
+    },
+    {
+      "id": 74,
+      "at": 1792798167.401979,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "3748c1217510",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 75,
+      "at": 1792798968.7422717,
+      "kind": "lease_expired",
+      "agent": "agent-1",
+      "subject": "03e348af7809",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 76,
+      "at": 1792798970.2253199,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "352200d9b241",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 77,
+      "at": 1792798970.9261541,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 78,
+      "at": 1792798970.9282432,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 79,
+      "at": 1792798971.2663295,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 80,
+      "at": 1792798971.2684817,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "604ad6fd57d3",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)"
+      }
+    },
+    {
+      "id": 81,
+      "at": 1792798971.2703214,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "03e348af7809",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 82,
+      "at": 1792814799.8915112,
+      "kind": "lease_expired",
+      "agent": "agent-1",
+      "subject": "03e348af7809",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 83,
+      "at": 1792814799.893445,
+      "kind": "lease_expired",
+      "agent": "agent-1",
+      "subject": "28e889cd39a9",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 84,
+      "at": 1792814799.893594,
+      "kind": "lease_expired",
+      "agent": "agent-1",
+      "subject": "ed284e18b0ce",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 85,
+      "at": 1792814799.8936646,
+      "kind": "lease_expired",
+      "agent": "agent-1",
+      "subject": "3748c1217510",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 86,
+      "at": 1792815059.7245235,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 87,
+      "at": 1792815059.7269442,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 88,
+      "at": 1792815059.9952767,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 89,
+      "at": 1792815059.9964836,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "01aa1d7e69bf",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)"
+      }
+    },
+    {
+      "id": 90,
+      "at": 1792815059.9975114,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "01aa1d7e69bf",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 91,
+      "at": 1792815338.3185682,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "a90a39db75aa",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 92,
+      "at": 1792817048.5256426,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 93,
+      "at": 1792817048.5289834,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 94,
+      "at": 1792817048.8380163,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 95,
+      "at": 1792817048.839149,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "92f7901d97f0",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 96,
+      "at": 1792817048.8399708,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "92f7901d97f0",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 97,
+      "at": 1792817413.0978158,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "002a54d521ae",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 98,
+      "at": 1792818683.4535594,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 99,
+      "at": 1792818683.4566045,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 100,
+      "at": 1792818683.7527795,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 101,
+      "at": 1792818683.7538836,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "70d0db1927ea",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 102,
+      "at": 1792818683.7547102,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "70d0db1927ea",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 103,
+      "at": 1792820699.0875857,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "430e927b3f08",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 104,
+      "at": 1792820699.6840408,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 105,
+      "at": 1792820699.6854122,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 106,
+      "at": 1792820699.9876235,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 107,
+      "at": 1792820699.9890335,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "6e95dd47535b",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)"
+      }
+    },
+    {
+      "id": 108,
+      "at": 1792820699.9902127,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "6e95dd47535b",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 109,
+      "at": 1792847028.662267,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 110,
+      "at": 1792847028.66473,
+      "kind": "lease_expired",
+      "agent": "agent-1",
+      "subject": "6e95dd47535b",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 111,
+      "at": 1792847028.6661806,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 112,
+      "at": 1792847028.9730828,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 113,
+      "at": 1792847028.9744794,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "8b4cad97903e",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 114,
+      "at": 1792847028.975842,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "8b4cad97903e",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 115,
+      "at": 1792847068.6327763,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 116,
+      "at": 1792847068.6363792,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 117,
+      "at": 1792847068.9535217,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 118,
+      "at": 1792847068.9551556,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "e14ec649d7dc",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 119,
+      "at": 1792847068.9562562,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "e14ec649d7dc",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 120,
+      "at": 1792847315.1317225,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 121,
+      "at": 1792847315.1349115,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 122,
+      "at": 1792847315.451488,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 123,
+      "at": 1792847315.4532948,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "cc91a1831e4b",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 124,
+      "at": 1792847315.4545147,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "cc91a1831e4b",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 125,
+      "at": 1792847555.1346138,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "8f671712bb47",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 126,
+      "at": 1792847555.7601225,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 127,
+      "at": 1792847555.761577,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 128,
+      "at": 1792847556.096094,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 129,
+      "at": 1792847556.0982027,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "e8e453583d62",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)"
+      }
+    },
+    {
+      "id": 130,
+      "at": 1792847556.0990796,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "e8e453583d62",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 131,
+      "at": 1792847576.8214245,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 132,
+      "at": 1792847576.8246603,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 133,
+      "at": 1792847577.155445,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 134,
+      "at": 1792847577.1567774,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "948f2904cdfc",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)"
+      }
+    },
+    {
+      "id": 135,
+      "at": 1792847577.1579483,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "948f2904cdfc",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 136,
+      "at": 1792847646.8773012,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 137,
+      "at": 1792847646.879574,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 138,
+      "at": 1792847647.1675627,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 139,
+      "at": 1792847647.1685355,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "167c1d964e32",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)"
+      }
+    },
+    {
+      "id": 140,
+      "at": 1792847647.1703246,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "167c1d964e32",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 141,
+      "at": 1792847739.315307,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "e2b56623909d",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 142,
+      "at": 1792847740.0486193,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 143,
+      "at": 1792847740.051442,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 144,
+      "at": 1792847740.3953874,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 145,
+      "at": 1792847740.3974051,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "e6d30d879169",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)"
+      }
+    },
+    {
+      "id": 146,
+      "at": 1792847740.3989182,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "e6d30d879169",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 147,
+      "at": 1792847786.5336843,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "45cb777ea46f",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 148,
+      "at": 1792847787.2379415,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 149,
+      "at": 1792847787.2403538,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 150,
+      "at": 1792847787.586973,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 151,
+      "at": 1792847787.589025,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "bd79368df59f",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)"
+      }
+    },
+    {
+      "id": 152,
+      "at": 1792847787.5908332,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "bd79368df59f",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 153,
+      "at": 1792847841.178342,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "d9ddf4c37a21",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 154,
+      "at": 1792852946.999465,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 155,
+      "at": 1792852947.0025864,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 156,
+      "at": 1792852947.2915587,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 157,
+      "at": 1792852947.292565,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "d31f427231d7",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 1)"
+      }
+    },
+    {
+      "id": 158,
+      "at": 1792852947.2934139,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "d31f427231d7",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 159,
+      "at": 1792853333.7251787,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "12cbeb6675d1",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 160,
+      "at": 1792853334.3127682,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 161,
+      "at": 1792853334.3139305,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 162,
+      "at": 1792853334.6048033,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 163,
+      "at": 1792853334.6060727,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "1e59c3cfefe1",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 2)"
+      }
+    },
+    {
+      "id": 164,
+      "at": 1792853334.6072822,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "1e59c3cfefe1",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 165,
+      "at": 1792853557.0229776,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "1495198b3325",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 166,
+      "at": 1792853557.6010852,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 167,
+      "at": 1792853557.6024556,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 168,
+      "at": 1792853557.8893347,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 169,
+      "at": 1792853557.8905997,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "056c991664ab",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 3)"
+      }
+    },
+    {
+      "id": 170,
+      "at": 1792853557.891724,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "056c991664ab",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 171,
+      "at": 1792853582.5503755,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "cc40994c87fc",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    },
+    {
+      "id": 172,
+      "at": 1792853583.127481,
+      "kind": "join",
+      "agent": "agent-1",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 173,
+      "at": 1792853583.1289842,
+      "kind": "join",
+      "agent": "operator",
+      "subject": null,
+      "detail": "{\"caps\": []}",
+      "detail_parsed": {
+        "caps": []
+      }
+    },
+    {
+      "id": 174,
+      "at": 1792853583.4352226,
+      "kind": "register_check",
+      "agent": "operator",
+      "subject": "chk_receipts-to-spreadsheet",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 175,
+      "at": 1792853583.4364433,
+      "kind": "post_task",
+      "agent": "operator",
+      "subject": "60bea6cf684d",
+      "detail": "{\"title\": \"Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)\"}",
+      "detail_parsed": {
+        "title": "Can you put my March receipts (in the receipts folder) into a spreadsheet for my accountant? I need the date, the shop, the amount and a category for each one: food, transport, home or other. Please save it as march_expenses.csv. (instance 4)"
+      }
+    },
+    {
+      "id": 176,
+      "at": 1792853583.4373102,
+      "kind": "take_task",
+      "agent": "agent-1",
+      "subject": "60bea6cf684d",
+      "detail": "{}",
+      "detail_parsed": {}
+    },
+    {
+      "id": 177,
+      "at": 1792853615.2539852,
+      "kind": "refuted",
+      "agent": "agent-1",
+      "subject": "1cd0be0c7fe7",
+      "detail": "{\"reason\": \"No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check\"}",
+      "detail_parsed": {
+        "reason": "No PPC candidate passed: invariant: the delivered files do not pass the acceptance check; domain: the delivered files do not pass the acceptance check"
+      }
+    }
+  ],
+  "everyday8_jobs": [
+    {
+      "job": "merge-contacts",
+      "verified": "5/5",
+      "paths": "M+ R+ R+ R+ R+",
+      "process": "v1",
+      "calls": 36
+    },
+    {
+      "job": "overdue-invoices",
+      "verified": "5/5",
+      "paths": "M+ R+ R+ R+ R+",
+      "process": "v1",
+      "calls": 14
+    },
+    {
+      "job": "reconcile-bank-statement",
+      "verified": "5/5",
+      "paths": "M+ M+ R+ R+ R+",
+      "process": "v1",
+      "calls": 52
+    },
+    {
+      "job": "fill-claim-form",
+      "verified": "5/5",
+      "paths": "M+ F+ F+ F+ F+",
+      "process": "v2",
+      "calls": 67
+    },
+    {
+      "job": "receipts-to-spreadsheet",
+      "verified": "4/5",
+      "paths": "M- M+ F+ R+ R+",
+      "process": "v2",
+      "calls": 91
+    },
+    {
+      "job": "policy-answer-with-source",
+      "verified": "4/5",
+      "paths": "M- M+ F+ R+ F+",
+      "process": "v2",
+      "calls": 74
+    },
+    {
+      "job": "tidy-downloads",
+      "verified": "3/5",
+      "paths": "M+ M- M+ M+ M-",
+      "process": "none",
+      "calls": 118
+    },
+    {
+      "job": "calendar-from-inbox",
+      "verified": "0/5",
+      "paths": "M- M- M- M- M-",
+      "process": "none",
+      "calls": 186
+    }
+  ],
+  "everyday8_rows": [
+    {
+      "task": "receipts-to-spreadsheet",
+      "instance": 0,
+      "seed": 100,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [
+        "refuted",
+        "refuted"
+      ],
+      "model_calls": 40,
+      "prompt_tokens": 510472,
+      "completion_tokens": 29107,
+      "seconds": 147.2
+    },
+    {
+      "task": "receipts-to-spreadsheet",
+      "instance": 1,
+      "seed": 101,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": 1,
+      "outcome": "process locked in as v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 34,
+      "prompt_tokens": 397502,
+      "completion_tokens": 22273,
+      "seconds": 107.1
+    },
+    {
+      "task": "receipts-to-spreadsheet",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 1,
+      "process_after": 2,
+      "outcome": "process locked in as v2",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 15,
+      "prompt_tokens": 105048,
+      "completion_tokens": 6044,
+      "seconds": 41.2
+    },
+    {
+      "task": "receipts-to-spreadsheet",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "replayed",
+      "process_before": 2,
+      "process_after": 2,
+      "outcome": "replayed process v2",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 1,
+      "prompt_tokens": 141,
+      "completion_tokens": 11,
+      "seconds": 5.2
+    },
+    {
+      "task": "receipts-to-spreadsheet",
+      "instance": 4,
+      "seed": 104,
+      "done": true,
+      "path": "replayed",
+      "process_before": 2,
+      "process_after": 2,
+      "outcome": "replayed process v2",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 1,
+      "prompt_tokens": 141,
+      "completion_tokens": 11,
+      "seconds": 5.2
+    },
+    {
+      "task": "tidy-downloads",
+      "instance": 0,
+      "seed": 100,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "process.py did not reproduce it, so there is no process to lock in",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 18,
+      "prompt_tokens": 94942,
+      "completion_tokens": 6196,
+      "seconds": 52.4
+    },
+    {
+      "task": "tidy-downloads",
+      "instance": 1,
+      "seed": 101,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [],
+      "model_calls": 40,
+      "prompt_tokens": 362325,
+      "completion_tokens": 1934,
+      "seconds": 64.2
+    },
+    {
+      "task": "tidy-downloads",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "no process.py, so there is no process to lock in",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 10,
+      "prompt_tokens": 56099,
+      "completion_tokens": 693,
+      "seconds": 14.0
+    },
+    {
+      "task": "tidy-downloads",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "no process.py, so there is no process to lock in",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 10,
+      "prompt_tokens": 60341,
+      "completion_tokens": 702,
+      "seconds": 14.6
+    },
+    {
+      "task": "tidy-downloads",
+      "instance": 4,
+      "seed": 104,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [],
+      "model_calls": 40,
+      "prompt_tokens": 510063,
+      "completion_tokens": 2122,
+      "seconds": 61.0
+    },
+    {
+      "task": "merge-contacts",
+      "instance": 0,
+      "seed": 100,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": 1,
+      "outcome": "process locked in as v1",
+      "claims": [
+        "refuted",
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 36,
+      "prompt_tokens": 265500,
+      "completion_tokens": 11257,
+      "seconds": 78.0
+    },
+    {
+      "task": "merge-contacts",
+      "instance": 1,
+      "seed": 101,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 5.2
+    },
+    {
+      "task": "merge-contacts",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 5.2
+    },
+    {
+      "task": "merge-contacts",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 5.0
+    },
+    {
+      "task": "merge-contacts",
+      "instance": 4,
+      "seed": 104,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 5.0
+    },
+    {
+      "task": "policy-answer-with-source",
+      "instance": 0,
+      "seed": 100,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [
+        "refuted",
+        "refuted",
+        "refuted",
+        "refuted"
+      ],
+      "model_calls": 40,
+      "prompt_tokens": 277588,
+      "completion_tokens": 8427,
+      "seconds": 70.5
+    },
+    {
+      "task": "policy-answer-with-source",
+      "instance": 1,
+      "seed": 101,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": 1,
+      "outcome": "process locked in as v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 12,
+      "prompt_tokens": 54114,
+      "completion_tokens": 2170,
+      "seconds": 20.7
+    },
+    {
+      "task": "policy-answer-with-source",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "s) the current version handles",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 11,
+      "prompt_tokens": 49754,
+      "completion_tokens": 2226,
+      "seconds": 25.5
+    },
+    {
+      "task": "policy-answer-with-source",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 1,
+      "prompt_tokens": 147,
+      "completion_tokens": 12,
+      "seconds": 5.4
+    },
+    {
+      "task": "policy-answer-with-source",
+      "instance": 4,
+      "seed": 104,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 1,
+      "process_after": 2,
+      "outcome": "process locked in as v2",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 10,
+      "prompt_tokens": 44326,
+      "completion_tokens": 2051,
+      "seconds": 24.4
+    },
+    {
+      "task": "reconcile-bank-statement",
+      "instance": 0,
+      "seed": 100,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "process.py did not reproduce it, so there is no process to lock in",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 14,
+      "prompt_tokens": 113255,
+      "completion_tokens": 19682,
+      "seconds": 80.6
+    },
+    {
+      "task": "reconcile-bank-statement",
+      "instance": 1,
+      "seed": 101,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": 1,
+      "outcome": "process locked in as v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 35,
+      "prompt_tokens": 498668,
+      "completion_tokens": 13835,
+      "seconds": 102.0
+    },
+    {
+      "task": "reconcile-bank-statement",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 1,
+      "prompt_tokens": 177,
+      "completion_tokens": 21,
+      "seconds": 13.3
+    },
+    {
+      "task": "reconcile-bank-statement",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 1,
+      "prompt_tokens": 177,
+      "completion_tokens": 21,
+      "seconds": 9.2
+    },
+    {
+      "task": "reconcile-bank-statement",
+      "instance": 4,
+      "seed": 104,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 1,
+      "prompt_tokens": 177,
+      "completion_tokens": 21,
+      "seconds": 13.6
+    },
+    {
+      "task": "fill-claim-form",
+      "instance": 0,
+      "seed": 100,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": 1,
+      "outcome": "process locked in as v1",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 21,
+      "prompt_tokens": 143729,
+      "completion_tokens": 7959,
+      "seconds": 47.2
+    },
+    {
+      "task": "fill-claim-form",
+      "instance": 1,
+      "seed": 101,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "s) the current version handles",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 10,
+      "prompt_tokens": 56462,
+      "completion_tokens": 4197,
+      "seconds": 29.7
+    },
+    {
+      "task": "fill-claim-form",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 1,
+      "process_after": 2,
+      "outcome": "process locked in as v2",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 12,
+      "prompt_tokens": 75010,
+      "completion_tokens": 3896,
+      "seconds": 29.4
+    },
+    {
+      "task": "fill-claim-form",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 2,
+      "process_after": 2,
+      "outcome": "s) the current version handles",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 10,
+      "prompt_tokens": 57209,
+      "completion_tokens": 4525,
+      "seconds": 30.5
+    },
+    {
+      "task": "fill-claim-form",
+      "instance": 4,
+      "seed": 104,
+      "done": true,
+      "path": "replay failed -> model",
+      "process_before": 2,
+      "process_after": 2,
+      "outcome": "s) the current version handles",
+      "claims": [
+        "refuted",
+        "witnessed"
+      ],
+      "model_calls": 14,
+      "prompt_tokens": 97384,
+      "completion_tokens": 7954,
+      "seconds": 48.4
+    },
+    {
+      "task": "calendar-from-inbox",
+      "instance": 0,
+      "seed": 100,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [
+        "refuted",
+        "refuted"
+      ],
+      "model_calls": 40,
+      "prompt_tokens": 541859,
+      "completion_tokens": 35555,
+      "seconds": 163.0
+    },
+    {
+      "task": "calendar-from-inbox",
+      "instance": 1,
+      "seed": 101,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [],
+      "model_calls": 26,
+      "prompt_tokens": 368535,
+      "completion_tokens": 44121,
+      "seconds": 169.7
+    },
+    {
+      "task": "calendar-from-inbox",
+      "instance": 2,
+      "seed": 102,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [
+        "refuted"
+      ],
+      "model_calls": 40,
+      "prompt_tokens": 789854,
+      "completion_tokens": 45624,
+      "seconds": 197.8
+    },
+    {
+      "task": "calendar-from-inbox",
+      "instance": 3,
+      "seed": 103,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [
+        "refuted"
+      ],
+      "model_calls": 40,
+      "prompt_tokens": 824500,
+      "completion_tokens": 61898,
+      "seconds": 251.6
+    },
+    {
+      "task": "calendar-from-inbox",
+      "instance": 4,
+      "seed": 104,
+      "done": false,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": null,
+      "outcome": "",
+      "claims": [],
+      "model_calls": 40,
+      "prompt_tokens": 914341,
+      "completion_tokens": 61354,
+      "seconds": 244.5
+    },
+    {
+      "task": "overdue-invoices",
+      "instance": 0,
+      "seed": 100,
+      "done": true,
+      "path": "worked out by the model",
+      "process_before": null,
+      "process_after": 1,
+      "outcome": "process locked in as v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 14,
+      "prompt_tokens": 93348,
+      "completion_tokens": 7107,
+      "seconds": 38.6
+    },
+    {
+      "task": "overdue-invoices",
+      "instance": 1,
+      "seed": 101,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 4.7
+    },
+    {
+      "task": "overdue-invoices",
+      "instance": 2,
+      "seed": 102,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 4.8
+    },
+    {
+      "task": "overdue-invoices",
+      "instance": 3,
+      "seed": 103,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 4.7
+    },
+    {
+      "task": "overdue-invoices",
+      "instance": 4,
+      "seed": 104,
+      "done": true,
+      "path": "replayed",
+      "process_before": 1,
+      "process_after": 1,
+      "outcome": "replayed process v1",
+      "claims": [
+        "witnessed"
+      ],
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "seconds": 4.7
+    }
+  ]
+};

@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Axiom-1 — The Mind</title>
+<style>
+  @font-face {
+    font-family: "Space Grotesk";
+    src: url("fonts/space-grotesk-var.woff2") format("woff2");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("fonts/jetbrains-mono-var.woff2") format("woff2");
+    font-weight: 400 800;
+    font-display: swap;
+  }
+
+  :root {
+    --color-surface: #0A0E12;
+    --color-surface-2: #10161C;
+    --color-surface-3: #18212A;
+    --color-text: #E6EDF3;
+    --color-text-dim: #9AA7B4;
+    --color-text-faint: #7A8794;
+    --color-border: #22303B;
+    --color-primary: #5CCFE6;
+    --color-verified: #7CE38B;
+    --color-refuted: #FF7B72;
+    --color-pending: #FFB454;
+    --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-data: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --radius-base: 4px;
+    --elev-1: 0 1px 3px rgba(0,0,0,0.5);
+    --elev-2: 0 4px 16px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 32px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-data);
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    color: var(--color-text);
+  }
+
+  .motto {
+    font-size: clamp(18px, 2.5vw, 22px);
+    line-height: 1.45;
+    color: var(--color-text-dim);
+    margin-bottom: 24px;
+    font-weight: 400;
+    border-left: 3px solid var(--color-primary);
+    padding-left: 16px;
+  }
+
+  .motto b {
+    color: var(--color-text);
+  }
+
+  .nav-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .pill-link {
+    font-family: var(--font-data);
+    font-size: 13px;
+    padding: 8px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 160ms ease;
+  }
+
+  .pill-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-surface-3);
+  }
+
+  .pill-link.primary {
+    background: rgba(92, 207, 230, 0.12);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .pill-link.primary:hover {
+    background: rgba(92, 207, 230, 0.22);
+  }
+
+  .pill-link .badge {
+    background: rgba(124, 227, 139, 0.15);
+    color: var(--color-verified);
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  section {
+    margin-bottom: 48px;
+  }
+
+  h2 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2 .num {
+    font-family: var(--font-data);
+    font-size: 14px;
+    color: var(--color-primary);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    padding: 2px 8px;
+    border-radius: var(--radius-base);
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--color-text-dim);
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--elev-1);
+    transition: border-color 160ms ease;
+  }
+
+  .card:hover {
+    border-color: var(--color-text-faint);
+  }
+
+  .card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card .tag {
+    font-family: var(--font-data);
+    font-size: 11px;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .card p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-text-dim);
+    margin-bottom: 0;
+  }
+
+  .card-rule {
+    border-left: 2px solid var(--color-primary);
+    background: rgba(92, 207, 230, 0.04);
+  }
+
+  .banner-proof {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: 24px;
+    margin-top: 24px;
+  }
+
+  .banner-proof h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .stat-box {
+    background: var(--color-surface-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: 14px;
+  }
+
+  .stat-val {
+    font-family: var(--font-data);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-verified);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-box.refuted .stat-val {
+    color: var(--color-refuted);
+  }
+
+  .stat-box.cyan .stat-val {
+    color: var(--color-primary);
+  }
+
+  .stat-lbl {
+    font-size: 12px;
+    color: var(--color-text-faint);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-family: var(--font-data);
+  }
+
+  ul.bullet-list {
+    list-style: none;
+    margin-top: 12px;
+  }
+
+  ul.bullet-list li {
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--color-text-dim);
+  }
+
+  ul.bullet-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--color-primary);
+  }
+
+  ul.bullet-list li b {
+    color: var(--color-text);
+  }
+
+  .interactive-destinations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .dest-card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 160ms ease;
+  }
+
+  .dest-card:hover {
+    border-color: var(--color-primary);
+    background: var(--color-surface-3);
+    transform: translateY(-2px);
+  }
+
+  .dest-card .arrow {
+    align-self: flex-end;
+    font-family: var(--font-data);
+    font-size: 18px;
+    color: var(--color-primary);
+    margin-top: 16px;
+  }
+
+  .dest-card h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  .dest-card p {
+    font-size: 13px;
+    color: var(--color-text-dim);
+    margin-bottom: 0;
+  }
+
+  footer {
+    border-top: 1px solid var(--color-border);
+    padding-top: 24px;
+    margin-top: 64px;
+    font-family: var(--font-data);
+    font-size: 12px;
+    color: var(--color-text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  footer a {
+    color: var(--color-text-dim);
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      padding: 24px 16px 60px;
+    }
+    .grid-4 {
+      grid-template-columns: 1fr;
+    }
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="eyebrow">Axiom-1 · Shared State for Sovereign Agents</span>
+      <h1>The Mind</h1>
+      <p class="motto">
+        <b>"Any agent that connects becomes part of one mind, and the mind only believes what it has checked."</b>
+      </p>
+      <p>
+        One mind has one fatal failure mode: a single agent's false "done" becomes everyone's belief. Axiom-1 eliminates unverified belief through cryptographic receipts and server-enforced verification gates:
+      </p>
+      <div class="nav-pills">
+        <a href="claims.html" class="pill-link primary">
+          The Mind Made Visible <span class="badge">Live Claims & DB</span> →
+        </a>
+        <a href="web/timeline/index.html" class="pill-link">
+          Email Timeline Proof →
+        </a>
+        <a href="web/timeline/audit.html" class="pill-link">
+          Sampled Audit →
+        </a>
+        <a href="web/timeline/inspect.html" class="pill-link">
+          Isolated Sandbox →
+        </a>
+        <a href="https://github.com/popimpin/axiom1" class="pill-link" target="_blank" rel="noopener">
+          GitHub Repo ↗
+        </a>
+      </div>
+    </header>
+
+    <section>
+      <h2><span class="num">01</span> The Four Pillars of the Mind</h2>
+      <p>
+        How multiple independent agents (Claude, Gemini, Nemotron, local models) work as one coherent intelligence without poisoning each other's knowledge:
+      </p>
+
+      <div class="grid-4">
+        <div class="card card-rule">
+          <div class="tag">Foundation</div>
+          <h3>Engines</h3>
+          <p>
+            Pure, deterministic tools for dates, time spans, currency math, and tabular data. Models handle language and nuance; hard logic is resolved by engines to eliminate hallucination at the root.
+          </p>
+        </div>
+
+        <div class="card card-rule">
+          <div class="tag">Granularity</div>
+          <h3>Smallest Decisions</h3>
+          <p>
+            Work is partitioned into atomic, verifiable decisions. No giant speculative leaps. Each individual extraction, flag, or edit is evaluated against concrete acceptance checks.
+          </p>
+        </div>
+
+        <div class="card card-rule">
+          <div class="tag">Verification</div>
+          <h3>Shared Memory</h3>
+          <p>
+            The server alone writes <code>witnessed</code> or <code>refuted</code>. Agents can only <i>declare</i>. Proven facts carry commit sha receipts; false claims are refuted and logged to the agent's permanent track record.
+          </p>
+        </div>
+
+        <div class="card card-rule">
+          <div class="tag">Efficiency</div>
+          <h3>Process Handoff</h3>
+          <p>
+            When a task is solved and witnessed, its <code>process.py</code> is locked into memory. Subsequent instances and peer agents replay the locked procedure with <b>0.4 model calls</b> instead of 29.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">02</span> Proven Beyond Email: The Verification Harness</h2>
+      <p>
+        Email processing is <b>one proof</b> of Axiom-1, not the product. The same verification harness operates across everyday work, real software bugs, and adversarial prompt injections:
+      </p>
+
+      <div class="banner-proof">
+        <h3>The 8 Everyday Job Types Series</h3>
+        <p>
+          40 tasks evaluated with fresh seeds across 8 real-world workflow types (receipt extraction, contact merging, invoice tracking, bank reconciliation, form filing, download organization, calendar sync).
+        </p>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val">31 / 40</div>
+            <div class="stat-lbl">Witnessed Verifications</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">0</div>
+            <div class="stat-lbl">Wrong Decisions Believed</div>
+          </div>
+          <div class="stat-box cyan">
+            <div class="stat-val">0.4 calls</div>
+            <div class="stat-lbl">Replay Cost (vs 29 Fresh)</div>
+          </div>
+          <div class="stat-box refuted">
+            <div class="stat-val">21</div>
+            <div class="stat-lbl">Bad Claims Refuted</div>
+          </div>
+        </div>
+
+        <ul class="bullet-list">
+          <li>
+            <b>Fail-Before / Pass-After Verification:</b> Before a claim is accepted, the server verifies that the test failed on the previous commit, passes on the new commit, and fails on a randomized canary test.
+          </li>
+          <li>
+            <b>Real Code Bugs with Docker Sandboxing:</b> Throwaway containers with no network, capped CPU/memory, unprivileged user, and read-only source trees prevent agents from altering test harness state.
+          </li>
+          <li>
+            <b>AgentDojo Prompt Injection Defense:</b> 30 attack runs across 5 attack styles. Decisions altered by attacks: <b>0</b>. Attacked threads read by model: <b>0</b>. Attacker text injected into shared lists: <b>0</b>.
+          </li>
+          <li>
+            <b>No Poisoned Handoffs:</b> A peer agent's message is untrusted until witnessed. An agent can read historical instructions without blindly executing them.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">03</span> Explore the Proof Pages</h2>
+      <p>
+        All data presented in this demo comes from actual recorded runs, databases, and cryptographic verification logs:
+      </p>
+
+      <div class="interactive-destinations">
+        <a href="claims.html" class="dest-card">
+          <div>
+            <h4>The Mind Made Visible</h4>
+            <p>
+              Inspect live claims from <code>arm_c.db</code>: declared vs witnessed/refuted verdicts, per-agent track records, locked processes, and the 8 Everyday Job Types series.
+            </p>
+          </div>
+          <span class="arrow">Explore Claims →</span>
+        </a>
+
+        <a href="web/timeline/index.html" class="dest-card">
+          <div>
+            <h4>Inbox Timeline & River</h4>
+            <p>
+              3D interactive timeline over 5 Enron mailboxes: 480 follow-ups, 88.5% filed with zero model calls, calendar entries verbatim from notices.
+            </p>
+          </div>
+          <span class="arrow">Launch Timeline →</span>
+        </a>
+
+        <a href="web/timeline/audit.html" class="dest-card">
+          <div>
+            <h4>Sampled Audit Sandbox</h4>
+            <p>
+              Blind human audit interface with zero network requests, strict CSP, and local storage marking for evaluating agent classification accuracy.
+            </p>
+          </div>
+          <span class="arrow">Open Audit →</span>
+        </a>
+
+        <a href="web/timeline/inspect.html" class="dest-card">
+          <div>
+            <h4>Review Sandbox</h4>
+            <p>
+              Isolated email review chamber: plain-text parsing, no external scripts or trackers, attachments listed but never executed.
+            </p>
+          </div>
+          <span class="arrow">Open Sandbox →</span>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <div>Axiom-1 · Nebius x NVIDIA AI Hackathon · Static Verification Demo</div>
+      <div>Commit <code>16b5366</code> · Apache-2.0 License</div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Axiom-1 — The Mind Made Visible</title>
+<style>
+  @font-face {
+    font-family: "Space Grotesk";
+    src: url("fonts/space-grotesk-var.woff2") format("woff2");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("fonts/jetbrains-mono-var.woff2") format("woff2");
+    font-weight: 400 800;
+    font-display: swap;
+  }
+
+  :root {
+    --color-surface: #0A0E12;
+    --color-surface-2: #10161C;
+    --color-surface-3: #18212A;
+    --color-surface-4: #222E3A;
+    --color-text: #E6EDF3;
+    --color-text-dim: #9AA7B4;
+    --color-text-faint: #7A8794;
+    --color-border: #22303B;
+    --color-primary: #5CCFE6;
+    --color-verified: #7CE38B;
+    --color-refuted: #FF7B72;
+    --color-pending: #FFB454;
+    --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --font-data: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --radius-base: 4px;
+    --elev-1: 0 1px 3px rgba(0,0,0,0.5);
+    --elev-2: 0 4px 16px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
+
+  /* Breadcrumb & Navigation */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .breadcrumbs {
+    font-family: var(--font-data);
+    font-size: 13px;
+    color: var(--color-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .breadcrumbs a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-nav {
+    font-family: var(--font-data);
+    font-size: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    background: var(--color-surface-2);
+    color: var(--color-text-dim);
+    text-decoration: none;
+    transition: all 160ms ease;
+  }
+
+  .btn-nav:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+  }
+
+  /* Provenance metadata badge */
+  .provenance-card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-base);
+    padding: 16px 20px;
+    margin-bottom: 36px;
+  }
+
+  .provenance-title {
+    font-family: var(--font-data);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+  }
+
+  .provenance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    font-family: var(--font-data);
+    font-size: 13px;
+  }
+
+  .prov-item b {
+    color: var(--color-text-faint);
+    font-weight: 500;
+  }
+
+  .prov-item span {
+    color: var(--color-text);
+  }
+
+  /* Page Header */
+  h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .lead {
+    font-size: 16px;
+    color: var(--color-text-dim);
+    margin-bottom: 36px;
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 48px;
+  }
+
+  h2 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2 .badge {
+    font-family: var(--font-data);
+    font-size: 12px;
+    padding: 2px 8px;
+    background: var(--color-surface-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    color: var(--color-primary);
+  }
+
+  /* Track records cards */
+  .track-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .track-card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: 20px;
+    box-shadow: var(--elev-1);
+  }
+
+  .track-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .agent-name {
+    font-family: var(--font-data);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .agent-role {
+    font-size: 12px;
+    color: var(--color-text-faint);
+  }
+
+  .track-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-family: var(--font-data);
+    margin-bottom: 12px;
+  }
+
+  .t-stat {
+    background: var(--color-surface-3);
+    padding: 8px 12px;
+    border-radius: var(--radius-base);
+    border: 1px solid var(--color-border);
+  }
+
+  .t-stat .num {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .t-stat.witnessed .num { color: var(--color-verified); }
+  .t-stat.refuted .num { color: var(--color-refuted); }
+  .t-stat.neutral .num { color: var(--color-text); }
+
+  .t-stat .lbl {
+    font-size: 11px;
+    color: var(--color-text-faint);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: 4px;
+  }
+
+  .track-desc {
+    font-size: 13px;
+    color: var(--color-text-dim);
+    line-height: 1.45;
+  }
+
+  .rule-note {
+    font-size: 13px;
+    color: var(--color-text-faint);
+    background: rgba(255, 180, 84, 0.08);
+    border-left: 2px solid var(--color-pending);
+    padding: 8px 12px;
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+
+  /* Filter pills for claims */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-pill {
+    font-family: var(--font-data);
+    font-size: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    background: var(--color-surface-2);
+    color: var(--color-text-dim);
+    cursor: pointer;
+    transition: all 160ms ease;
+  }
+
+  .filter-pill:hover {
+    border-color: var(--color-text-faint);
+    color: var(--color-text);
+  }
+
+  .filter-pill.active {
+    background: var(--color-surface-3);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .filter-pill.active.verified {
+    border-color: var(--color-verified);
+    color: var(--color-verified);
+  }
+
+  .filter-pill.active.refuted {
+    border-color: var(--color-refuted);
+    color: var(--color-refuted);
+  }
+
+  /* Claim cards list */
+  .claims-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .claim-card {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    padding: 20px;
+    box-shadow: var(--elev-1);
+    transition: border-color 160ms ease;
+  }
+
+  .claim-card.witnessed {
+    border-left: 3px solid var(--color-verified);
+  }
+
+  .claim-card.refuted {
+    border-left: 3px solid var(--color-refuted);
+  }
+
+  .claim-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .claim-meta {
+    font-family: var(--font-data);
+    font-size: 12px;
+    color: var(--color-text-faint);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .claim-meta b {
+    color: var(--color-primary);
+  }
+
+  .claim-verdict {
+    font-family: var(--font-data);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--radius-base);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .claim-verdict.witnessed {
+    background: rgba(124, 227, 139, 0.15);
+    color: var(--color-verified);
+    border: 1px solid rgba(124, 227, 139, 0.3);
+  }
+
+  .claim-verdict.refuted {
+    background: rgba(255, 123, 114, 0.15);
+    color: var(--color-refuted);
+    border: 1px solid rgba(255, 123, 114, 0.3);
+  }
+
+  .claim-statement {
+    font-size: 14px;
+    color: var(--color-text);
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: var(--color-surface-3);
+    border-radius: var(--radius-base);
+    border-left: 2px solid var(--color-border);
+  }
+
+  .claim-statement b {
+    color: var(--color-text-dim);
+    font-family: var(--font-data);
+    font-size: 11px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .claim-reason {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    color: var(--color-text-dim);
+  }
+
+  .claim-reason b {
+    font-family: var(--font-data);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--color-text-faint);
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  .claim-evidence {
+    font-family: var(--font-data);
+    font-size: 11px;
+    color: var(--color-text-faint);
+    background: #06090c;
+    border: 1px solid var(--color-border);
+    padding: 10px 14px;
+    border-radius: var(--radius-base);
+    overflow-x: auto;
+  }
+
+  .claim-evidence pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  /* Table styling */
+  .table-wrap {
+    overflow-x: auto;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    margin-top: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  th {
+    background: var(--color-surface-3);
+    color: var(--color-text-dim);
+    font-family: var(--font-data);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td.mono {
+    font-family: var(--font-data);
+  }
+
+  td.verified {
+    color: var(--color-verified);
+    font-weight: 600;
+  }
+
+  /* Code view */
+  .code-viewer {
+    background: #06090c;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    margin-top: 16px;
+    overflow: hidden;
+  }
+
+  .code-header {
+    background: var(--color-surface-3);
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-data);
+    font-size: 12px;
+    color: var(--color-text-dim);
+  }
+
+  pre.code-content {
+    padding: 16px;
+    font-family: var(--font-data);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--color-text);
+    overflow-x: auto;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+
+  /* Toggle details */
+  details summary {
+    cursor: pointer;
+    font-family: var(--font-data);
+    font-size: 13px;
+    color: var(--color-primary);
+    padding: 8px 0;
+    user-select: none;
+  }
+
+  details summary:hover {
+    text-decoration: underline;
+  }
+
+  footer {
+    border-top: 1px solid var(--color-border);
+    padding-top: 24px;
+    margin-top: 64px;
+    font-family: var(--font-data);
+    font-size: 12px;
+    color: var(--color-text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  footer a {
+    color: var(--color-text-dim);
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px 12px 60px;
+    }
+    .track-grid {
+      grid-template-columns: 1fr;
+    }
+    .claim-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="breadcrumbs">
+        <a href="index.html">← Axiom-1 Mind</a>
+        <span>/</span>
+        <span>The Mind Made Visible</span>
+      </div>
+      <div class="nav-actions">
+        <a href="web/timeline/index.html" class="btn-nav">Email Timeline</a>
+        <a href="web/timeline/audit.html" class="btn-nav">Sampled Audit</a>
+        <a href="web/timeline/inspect.html" class="btn-nav">Review Sandbox</a>
+      </div>
+    </div>
+
+    <header>
+      <h1>The Mind Made Visible</h1>
+      <p class="lead">
+        Real claims, server verifications, per-agent track records, and locked processes directly from actual Axiom-1 runs.
+      </p>
+
+      <div class="provenance-card">
+        <div class="provenance-title">Run & Database Provenance</div>
+        <div class="provenance-grid">
+          <div class="prov-item">
+            <b>Database:</b> <span id="provDb">arm_c.db</span>
+          </div>
+          <div class="prov-item">
+            <b>Run Label:</b> <span id="provRun">Nebius Paid Run 3 (Arm C)</span>
+          </div>
+          <div class="prov-item">
+            <b>Git Commit:</b> <span id="provCommit">16b5366</span>
+          </div>
+          <div class="prov-item">
+            <b>Verification Rule:</b> <span>Server-enforced only</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: PER-AGENT TRACK RECORDS -->
+    <section>
+      <h2>
+        Per-Agent Track Records
+        <span class="badge" id="agentCountBadge">3 agents</span>
+      </h2>
+      <p>
+        In Axiom-1, agents cannot edit their reputation. The server tracks each agent's witnessed vs refuted claims:
+      </p>
+
+      <div class="track-grid" id="trackGrid">
+        <!-- Rendered by JS / Fallback content -->
+        <div class="track-card">
+          <div class="track-header">
+            <span class="agent-name">agent-cold</span>
+            <span class="agent-role">Cold-start Runner</span>
+          </div>
+          <div class="track-stats">
+            <div class="t-stat witnessed">
+              <div class="num" id="coldWitnessed">1</div>
+              <div class="lbl">Witnessed</div>
+            </div>
+            <div class="t-stat refuted">
+              <div class="num" id="coldRefuted">0</div>
+              <div class="lbl">Refuted</div>
+            </div>
+          </div>
+          <p class="track-desc">
+            Solved <code>receipts-to-spreadsheet</code> from scratch. Verified by server acceptance checks and locked in <code>process.py v1</code> for peer replay.
+          </p>
+        </div>
+
+        <div class="track-card">
+          <div class="track-header">
+            <span class="agent-name">agent-1</span>
+            <span class="agent-role">Follow-up PPC Worker</span>
+          </div>
+          <div class="track-stats">
+            <div class="t-stat witnessed">
+              <div class="num" id="agent1Witnessed">0</div>
+              <div class="lbl">Witnessed</div>
+            </div>
+            <div class="t-stat refuted">
+              <div class="num" id="agent1Refuted">14</div>
+              <div class="lbl">Refuted</div>
+            </div>
+          </div>
+          <p class="track-desc">
+            Attempted subsequent task instances via candidate PPC batches. None passed the acceptance check; the server rejected all 14 invalid declarations.
+          </p>
+        </div>
+
+        <div class="track-card">
+          <div class="track-header">
+            <span class="agent-name">operator</span>
+            <span class="agent-role">Check Registrar</span>
+          </div>
+          <div class="track-stats">
+            <div class="t-stat neutral">
+              <div class="num">20</div>
+              <div class="lbl">Tasks Posted</div>
+            </div>
+            <div class="t-stat neutral">
+              <div class="num">1</div>
+              <div class="lbl">Check Registered</div>
+            </div>
+          </div>
+          <p class="track-desc">
+            Human/system operator. Only the operator can define what "verified" means by registering checks. Agents cannot register checks.
+          </p>
+        </div>
+      </div>
+
+      <div class="rule-note">
+        <b>Server Enforcement Law:</b> <i>"Witnessed counts only anchored claims (farming your own bugs earns nothing). Refuted counts every claim: a false statement is false wherever it started."</i>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CLAIMS (DECLARED VS WITNESSED/REFUTED) -->
+    <section>
+      <h2>
+        Claims & Server Verdicts
+        <span class="badge" id="claimsCountBadge">15 claims</span>
+      </h2>
+      <p>
+        Every task completion is submitted as an untrusted declaration. The server independently verifies the claim before writing a verdict:
+      </p>
+
+      <div class="filter-bar">
+        <button class="filter-pill active" data-filter="all" id="btnFilterAll">All Claims (15)</button>
+        <button class="filter-pill" data-filter="witnessed" id="btnFilterWitnessed">Witnessed (1)</button>
+        <button class="filter-pill" data-filter="refuted" id="btnFilterRefuted">Refuted (14)</button>
+      </div>
+
+      <div class="claims-list" id="claimsList">
+        <!-- Rendered dynamically from window.AXIOM_CLAIMS_DATA -->
+      </div>
+    </section>
+
+    <!-- SECTION 3: LOCKED PROCESS & REPLAYS -->
+    <section>
+      <h2>
+        Locked Processes & Replays
+        <span class="badge">Replay: 0.4 vs 29 calls</span>
+      </h2>
+      <p>
+        When an agent's delivery is witnessed, its solution script is locked into shared memory. Future instances and peer agents replay the locked process at <b>0.4 model calls</b> instead of synthesizing new code from scratch:
+      </p>
+
+      <div class="code-viewer">
+        <div class="code-header">
+          <span>Locked Process: <b>chk_receipts-to-spreadsheet (v1)</b></span>
+          <span>Locked by <b>agent-cold</b> via claim <code>335c0f7b3e7e</code></span>
+        </div>
+        <pre class="code-content" id="lockedProcessCode">
+#!/usr/bin/env python3
+"""Read March receipts from receipts/ and produce march_expenses.csv using pure Axiom engines."""
+import os, re, glob
+from axiom_engines import time, money, table
+
+def categorize_shop(shop: str) -> str:
+    s = shop.strip().lower()
+    if any(w in s for w in ("grocer", "food", "market", "deli")): return "food"
+    if any(w in s for w in ("transit", "metro", "bus", "train", "taxi", "uber", "rail")): return "transport"
+    if any(w in s for w in ("hardware", "home", "furniture", "linen", "lamp", "garden", "plumb")): return "home"
+    return "other"
+
+def parse_date_line(text: str, year: int) -> str:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    for ln in lines:
+        low = ln.lower()
+        if "march" in low:
+            m = re.search(r'March\s+(\d{1,2}),?\s+(\d{4})', ln[low.find("march"):])
+            if m: return time.parse_date(f"March {m.group(1)}, {m.group(2)}", year)
+        m = re.search(r'(\d{1,2})/(\d{1,2})/(\d{4})', ln)
+        if m: return time.parse_numeric_date(m.group(0), "MDY")
+    raise ValueError(f"No date found in receipt text: {text}")
+
+def parse_amount(text: str) -> str:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    for ln in lines:
+        if re.match(r'^total\s*[\$]?[\d,]+\.\d{2}$', ln.lower().strip()):
+            m = re.search(r'[\$]?([\d,]+\.\d{2})', ln)
+            if m: return money.parse_amount(m.group(1))
+    for ln in reversed(lines):
+        m = re.search(r'[\$]?([\d,]+\.\d{2})', ln)
+        if m: return money.parse_amount(m.group(1))
+    raise ValueError(f"No amount found in receipt text: {text}")
+
+def main():
+    rows = []
+    for path in sorted(glob.glob("receipts/*.txt")):
+        if os.path.basename(path).lower() == "readme.txt": continue
+        with open(path) as f: text = f.read()
+        rows.append({
+            "date": parse_date_line(text, 2026),
+            "shop": parse_shop(text),
+            "amount": money.format_amount(parse_amount(text)),
+            "category": categorize_shop(parse_shop(text))
+        })
+    rows.sort(key=lambda r: (r["date"], r["shop"]))
+    table.write_csv("march_expenses.csv", ["date", "shop", "amount", "category"], rows)
+    print(f"Wrote {len(rows)} rows to march_expenses.csv")
+        </pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Job Type</th>
+              <th>Verified Rate</th>
+              <th>Execution Paths (M=Model, R=Replay, F=Repaired)</th>
+              <th>Process</th>
+              <th>Total Model Calls</th>
+            </tr>
+          </thead>
+          <tbody id="everydayTableBody">
+            <tr>
+              <td class="mono">merge-contacts</td>
+              <td class="verified">5 / 5</td>
+              <td class="mono">M+ R+ R+ R+ R+</td>
+              <td class="mono">v1</td>
+              <td class="mono">36</td>
+            </tr>
+            <tr>
+              <td class="mono">overdue-invoices</td>
+              <td class="verified">5 / 5</td>
+              <td class="mono">M+ R+ R+ R+ R+</td>
+              <td class="mono">v1</td>
+              <td class="mono">14</td>
+            </tr>
+            <tr>
+              <td class="mono">reconcile-bank-statement</td>
+              <td class="verified">5 / 5</td>
+              <td class="mono">M+ M+ R+ R+ R+</td>
+              <td class="mono">v1</td>
+              <td class="mono">52</td>
+            </tr>
+            <tr>
+              <td class="mono">fill-claim-form</td>
+              <td class="verified">5 / 5</td>
+              <td class="mono">M+ F+ F+ F+ F+</td>
+              <td class="mono">v2</td>
+              <td class="mono">67</td>
+            </tr>
+            <tr>
+              <td class="mono">receipts-to-spreadsheet</td>
+              <td class="verified">4 / 5</td>
+              <td class="mono">M- M+ F+ R+ R+</td>
+              <td class="mono">v2</td>
+              <td class="mono">91</td>
+            </tr>
+            <tr>
+              <td class="mono">policy-answer-with-source</td>
+              <td class="verified">4 / 5</td>
+              <td class="mono">M- M+ F+ R+ F+</td>
+              <td class="mono">v2</td>
+              <td class="mono">74</td>
+            </tr>
+            <tr>
+              <td class="mono">tidy-downloads</td>
+              <td>3 / 5</td>
+              <td class="mono">M+ M- M+ M+ M-</td>
+              <td class="mono">none</td>
+              <td class="mono">118</td>
+            </tr>
+            <tr>
+              <td class="mono">calendar-from-inbox</td>
+              <td>0 / 5</td>
+              <td class="mono">M- M- M- M- M-</td>
+              <td class="mono">none</td>
+              <td class="mono">186</td>
+            </tr>
+            <tr style="background: var(--color-surface-3); font-weight: 600;">
+              <td>Total / Summary</td>
+              <td class="verified">31 / 40 (77.5%)</td>
+              <td class="mono">19 M · 14 R · 7 F</td>
+              <td class="mono">—</td>
+              <td class="mono">638 (0.4 / replay)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 4: SERVER EVENT LOG -->
+    <section>
+      <details>
+        <summary>View Complete Server Event Log (128 Recorded Events from SQLite DB)</summary>
+        <div class="table-wrap" style="margin-top:12px; max-height:400px; overflow-y:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Kind</th>
+                <th>Agent</th>
+                <th>Subject</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="eventsTableBody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <div>Axiom-1 · Nebius x NVIDIA AI Hackathon · The Mind Made Visible</div>
+      <div>Real SQLite DB Export · Apache-2.0 License</div>
+    </footer>
+  </div>
+
+  <script src="data/claims_export.js"></script>
+  <script>
+    const data = window.AXIOM_CLAIMS_DATA;
+    if (data) {
+      // Hydrate metadata
+      if (data.metadata) {
+        document.getElementById("provDb").textContent = data.metadata.db_name;
+        document.getElementById("provRun").textContent = data.metadata.run_label;
+        document.getElementById("provCommit").textContent = data.metadata.commit.slice(0, 7);
+        document.getElementById("claimsCountBadge").textContent = data.claims.length + " claims";
+      }
+
+      // Hydrate track records
+      if (data.track_records) {
+        const c = data.track_records["agent-cold"];
+        if (c) {
+          document.getElementById("coldWitnessed").textContent = c.witnessed;
+          document.getElementById("coldRefuted").textContent = c.refuted;
+        }
+        const a1 = data.track_records["agent-1"];
+        if (a1) {
+          document.getElementById("agent1Witnessed").textContent = a1.witnessed;
+          document.getElementById("agent1Refuted").textContent = a1.refuted;
+        }
+      }
+
+      // Hydrate claims
+      const claimsList = document.getElementById("claimsList");
+      function renderClaims(filter) {
+        claimsList.innerHTML = "";
+        const filtered = data.claims.filter(c => filter === "all" || c.label === filter);
+        filtered.forEach(c => {
+          const card = document.createElement("div");
+          card.className = "claim-card " + c.label;
+          const isWitnessed = c.label === "witnessed";
+          
+          let evidenceSummary = "";
+          if (c.evidence_parsed) {
+            evidenceSummary = JSON.stringify(c.evidence_parsed, null, 2);
+          } else {
+            evidenceSummary = c.evidence || "No evidence payload";
+          }
+
+          card.innerHTML = `
+            <div class="claim-head">
+              <div class="claim-meta">
+                <span>Claim <b>#${c.id}</b></span>
+                <span>•</span>
+                <span>Agent: <b>${c.agent}</b></span>
+                <span>•</span>
+                <span>Check: <b>${c.check_id}</b></span>
+              </div>
+              <div class="claim-verdict ${c.label}">${c.label}</div>
+            </div>
+            <div class="claim-statement">
+              <b>Declared by Agent:</b>
+              ${c.statement}
+            </div>
+            <div class="claim-reason">
+              <b>Server Verdict Reason:</b>
+              ${c.reason}
+            </div>
+            <details style="margin-top: 8px;">
+              <summary>View Verification Evidence & Output Receipts</summary>
+              <div class="claim-evidence">
+                <pre>${evidenceSummary}</pre>
+              </div>
+            </details>
+          `;
+          claimsList.appendChild(card);
+        });
+      }
+
+      renderClaims("all");
+
+      // Wire filter buttons
+      const btnAll = document.getElementById("btnFilterAll");
+      const btnWitnessed = document.getElementById("btnFilterWitnessed");
+      const btnRefuted = document.getElementById("btnFilterRefuted");
+      const allBtns = [btnAll, btnWitnessed, btnRefuted];
+
+      btnAll.addEventListener("click", () => {
+        allBtns.forEach(b => b.classList.remove("active", "verified", "refuted"));
+        btnAll.classList.add("active");
+        renderClaims("all");
+      });
+      btnWitnessed.addEventListener("click", () => {
+        allBtns.forEach(b => b.classList.remove("active", "verified", "refuted"));
+        btnWitnessed.classList.add("active", "verified");
+        renderClaims("witnessed");
+      });
+      btnRefuted.addEventListener("click", () => {
+        allBtns.forEach(b => b.classList.remove("active", "verified", "refuted"));
+        btnRefuted.classList.add("active", "refuted");
+        renderClaims("refuted");
+      });
+
+      // Hydrate events table
+      const eventsTable = document.getElementById("eventsTableBody");
+      if (eventsTable && data.events) {
+        eventsTable.innerHTML = data.events.map(ev => `
+          <tr>
+            <td class="mono">${ev.id}</td>
+            <td class="mono" style="color:var(--color-primary)">${ev.kind}</td>
+            <td class="mono">${ev.agent || "—"}</td>
+            <td class="mono">${ev.subject || "—"}</td>
+            <td class="mono" style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${(ev.detail || '').replace(/"/g, '&quot;')}">
+              ${(ev.detail || '—').slice(0, 80)}
+            </td>
+          </tr>
+        `).join("");
+      }
+    }
+  </script>
+</body>
+</html>

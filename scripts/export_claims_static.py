@@ -1,12 +1,10 @@
 import sqlite3
 import json
 import os
-from datetime import datetime
+import sys
+import argparse
 
-def export_claims():
-    db_path = r"C:\Projectsfolder\OhmOS\Axiom1\.axiom_arms_paid_run3\arm_c.db"
-    measurements_path = r"C:\Projectsfolder\OhmOS\Axiom1\docs\measurements\2026-10-01_everyday8_series_lightning_v1.json"
-    
+def export_claims(db_path, measurements_path, out_dir):
     con = sqlite3.connect(db_path)
     con.row_factory = sqlite3.Row
     cur = con.cursor()
@@ -70,7 +68,7 @@ def export_claims():
         
     # 6. Everyday 8 series data
     everyday8 = {}
-    if os.path.exists(measurements_path):
+    if measurements_path and os.path.exists(measurements_path):
         with open(measurements_path, "r", encoding="utf-8") as f:
             everyday8 = json.load(f)
             
@@ -88,7 +86,7 @@ def export_claims():
     out_data = {
         "metadata": {
             "title": "Axiom-1 The Mind Made Visible",
-            "db_name": "arm_c.db",
+            "db_name": os.path.basename(db_path),
             "run_label": "Nebius Token Factory Paid Run 3 (Arm C: Locked Process Reproduction + PPC Checks)",
             "commit": "16b53667721e9c84e5bb06d22e67991cab1c23c8",
             "total_claims": len(claims),
@@ -113,7 +111,6 @@ def export_claims():
         "everyday8_rows": everyday8.get("rows", [])
     }
     
-    out_dir = r"C:\Projectsfolder\OhmOS\Axiom1_pages\data"
     os.makedirs(out_dir, exist_ok=True)
     
     out_json = os.path.join(out_dir, "claims_export.json")
@@ -127,4 +124,9 @@ def export_claims():
     print(f"Exported {len(claims)} claims and {len(events)} events to {out_json} and {out_js}")
 
 if __name__ == "__main__":
-    export_claims()
+    parser = argparse.ArgumentParser(description="Export claims from Axiom SQLite DB")
+    parser.add_argument("--db", required=True, help="Path to sqlite db")
+    parser.add_argument("--measurements", default=None, help="Path to measurements json")
+    parser.add_argument("--out-dir", default="./data", help="Output directory")
+    args = parser.parse_args()
+    export_claims(args.db, args.measurements, args.out_dir)

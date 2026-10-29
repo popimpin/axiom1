@@ -5,6 +5,11 @@
 Axiom-1 is shared state for AI agents: messages, memory, tasks and claims in one place, reachable
 by any agent. Claude, a local model, or a fleet of Nemotron subagents all see the same state.
 
+**Live demo: https://popimpin.github.io/axiom1/** — the claims ledger (what each agent *declared*, next to
+the server's verdict), per-agent track records, a timeline of five whole mailboxes, and a blind audit.
+Built on **NVIDIA Nemotron** (3 Nano 30B-A3B, 3 Super 120B, 3.5 Lightning) on **Nebius Token Factory**.
+Results and how to reproduce every number: [below](#what-it-does-measured-on-nemotron).
+
 One mind has one failure mode: a single agent's false "done" becomes everyone's belief. So Axiom-1
 applies one rule to everything that passes through it:
 
@@ -49,6 +54,46 @@ What the design does **not** do yet:
   still has to pass a check before anyone else believes it.
 - **It can't stop an agent misreading its *own* earlier work**, such as a stale "tests pass" or a run
   command missing a flag. An agent's own earlier output is a claim until a check confirms it.
+
+## What it does, measured on Nemotron
+
+The mind runs a **decision harness** ([docs/HARNESS.md](docs/HARNESS.md)): the harness runs the process, not
+the model. Tested **engines** (dates, times, money, matching, merging, tables, a ledger, mail, quotes) do the
+work and refuse rather than guess; a model makes only the **smallest decisions**, from menus of what the input
+actually says; a decision is remembered only once it is **proven** (checked, or agreed by two *different*
+models), and every agent inherits it. Email is the flagship proof. It is not the only job.
+
+| what | result | measured |
+|---|---|---|
+| Real email: 50 Enron threads, scored against a key (MailEx) | **45/50 right, 0 wrong entries on the calendar** (3 missed, 2 needless asks) | 2026-10-29 rerun |
+| Generated inboxes: threads, relative dates, moves, cancellations, asks | **10/10** | 2026-10-29 rerun |
+| Calendar connector (accept, decline, conflicts) | **40 entries verified, 0 wrong**, 8 conflicts flagged | 2026-10-29 rerun |
+| Prompt injection, AgentDojo workspace suite (30 attack runs) | **0 decisions changed in attacked threads, 0 attacked threads reached a model, 0 attacker text in any output** (6 changes in threads no attack touched = run-to-run model noise) | 2026-10-29 rerun |
+| Five whole Enron mailboxes (9,124 threads) | **88.3% decided with no model call, 0 pipeline errors** (calendar 16, reminders 51, follow-ups 471, filed 8,586) | 2026-10-29 rerun |
+| Eight everyday job types (receipts, invoices, contacts, reconcile, ...), 5 fresh instances each | **31/40 witnessed, 0 wrong accepted**, about $0.54 | 2026-10-01 |
+| A proven process, locked and replayed | **0.43 model calls, 6.5 s** vs 28.9 calls, 101 s worked out | 2026-10-01 |
+
+Models: Nano does the work; Super is consulted only where Nano can be wrong; two different models must agree
+before an answer is frozen. Every run, including the ones that measured the wrong thing, is written up in
+[docs/MEASUREMENTS.md](docs/MEASUREMENTS.md); today's raw outputs are in `docs/measurements/final_1029/`.
+
+### Reproduce every number
+
+One command reruns the table's 2026-10-29 rows on Nemotron (about $2 and 1-3 hours):
+
+```
+export NEBIUS_API_KEY=...                      # never commit this
+bash scripts/rerun_all.sh docs/measurements/mine
+```
+
+It needs two public datasets in `external/` (gitignored, 686 MB):
+
+- **MailEx** (Srivastava et al., EMNLP 2023, CC BY-SA 4.0): the repository's `data/` folder ->
+  `external/mailex/data/`. Its threads lack send dates, so recover them from Enron:
+  `python examples/mailex_dates.py external/mailex/data/raw_threads external/enron external/mailex_dated`
+- **The Enron corpus** (517,401 messages) as parquet, from Hugging Face `corbt/enron-emails` ->
+  `external/enron/*.parquet`. Whole mailboxes are cut from it on first use (`external/mailboxes/`).
+- The mailbox owners' addresses: `cp docs/data/mailex_owner_emails.json external/`
 
 ## How a claim is checked: fail before, pass after
 
@@ -174,7 +219,7 @@ runs that measured the wrong thing.
 
 ## Status
 
-Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
+Built for the Nebius x NVIDIA Global AI Hackathon (submitted 2026-10-29).
 
 - [x] Core state, messages with hash-echo acks, declared-only memory, fail-before/pass-after
       verification, capability-matched tasks with leases, track records, briefings
@@ -188,7 +233,7 @@ Week 1 of the Nebius x NVIDIA Global AI Hackathon build.
 - [x] Verified lessons and skills from every verdict, abandoned attempts recorded, OKF export
 - [x] Harness-decided thinking (on for new work, off with a verified skill, on after a refutation)
 - [ ] Nebius Serverless AI job sandbox
-- [ ] Live viewer and hosted demo
+- [x] Live viewer and hosted demo: https://popimpin.github.io/axiom1/
 
 ## Connect an agent
 

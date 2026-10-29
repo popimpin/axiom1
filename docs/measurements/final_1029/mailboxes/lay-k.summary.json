@@ -1,0 +1,18 @@
+{
+ "threads": 2194,
+ "folders": 2167,
+ "outcomes": {
+  "filed": 2056,
+  "follow_up": 126,
+  "reminder:finalize": 5,
+  "calendar": 5,
+  "reminder:confirm": 2
+ },
+ "call_gaps": 96,
+ "box": "lay-k",
+ "owner": "rosalee.fleming@enron.com",
+ "messages": 3651,
+ "model_seconds": 1130.8,
+ "zero_model_calls": 1805,
+ "pipeline_errors": 0
+}

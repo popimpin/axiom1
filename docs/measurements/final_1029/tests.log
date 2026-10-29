@@ -1,0 +1,285 @@
+....................................C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A064310>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2ADD50>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2ADC60>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AC8B0>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AC040>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFE20>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD6C0>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF790>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AE110>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AEA70>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2ADF30>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD210>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF3D0>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AED40>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF010>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD300>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.......C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A064310>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD300>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF010>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF3D0>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD210>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AED40>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AEA70>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AE110>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A067F10>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFE20>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD6C0>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF790>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2ADD50>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:552: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFD30>
+  def _push_exit_callback(self, callback, is_sync=True):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.......C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFD30>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFB50>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Projectsfolder\OhmOS\Axiom1\axiom1\core.py:900: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A067F10>
+  n = lambda label, anchored=None: sum(r["n"] for r in rows if r["label"] == label  # noqa: E731
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\threading.py:303: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFE20>
+  def __enter__(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\threading.py:303: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD6C0>
+  def __enter__(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\threading.py:303: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A314130>
+  def __enter__(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\threading.py:303: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A314400>
+  def __enter__(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\threading.py:303: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A314D60>
+  def __enter__(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\threading.py:303: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A3158A0>
+  def __enter__(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+........C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF6A0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF5B0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF1F0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2ADC60>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AC8B0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFA60>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A064310>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A1DFF10>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A1DC040>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A3146D0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A3144F0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A3147C0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A1DF880>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A1DFA60>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFD30>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFE20>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AD6C0>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2ADD50>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF790>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AEA70>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AED40>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AF010>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:597: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83A2AFB50>
+  is_sync, cb = self._exit_callbacks.pop()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+................................................................................................................................................................C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\websockets\legacy\__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+  warnings.warn(  # deprecated in 14.0 - 2024-11-09
+C:\Users\adria\AppData\Roaming\Python\Python313\site-packages\uvicorn\protocols\websockets\websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+  from websockets.server import WebSocketServerProtocol
+[10/29/26 11:29:44] WARNING  Session termination failed: streamable_http.py:433
+                             peer closed connection                            
+                             without sending complete                          
+                             message body (incomplete                          
+                             chunked read)                                     
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac26210>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac84f50>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac85610>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac85eb0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac86570>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac846b0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac26d50>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac85970>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad16270>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad16c30>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad17590>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad17cb0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad15130>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+[10/29/26 11:29:52] WARNING  Session termination failed: streamable_http.py:433
+                             peer closed connection                            
+                             without sending complete                          
+                             message body (incomplete                          
+                             chunked read)                                     
+[10/29/26 11:29:57] WARNING  Session termination failed: streamable_http.py:433
+                             peer closed connection                            
+                             without sending complete                          
+                             message body (incomplete                          
+                             chunked read)                                     
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac87890>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad16cf0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad17050>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad166f0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad14ef0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ad15a30>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\streams\memory.py:183: ResourceWarning: Unclosed <MemoryObjectReceiveStream at 1d83ac85fd0>
+  warnings.warn(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.........................C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\tempfile.py:941: ResourceWarning: Implicitly cleaning up <TemporaryDirectory 'C:\\Users\\adria\\AppData\\Local\\Temp\\tmpbopl36hi'>
+  _warnings.warn(warn_message, ResourceWarning)
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\tempfile.py:941: ResourceWarning: Implicitly cleaning up <TemporaryDirectory 'C:\\Users\\adria\\AppData\\Local\\Temp\\tmpcbfn250u'>
+  _warnings.warn(warn_message, ResourceWarning)
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\fields.py:512: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83AC61E40>
+  merged_metadata.extend(meta.metadata)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\fields.py:512: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83ABBB6A0>
+  merged_metadata.extend(meta.metadata)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\fields.py:512: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001D83ABBB100>
+  merged_metadata.extend(meta.metadata)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.C:\Users\adria\AppData\Local\Programs\Python\Python313\Lib\tempfile.py:941: ResourceWarning: Implicitly cleaning up <TemporaryDirectory 'C:\\Users\\adria\\AppData\\Local\\Temp\\tmprvc8m_7r'>
+  _warnings.warn(warn_message, ResourceWarning)
+.................................................ssss...............s..sss......s..ssss
+----------------------------------------------------------------------
+Ran 335 tests in 344.497s
+
+OK (skipped=13)

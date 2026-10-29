@@ -330,7 +330,9 @@ class Replay(unittest.TestCase):
                 {"id": name + str(len(messages)), "type": "function",
                  "function": {"name": name, "arguments": json.dumps(args)}}]}
 
-        asyncio.run(run_agent("worker", wt, self.db, repairer, log=lambda *_: None, shell=DockerSandbox(IMAGE)))
+        # enable_ppc=False: this tests the interactive repair; the scripted model is not a PPC proposer
+        asyncio.run(run_agent("worker", wt, self.db, repairer, log=lambda *_: None, shell=DockerSandbox(IMAGE),
+                              enable_ppc=False))
         self.assertIn("did not pass", seen["opening"])
         ax = Axiom(self.db)
         self.assertEqual(ax.process_for("receipts")["version"], 2)        # the repair is locked in

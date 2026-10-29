@@ -1,0 +1,18 @@
+{
+ "threads": 2130,
+ "folders": 2099,
+ "outcomes": {
+  "filed": 1995,
+  "calendar": 5,
+  "follow_up": 104,
+  "reminder:confirm": 5,
+  "reminder:finalize": 21
+ },
+ "call_gaps": 96,
+ "box": "steffes-j",
+ "owner": "d..steffes@enron.com",
+ "messages": 3274,
+ "model_seconds": 1949.2,
+ "zero_model_calls": 1787,
+ "pipeline_errors": 0
+}

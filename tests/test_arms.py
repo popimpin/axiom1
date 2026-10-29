@@ -1072,6 +1072,39 @@ class TestArmsExperiment(unittest.TestCase):
             )
         self.assertIn("Arm A made 0 model calls", str(ctx.exception))
 
+    def test_unparseable_replies_are_not_candidates(self):
+        """
+        Claude 2026-10-24: run 3 sent 6 of 8 EMPTY scripts to the gate - an unparseable proposer reply was scored as a
+        refused proposal. Both replies unparseable -> B / C get no candidate, agree N/A, parse_failed names both.
+        NEGATIVE CONTROL: drop the parse_failed branch and B / C judge two empty files again (this goes RED).
+        """
+        exp = ArmsExperiment(self.db_dir, arms=["B", "C"])
+        res = exp.evaluate_instance_arms(
+            task_id="unparseable_inst",
+            task_title="Test unparseable proposer replies",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_unparseable", arm=arm),
+            propose_fn=lambda *args, **kwargs: {"candidates": {"invariant": {"script": ""}, "domain": {"script": "  "}}},
+            compose_fn=lambda *_: (_ for _ in ()).throw(AssertionError("the composer must not see empty candidates")),
+        )
+        self.assertEqual(res["parse_failed"], ["invariant", "domain"])
+        self.assertTrue(res["arm_b"]["no_candidate"])
+        self.assertTrue(res["arm_c"]["no_candidate"])
+        self.assertEqual(res["agree"], "N/A")
+        self.assertEqual(res["k_effective"], 0)
+
+    def test_one_unparseable_reply_runs_on_the_other(self):
+        """One reply parses, one does not: both slots carry the real candidate (K=1), never an empty file."""
+        exp = ArmsExperiment(self.db_dir, arms=["C"])
+        res = exp.evaluate_instance_arms(
+            task_id="half_parse_inst",
+            task_title="Test one unparseable reply",
+            repo_builder=lambda arm="": self._setup_repo_with_earlier_instance("repo_half_parse", arm=arm),
+            propose_fn=lambda *args, **kwargs: {"candidates": {"invariant": {"script": "print('x')"}, "domain": {"script": ""}}},
+            compose_fn=lambda *_: {},
+        )
+        self.assertEqual(res["parse_failed"], ["domain"])
+        self.assertEqual(res["k_effective"], 1)
+
     def test_arm_a_step_cap_reached_records_exact_reason(self):
         """
         Claude Rule 2: When Arm A hits the step cap mid-repair without a witnessed claim,

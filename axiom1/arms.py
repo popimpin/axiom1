@@ -68,6 +68,15 @@ def get_pricing_info(model_name: str = None, base_url: str = None) -> dict[str, 
             "status": "local (private network, cost $0.00)",
             "citation": f"Local endpoint {endpoint} ({model}): $0.00 / free",
         }
+    if "super-120b" in model.lower():          # Nebius Token Factory list price, 2026-10-24 (aggregators; not Nebius's own page)
+        return {
+            "model": model,
+            "endpoint": endpoint,
+            "prompt_per_1m_usd": 0.30,
+            "completion_per_1m_usd": 0.90,
+            "status": "unverified (third-party listings of Nebius pricing)",
+            "citation": f"Nebius Token Factory pricing for {model} as listed by third parties ($0.30/1M prompt, $0.90/1M completion)",
+        }
     return {
         "model": model,
         "endpoint": endpoint,
@@ -462,14 +471,14 @@ class ArmsExperiment:
         c_cost = (completion_tokens / 1_000_000.0) * pricing["completion_per_1m_usd"]
         return p_cost + c_cost
 
-    def record_usage(self, prompt_tokens: int | None, completion_tokens: int | None):
+    def record_usage(self, prompt_tokens: int | None, completion_tokens: int | None, model: str | None = None):
         """Record real token usage; if missing or 0, record as 'missing' without guessing."""
         if prompt_tokens is None or completion_tokens is None or (prompt_tokens == 0 and completion_tokens == 0):
             self.token_usage["missing"] = self.token_usage.get("missing", 0) + 1
             return "missing"
         self.token_usage["prompt_tokens"] = self.token_usage.get("prompt_tokens", 0) + prompt_tokens
         self.token_usage["completion_tokens"] = self.token_usage.get("completion_tokens", 0) + completion_tokens
-        cost = self.calculate_cost(prompt_tokens, completion_tokens, self.model, self.base_url)
+        cost = self.calculate_cost(prompt_tokens, completion_tokens, model or self.model, self.base_url)
         self.accumulated_cost_usd += cost
         if self.accumulated_cost_usd >= self.max_cost:
             self.stopped_early = True
@@ -684,6 +693,11 @@ class ArmsExperiment:
         # Extract verified and unverified lessons from active reference task
         c_task = ref_ctx.get("task") or {}
         w_mem, d_mem = format_memory(c_task.get("lessons"))
+        # A lesson the USER taught (AXIOM_TEACH / --teach). Labelled TAUGHT, never WITNESSED: the server did not verify it.
+        taught = os.environ.get("AXIOM_TEACH", "").strip()
+        if taught:
+            w_mem = f"- [TAUGHT by the user] {taught}" + ("" if w_mem.startswith("(no verified") else chr(10) + w_mem)
+            results["taught"] = taught
 
         # Collect sample input files for proposal context
         input_files_text = ""
@@ -726,6 +740,41 @@ class ArmsExperiment:
                 c_inv = extract_single_candidate(prop_content, "invariant")
                 c_dom = extract_single_candidate(prop_content, "domain")
                 raw_candidates = {"invariant": c_inv, "domain": c_dom}
+
+        # Raw proposer replies, kept so a failed candidate can be read (a parse failure is not a proposal)
+        if isinstance(proposal_reply, dict) and proposal_reply.get("raw"):
+            raw_dir = self.db_dir / "raw_replies"; raw_dir.mkdir(parents=True, exist_ok=True)
+            for kind, texts in proposal_reply["raw"].items():
+                for n, t in enumerate(texts):
+                    (raw_dir / f"{task_id}_{kind}_{n}.txt").write_text(t or "", encoding="utf-8")
+            results["propose_retries"] = proposal_reply.get("retries")
+            self.call_count += max(0, int(proposal_reply.get("calls", 1)) - 1)
+        parse_failed = [k for k in ("invariant", "domain") if not (raw_candidates.get(k) or {}).get("script", "").strip()]
+        results["parse_failed"] = parse_failed
+        if len(parse_failed) == 1:                       # one real candidate: both slots carry it (K=1), never an empty file
+            ok = "domain" if parse_failed[0] == "invariant" else "invariant"
+            raw_candidates[parse_failed[0]] = dict(raw_candidates[ok])
+        elif len(parse_failed) == 2:                     # nothing to judge: B / C / C+J get no candidate; Arm A still runs
+            u = proposal_reply.get("usage") if isinstance(proposal_reply, dict) else None
+            if u:
+                results["propose_token_usage"] = self.record_usage(u.get("prompt_tokens"), u.get("completion_tokens"))
+            results["k_effective"] = 0
+            if "A" in self.arms and repair_a_fn:
+                a_res = repair_a_fn(arm_contexts["A"])
+                if isinstance(a_res, dict) and a_res.get("model_calls") == 0 and not a_res.get("witnessed"):
+                    raise RuntimeError("Arm A made 0 model calls! Arm A must never report a repair it did not attempt.")
+                results["arm_a"] = a_res
+                if isinstance(a_res, dict) and a_res.get("model_calls"):
+                    self.call_count += a_res["model_calls"]
+                    tu = a_res.get("token_usage") or {}
+                    self.record_usage(tu.get("prompt_tokens"), tu.get("completion_tokens"), a_res.get("model"))
+            no_cand = {"no_candidate": True, "reason": "both proposer replies unparseable after one retry"}
+            for arm, key in (("B", "arm_b"), ("C", "arm_c"), ("C+J", "arm_c_j")):
+                if arm in self.arms:
+                    results[key] = dict(no_cand)
+            results["agree"] = "N/A"
+            results["disagree_reason"] = "no candidate to judge"
+            return results
 
         # Track effective K: K=2 vs K=1 (when candidate scripts are identical)
         inv_script = raw_candidates.get("invariant", {}).get("script", "")
@@ -820,6 +869,10 @@ class ArmsExperiment:
                 if isinstance(a_res, dict) and a_res.get("model_calls") == 0 and not a_res.get("witnessed"):
                     raise RuntimeError("Arm A made 0 model calls! Arm A must never report a repair it did not attempt.")
                 results["arm_a"] = a_res
+                if isinstance(a_res, dict) and a_res.get("model_calls"):
+                    self.call_count += a_res["model_calls"]
+                    tu = a_res.get("token_usage") or {}
+                    self.record_usage(tu.get("prompt_tokens"), tu.get("completion_tokens"), a_res.get("model"))
             else:
                 results["arm_a"] = "NOT_RUN"
 
@@ -837,7 +890,7 @@ class ArmsExperiment:
             if u and (u.get("prompt_tokens") or u.get("completion_tokens")):
                 p_tok = u.get("prompt_tokens")
                 c_tok = u.get("completion_tokens")
-                rec = self.record_usage(p_tok, c_tok)
+                rec = self.record_usage(p_tok, c_tok, self.judge_model)
                 results["compose_token_usage"] = rec
             else:
                 self.record_usage(None, None)
@@ -936,7 +989,7 @@ class ArmsExperiment:
                 if u and (u.get("prompt_tokens") or u.get("completion_tokens")):
                     p_tok = u.get("prompt_tokens")
                     c_tok = u.get("completion_tokens")
-                    rec = self.record_usage(p_tok, c_tok)
+                    rec = self.record_usage(p_tok, c_tok, self.judge_model)
                     results["judge_token_usage"] = rec
 
                 j_dec = parse_composer_decision(judge_reply)
@@ -1469,10 +1522,29 @@ def run_series(
                 witnessed_lessons=witnessed_lessons or "(no verified lessons yet)",
                 declared_lessons=declared_lessons or "(no unverified attempts)",
             )
-            inv_msg = chat_model([
-                {"role": "system", "content": "You are the Invariant Proposer repairing a locked process for an AI task."},
-                {"role": "user", "content": inv_prompt},
-            ], [])
+            raws, retries = {}, {}
+
+            def ask(system, prompt, kind):
+                """One proposal; if the reply holds no parseable script, ask ONCE for a plain python block.
+                A reply that still has no script stays empty - the runner records it as a parse failure."""
+                msgs = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
+                msg = chat_model(msgs, [])
+                text = msg.get("content") if isinstance(msg, dict) else str(msg)
+                raws[kind] = [text or ""]
+                cand = extract_single_candidate(text or "", kind)
+                retries[kind] = 0
+                if not cand.get("script", "").strip():
+                    retries[kind] = 1
+                    msgs += [{"role": "assistant", "content": text or ""},
+                             {"role": "user", "content": "Your reply could not be parsed: it held no complete script. Reply with "
+                                                         "ONLY the complete new process.py inside one ```python block, nothing else."}]
+                    msg = chat_model(msgs, [])
+                    text = msg.get("content") if isinstance(msg, dict) else str(msg)
+                    raws[kind].append(text or "")
+                    cand = extract_single_candidate(text or "", kind)
+                return cand
+
+            c_inv = ask("You are the Invariant Proposer repairing a locked process for an AI task.", inv_prompt, "invariant")
             p1 = chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
             c1 = chat_model.usage["completion_tokens"] - u0["completion_tokens"]
 
@@ -1486,15 +1558,9 @@ def run_series(
                 witnessed_lessons=witnessed_lessons or "(no verified lessons yet)",
                 declared_lessons=declared_lessons or "(no unverified attempts)",
             )
-            dom_msg = chat_model([
-                {"role": "system", "content": "You are the Domain Proposer repairing a locked process for an AI task."},
-                {"role": "user", "content": dom_prompt},
-            ], [])
+            c_dom = ask("You are the Domain Proposer repairing a locked process for an AI task.", dom_prompt, "domain")
             p2 = chat_model.usage["prompt_tokens"] - u1["prompt_tokens"]
             c2 = chat_model.usage["completion_tokens"] - u1["completion_tokens"]
-
-            c_inv = extract_single_candidate(inv_msg.get("content") if isinstance(inv_msg, dict) else str(inv_msg), "invariant")
-            c_dom = extract_single_candidate(dom_msg.get("content") if isinstance(dom_msg, dict) else str(dom_msg), "domain")
 
             p_total = p1 + p2
             c_total = c1 + c2
@@ -1506,6 +1572,9 @@ def run_series(
                 },
                 "inv_prompt": inv_prompt,
                 "dom_prompt": dom_prompt,
+                "raw": raws,
+                "retries": retries,
+                "calls": 2 + sum(retries.values()),
             }
             if p_total > 0 or c_total > 0:
                 res["usage"] = {"prompt_tokens": p_total, "completion_tokens": c_total}
@@ -1518,8 +1587,8 @@ def run_series(
                 {"role": "system", "content": COMPOSER_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ], [])
-            p_used = chat_model.usage["prompt_tokens"] - u0["prompt_tokens"]
-            c_used = chat_model.usage["completion_tokens"] - u0["completion_tokens"]
+            p_used = comp_model.usage["prompt_tokens"] - u0["prompt_tokens"]
+            c_used = comp_model.usage["completion_tokens"] - u0["completion_tokens"]
             content = msg.get("content", "") if isinstance(msg, dict) else str(msg)
             res = parse_composer_decision(content)
             if p_used > 0 or c_used > 0:
@@ -1568,7 +1637,8 @@ def run_series(
             if proc and proc.get("entry_example"):
                 ws_a.write_file(ENTRY_FILE, proc["entry_example"])
 
-            model_a = ChatModel(model=model, base_url=endpoint)
+            a_model_name = os.environ.get("AXIOM_ARM_A_MODEL") or model
+            model_a = ChatModel(model=a_model_name, base_url=endpoint)
             model_a.thinking = False
             u0_a = dict(model_a.usage)
             t0_a = time.time()
@@ -1611,6 +1681,7 @@ def run_series(
                 "model_calls": calls_a,
                 "wall_time_seconds": wall_a,
                 "token_usage": {"prompt_tokens": p_a, "completion_tokens": c_a},
+                "model": a_model_name,
                 "reason": reason,
             }
         repair_a_fn = live_repair_a
@@ -1806,9 +1877,12 @@ def main():
     parser.add_argument("--max-cost", type=float, default=1.0, help="Max cost cap in USD")
     parser.add_argument("--call-cap", type=int, default=100, help="Maximum allowed model API calls")
     parser.add_argument("--receipt", default="arms_receipt.json", help="Path to write experiment receipt")
+    parser.add_argument("--teach", default=None, help="A lesson the user teaches the proposer (labelled TAUGHT in the prompt)")
     parser.add_argument("--confirm-paid", action="store_true", help="Authorize execution of paid Nebius model calls")
 
     args = parser.parse_args()
+    if args.teach:
+        os.environ["AXIOM_TEACH"] = args.teach
     arms_list = [a.strip().upper() for a in args.arms.split(",") if a.strip()]
 
     if args.dry_run:

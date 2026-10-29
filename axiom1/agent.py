@@ -255,8 +255,10 @@ class ChatModel:
 
     def __call__(self, messages, tools):
         check_local(self.base_url)                     # and on every call: a host that re-resolves elsewhere is caught
-        body = {"model": self.model, "messages": messages, "tools": tools,
+        body = {"model": self.model, "messages": messages,
                 "temperature": self.temperature, "max_tokens": self.max_tokens}
+        if tools:
+            body["tools"] = tools
         if self.thinking is not None and self.thinking_switch == "chat_template_kwargs":
             body["chat_template_kwargs"] = {"enable_thinking": bool(self.thinking)}
         elif self.thinking is False:                       # reasoning_effort: thinking on = the model's default
@@ -264,9 +266,10 @@ class ChatModel:
         req = urllib.request.Request(f"{self.base_url}/chat/completions", data=json.dumps(body).encode(),
                                      headers={"Authorization": f"Bearer {self.api_key}",
                                               "Content-Type": "application/json"})
-        for attempt in range(5):
+        timeout = int(os.environ.get("AXIOM_HTTP_TIMEOUT", 600))
+        for attempt in range(8):
             try:
-                with urllib.request.urlopen(req, timeout=180) as r:
+                with urllib.request.urlopen(req, timeout=timeout) as r:
                     data = json.load(r)
                 u = data.get("usage") or {}
                 self.usage["calls"] += 1
@@ -276,16 +279,16 @@ class ChatModel:
                 self.usage["cut_off"] += data["choices"][0].get("finish_reason") == "length"
                 return data["choices"][0]["message"]
             except urllib.error.HTTPError as e:
-                if e.code < 500 and e.code != 429 or attempt == 4:
+                if (e.code < 500 and e.code != 429) or attempt == 7:
                     raise RuntimeError(f"model endpoint returned HTTP {e.code}: "
                                        f"{e.read()[:300].decode(errors='replace')}") from None
-            except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException) as e:
+            except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException, json.decoder.JSONDecodeError) as e:
                 # one slow or dropped call is not the end of a run (seen on Bee: a 9B call ran 3 minutes; seen on
                 # Nebius 2026-10-04: "ConnectionResetError 10054" while READING the reply, which is not a URLError,
                 # ended a mailbox run - ConnectionError and http.client errors are retried too)
-                if attempt == 4:
+                if attempt == 7:
                     raise RuntimeError(f"model endpoint did not answer: {e}") from None
-            time.sleep(2 ** attempt * 2)     # 2, 4, 8, 16 s: rides out a brief network drop (seen on Bee)
+            time.sleep(min(30, 2 ** attempt * 2))     # rides out a brief network drop or server 503
 
 
 def _looks_like_a_tool_call(content):
@@ -301,7 +304,7 @@ def _openai_tool(name, description, parameters):
 
 
 async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=print, hub_url=None,
-                    token=None, shell=None, thinking="auto"):
+                    token=None, shell=None, thinking="auto", enable_ppc=True):
     """Run one agent until it gives a final answer or runs out of steps. Returns the transcript.
 
     With `hub_url` the agent connects to a hub over HTTP and is whoever `token` says it is; `db` and
@@ -349,7 +352,8 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
         # The harness takes the task, not the model. Measured: agents that explored first took it late
         # (sometimes only after a claim bounced off the lease check), so the thinking dial learned about
         # a verified skill only after most of the run had already been paid for.
-        res = await session.call_tool("take_task", {})
+        lease_s = int(os.environ.get("AXIOM_LEASE_SECONDS", max(600, max_steps * 60)))
+        res = await session.call_tool("take_task", {"lease_seconds": lease_s})
         taken = json.loads(res.content[0].text) if res.content and not res.isError else {}
         task = taken.get("task") if isinstance(taken, dict) else None
         if not task:
@@ -363,10 +367,21 @@ async def run_agent(agent_id, workspace, db, model, caps=(), max_steps=30, log=p
             if replay["witnessed"]:
                 state["witnessed"] = True
                 return replay["messages"]
+            if enable_ppc:
+                # The input strayed from the locked process: Harness^2 PPC parallel K=2 repair
+                from .ppc import repair_ppc
+                ppc = await repair_ppc(agent_id, task, replay, model, ws, session, start_sha, log)
+                if ppc["witnessed"]:
+                    state["ppc_arm"] = "ppc_winner"
+                    state["ppc_failed"] = False
+                    state["witnessed"] = True
+                    return ppc["messages"]
             # The input strayed from the locked process: the model repairs it, with thinking on.
+            state["ppc_arm"] = "ppc_fallback_interactive"
+            state["ppc_failed"] = True
             state["think"] = thinking != "off"
             state["refuted"] = True
-            res = await session.call_tool("take_task", {})       # the refutation returned the task to the pool
+            res = await session.call_tool("take_task", {"lease_seconds": lease_s})       # the refutation returned the task to the pool
             again = json.loads(res.content[0].text) if res.content and not res.isError else {}
             if isinstance(again, dict) and again.get("task"):
                 task = again["task"]

@@ -12,6 +12,7 @@ always store `declared`, and `witnessed` / `refuted` are written only by
 """
 import hashlib
 import json
+import os
 import sqlite3
 import time
 import functools
@@ -24,7 +25,7 @@ from . import sandbox as sandboxes
 from . import verifier
 
 DECLARED, WITNESSED, REFUTED = "declared", "witnessed", "refuted"
-DEFAULT_LEASE_S = 600
+DEFAULT_LEASE_S = int(os.environ.get("AXIOM_LEASE_SECONDS", 600))
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS agents   (id TEXT PRIMARY KEY, caps TEXT NOT NULL, joined_at REAL NOT NULL,
@@ -353,18 +354,20 @@ class Axiom:
         return {"id": task_id, "status": "open"}
 
     @_locked
-    def take_task(self, agent_id, lease_s=DEFAULT_LEASE_S):
-        """Lease the oldest open task this agent is capable of, or None."""
+    def take_task(self, agent_id, lease_s=DEFAULT_LEASE_S, task_id=None):
+        """Lease the oldest open task this agent is capable of (or a specific task_id if given), or None."""
         caps = set(json.loads(self._agent(agent_id)["caps"]))
         self._expire_leases()
-        for t in self.db.execute("SELECT * FROM tasks WHERE status='open' ORDER BY at").fetchall():
+        query = "SELECT * FROM tasks WHERE id=? AND status='open'" if task_id else "SELECT * FROM tasks WHERE status='open' ORDER BY at"
+        params = (task_id,) if task_id else ()
+        for t in self.db.execute(query, params).fetchall():
             if set(json.loads(t["caps"])) <= caps:
                 with self.db:
                     self.db.execute("UPDATE tasks SET status='leased', holder=?, lease_until=? WHERE id=?",
                                     (agent_id, self.clock() + lease_s, t["id"]))
                     self._event("take_task", agent_id, t["id"])
                 out = {"id": t["id"], "title": t["title"], "lease_s": lease_s,
-                       "lessons": self._lessons_for(t["title"])}
+                       "lessons": self._lessons_for(t["title"], check_id=t["check_id"])}
                 if t["check_id"]:
                     out["check_id"] = t["check_id"]
                     proc = self._process_for(t["check_id"])
@@ -458,13 +461,17 @@ class Axiom:
         return self._process_for(check_id)
 
     # ---- lessons: what the collective learned, written by the server from its own verdicts ----
-    def _lessons_for(self, task_title, limit=5):
+    def _lessons_for(self, task_title, limit=5, check_id=None):
         """Earlier attempts at a task with this title, newest first: what failed and why, what worked.
         Empty when sharing is off. Agents cannot write these; they come only from verdicts."""
         if not self.share_lessons:
             return []
-        rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
-                               "WHERE task_title=? ORDER BY at DESC LIMIT ?", (task_title, limit)).fetchall()
+        if check_id:
+            rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
+                                   "WHERE check_id=? OR task_title=? ORDER BY at DESC LIMIT ?", (check_id, task_title, limit)).fetchall()
+        else:
+            rows = self.db.execute("SELECT kind, label, reason, changed, body, agent FROM lessons "
+                                   "WHERE task_title=? ORDER BY at DESC LIMIT ?", (task_title, limit)).fetchall()
         return [{"kind": r["kind"], "label": r["label"], "by": r["agent"], "reason": r["reason"],
                  "changed": json.loads(r["changed"]), "lesson": r["body"]} for r in rows]
 
@@ -500,6 +507,21 @@ class Axiom:
     @_locked
     def lessons(self, limit=50):
         return [dict(r) for r in self.db.execute("SELECT * FROM lessons ORDER BY at DESC LIMIT ?", (limit,))]
+
+    def _record_refusal_lesson(self, task, agent_id, candidate_kind, reason):
+        """Internal server record: insert a refused repair candidate into lessons with label REFUTED.
+        Reason and body are strictly server-derived; no agent text is accepted."""
+        check_id = task["check_id"]
+        task_title = task["title"]
+        lesson_id = uuid.uuid4().hex[:12]
+        claim_id = f"refusal-{task['id']}-{candidate_kind}"
+        body = f"PPC candidate {candidate_kind} refused: {reason}"
+        with self.db:
+            self.db.execute("INSERT INTO lessons VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                            (lesson_id, "lesson", claim_id, check_id, task_title,
+                             agent_id, REFUTED, reason, json.dumps([]), body, self.clock()))
+        return {"id": lesson_id, "task_id": task["id"], "task_title": task_title,
+                "label": REFUTED, "reason": reason, "body": body}
 
     @_locked
     def export_okf(self, directory):
@@ -633,6 +655,240 @@ class Axiom:
             if "check_output" in private:  # a deliver check's full output may hold the hidden truth
                 self._event("check_output", c["agent"], claim_id, tail=private["check_output"])
         return {"id": claim_id, "label": label, "reason": reason, "evidence": evidence, "counts": anchored}
+
+    def _diff_size(self, base_script: str, cand_script: str) -> int:
+        import difflib
+        matcher = difflib.SequenceMatcher(None, base_script, cand_script)
+        return int((1.0 - matcher.ratio()) * 10000)
+
+    def _probe(self, agent_id, check, before_ref, after_ref, kind=None):
+        """Private server-side probe: runs check + canaries + regression for a candidate commit
+        without side effects. Does not record claims or modify track record."""
+        check_claim_kind = check["claim_kind"] if "claim_kind" in check.keys() else "fix"
+        if kind is None or check_claim_kind == "deliver":
+            kind = check_claim_kind
+        try:
+            before_sha = verifier.resolve(check["repo"], before_ref)
+            after_sha = verifier.resolve(check["repo"], after_ref)
+        except Exception as e:
+            return {"label": "error", "passed": False, "anchored": False, "reason": str(e),
+                    "evidence": {}, "before": "", "after": ""}
+        if before_sha == after_sha:
+            return {"label": "error", "passed": False, "anchored": False,
+                    "reason": "before and after are the same commit",
+                    "evidence": {}, "before": before_sha, "after": after_sha}
+        anchored = verifier.is_ancestor(check["repo"], before_sha, check["base_ref"])
+
+        _, check_fn = CLAIM_KINDS[kind]
+        label, reason, evidence, private = check_fn(
+            check["repo"], before_sha, after_sha,
+            json.loads(check["argv"]), json.loads(check["test_paths"]),
+            sandboxes.from_check(check["sandbox"], check["image"]), check["holdout"])
+        if label == WITNESSED and (evidence.get("process") or {}).get("reproduced"):
+            evidence["process"].update(self._regression(check, after_sha))
+
+        passed = (label == WITNESSED and bool(anchored))
+        return {
+            "label": label,
+            "passed": passed,
+            "anchored": bool(anchored),
+            "reason": reason,
+            "evidence": evidence,
+            "before": before_sha,
+            "after": after_sha,
+        }
+
+    def submit_candidates(self, agent_id, task_id, candidates, before_ref):
+        """Submit up to K=2 candidate repairs for a leased task. The server probes each candidate,
+        selects the winner via the gate (passes check, reproduces process, 0 regressions, tie-break
+        smallest diff), locks the winner as version v+1, and records refused candidates into the
+        lessons table using the verifier's own reasons (no agent text).
+        If no candidate passes, records a single refuted claim against the agent's honesty track record."""
+        self._agent(agent_id)
+        if not candidates or len(candidates) > 2:
+            raise AxiomError("candidates list must contain between 1 and 2 candidates")
+        ALLOWED_CANDIDATE_KINDS = {"invariant", "domain"}
+        kinds_seen = set()
+        for c in candidates:
+            if not isinstance(c, dict) or "after_ref" not in c or "kind" not in c:
+                raise AxiomError("each candidate must be an object with 'kind' and 'after_ref'")
+            extra_keys = set(c.keys()) - {"kind", "after_ref"}
+            if extra_keys:
+                raise AxiomError(f"candidate object contains disallowed keys: {sorted(extra_keys)!r}")
+            if c["kind"] not in ALLOWED_CANDIDATE_KINDS:
+                raise AxiomError(f"candidate kind must be one of {sorted(ALLOWED_CANDIDATE_KINDS)!r}, got {c['kind']!r}")
+            if c["kind"] in kinds_seen:
+                raise AxiomError(f"candidates must have distinct kinds, got duplicate {c['kind']!r}")
+            kinds_seen.add(c["kind"])
+
+        with self.lock:
+            self._expire_leases()
+            task = self.db.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone()
+            if task is None or task["status"] != "leased" or task["holder"] != agent_id:
+                raise AxiomError("only the current lease holder can submit candidates for a task")
+            check = self.db.execute("SELECT * FROM checks WHERE id=?", (task["check_id"],)).fetchone()
+            if check is None:
+                raise AxiomError(f"no registered check {task['check_id']!r}")
+            latest_proc = self._process_for(check["id"])
+            base_script = latest_proc["script"] if latest_proc else ""
+            claim_kind = check["claim_kind"] if "claim_kind" in check.keys() else "fix"
+
+        probed_results = []
+        for cand in candidates:
+            cand_kind = str(cand["kind"])
+            after_ref = cand["after_ref"]
+            probe_res = self._probe(agent_id, check, before_ref, after_ref, kind=claim_kind)
+            try:
+                cand_script = verifier.git_show(check["repo"], probe_res["after"], verifier.PROCESS_FILE)
+                diff = self._diff_size(base_script, cand_script)
+            except Exception:
+                diff = 999999
+
+            ev = probe_res.get("evidence") or {}
+            p_ev = ev.get("process") or {}
+            reproduced = p_ev.get("reproduced", False)
+            regression = p_ev.get("regression") or {}
+            reg_failed = regression.get("failed", 0)
+
+            probed_results.append({
+                "kind": cand_kind,
+                "after_ref": after_ref,
+                "after_sha": probe_res["after"],
+                "passed": probe_res["passed"],
+                "anchored": probe_res["anchored"],
+                "reproduced": reproduced,
+                "regression_failed": reg_failed,
+                "reason": probe_res["reason"],
+                "diff": diff,
+                "probe": probe_res,
+            })
+
+        valid_winners = [
+            r for r in probed_results
+            if r["passed"] and r["reproduced"] and r["regression_failed"] == 0
+        ]
+
+        if valid_winners:
+            valid_winners.sort(key=lambda r: r["diff"])
+            winner = valid_winners[0]
+            refused = [r for r in probed_results if r is not winner]
+
+            # 1. Lock winner through real claim + verify with task_id
+            win_claim = self.claim(
+                agent_id,
+                f"PPC winner ({winner['kind']})",
+                check["id"],
+                before_ref,
+                winner["after_sha"],
+                task_id=task_id,
+                kind=claim_kind,
+            )
+            win_verdict = self.verify(win_claim["id"])
+            is_witnessed = bool(win_verdict.get("label") == WITNESSED and win_verdict.get("counts"))
+
+            if is_witnessed:
+                # 2. Record refused candidates as lessons using verifier's own reason
+                for r in refused:
+                    ref_reason = r["reason"]
+                    if r.get("regression_failed", 0) > 0:
+                        ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
+                    self._record_refusal_lesson(task, agent_id, r["kind"], ref_reason)
+
+                return {
+                    "witnessed": True,
+                    "winner": winner["kind"],
+                    "winner_diff": winner["diff"],
+                    "verdict": win_verdict,
+                    "refused": [
+                        {
+                            "candidate": {"kind": r["kind"]},
+                            "kind": r["kind"],
+                            "diff": r["diff"],
+                            "reason": r["reason"],
+                            "regression_failed": r.get("regression_failed", 0),
+                        }
+                        for r in refused
+                    ],
+                }
+            else:
+                # Winner verification refuted (e.g. lease expired mid-probe, race, flaky check)
+                winner_fail_reason = win_verdict.get("reason", "winner verification refuted")
+                fail_reason = f"Winner candidate {winner['kind']} refuted during verification: {winner_fail_reason}"
+                winner_refused_entry = {
+                    "kind": winner["kind"],
+                    "reason": winner_fail_reason,
+                    "diff": winner["diff"],
+                    "regression_failed": 0,
+                }
+                all_refused = [winner_refused_entry] + refused
+                for r in all_refused:
+                    ref_reason = r["reason"]
+                    if r.get("regression_failed", 0) > 0:
+                        ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
+                    self._record_refusal_lesson(task, agent_id, r["kind"], ref_reason)
+
+                return {
+                    "witnessed": False,
+                    "winner": None,
+                    "reason": fail_reason,
+                    "verdict": win_verdict,
+                    "refused": [
+                        {
+                            "candidate": {"kind": r["kind"]},
+                            "kind": r["kind"],
+                            "diff": r["diff"],
+                            "reason": r["reason"],
+                            "regression_failed": r.get("regression_failed", 0),
+                        }
+                        for r in all_refused
+                    ],
+                }
+        else:
+            refused = probed_results
+            fail_reason = "No PPC candidate passed: " + "; ".join(f"{r['kind']}: {r['reason']}" for r in refused)
+
+            # Record a real refuted claim against the agent so it counts against honesty track record!
+            with self.lock:
+                claim_id = uuid.uuid4().hex[:12]
+                try:
+                    b_sha = verifier.resolve(check["repo"], before_ref)
+                    a_sha = probed_results[0]["after_sha"] if probed_results else ""
+                except Exception:
+                    b_sha, a_sha = "", ""
+                anchored = verifier.is_ancestor(check["repo"], b_sha, check["base_ref"]) if b_sha else False
+                with self.db:
+                    self.db.execute(
+                        "INSERT INTO claims (id, agent, statement, check_id, before_sha, after_sha, "
+                        "task_id, label, reason, evidence, made_at, verified_at, kind, anchored) "
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        (claim_id, agent_id, f"PPC batch ({', '.join(r['kind'] for r in candidates)})",
+                         check["id"], b_sha, a_sha, None, REFUTED, fail_reason, json.dumps({}),
+                         self.clock(), self.clock(), claim_kind, int(anchored)),
+                    )
+                self._event(REFUTED, agent_id, claim_id, reason=fail_reason)
+
+            # Record lessons for refused candidates using verifier's own reason
+            for r in refused:
+                ref_reason = r["reason"]
+                if r.get("regression_failed", 0) > 0:
+                    ref_reason = f"regression: broke {r['regression_failed']} earlier instance(s)"
+                self._record_refusal_lesson(task, agent_id, r["kind"], ref_reason)
+
+            return {
+                "witnessed": False,
+                "winner": None,
+                "reason": fail_reason,
+                "refused": [
+                    {
+                        "candidate": {"kind": r["kind"]},
+                        "kind": r["kind"],
+                        "diff": r["diff"],
+                        "reason": r["reason"],
+                        "regression_failed": r.get("regression_failed", 0),
+                    }
+                    for r in refused
+                ],
+            }
 
     # ---- track record: honesty and reliability are separate ----------------
     @_locked

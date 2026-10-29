@@ -8,3 +8,5 @@ dist/
 build/
 *.egg-info/
 external/
+.axiom_arms_run/
+local_pilot_receipt.json
